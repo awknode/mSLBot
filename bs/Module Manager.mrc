@@ -1,16 +1,3 @@
-/*
-
-######################################
-
-	# WESTOR Module Manager #
-	 # v4.4 - (11/11/2017) #
-	  # Thanks Supporters #
-
-######################################
-
-*/
-
-; --- Start of dialogs ---
 
 dialog -l wmm_module_sets {
   title ""
