@@ -7,3 +7,5 @@ My old IRC bot written in mSL, has user management with 3 groups, ascii art, API
 4. go to userlist.ini and add yourself the same way
 
 From here you can do whatever you'd like with the bot, type $sshelp for more instructions. It's not all the bot can do but it's a start to documentation.
+
+A lot of these scripts are public or from #mirc on freenode, about 40% of this code is actually mine.
