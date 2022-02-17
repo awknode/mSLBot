@@ -1,0 +1,79 @@
+
+on *:JOIN:#Main: { set -u5 /mode $chan +l $calc($nick(#,0) + 2) }
+on *:QUIT:{ if ( $chan == Main) { set -u5 /mode $chan +l $calc($nick(#,0) + 1) } }
+on *:PART:#Main: { set -u5 /mode $chan +l $calc($nick(#,0) + 1) }
+
+alias floatlimit {
+  set %getlim $nick($$1,0)
+  set %floatlimit $calc(%getlim + 2)
+  return %floatlimit
+}
+
+alias floatlimitnow {
+  set %getlim $nick($$1,0)
+  set %floatlimit $calc(%getlim + 2)
+  mode $$1 +l %floatlimit
+}
+
+alias fl {
+  set %getlim $nick($$1,0)
+  set %floatlimit $calc(%getlim + 2)
+  return %floatlimit
+}
+
+on @*:join:#:{
+  if ($istok(%settings.channels.float.limit,$chan,44)) {
+    if ($issplit($nick)) {
+      halt
+    }
+    inc -u3 %float.time 3
+    if (%float.time > 30) {
+      set %float.time 3
+    }
+    .timerfloatlim. [ $+ [ $chan ] ] off
+    .timerfloatlim. [ $+ [ $chan ] ] 1 %float.time floatlimitnow $chan
+  }
+  if ($istok(%settings.channels.delayed.voice,$chan,44)) {
+    .timervoice. [ $+ [ $chan ] ] off
+    set %voicenicks. [ $+ [ $chan ] ] $addtok(%voicenicks. [ $+ [ $chan ] ],$nick,32)
+    set %voicecount $numtok(%voicenicks. [ $+ [ $chan ] ], 32)
+    if (%voicecount == 1) {
+      .timervoice. [ $+ [ $chan ] ] 1 5 voice $chan %voicenicks. [ $+ [ $chan ] ]
+    }
+    else {
+      .timervoice. [ $+ [ $chan ] ] 1 $calc(15 * (%voicecount - 1)) voice $chan %voicenicks. [ $+ [ $chan ] ]
+    }
+  }
+}
+
+on @*:part:#:{
+  if ($istok(%settings.channels.float.limit,$chan,44)) {
+    .timerfloatlim. [ $+ [ $chan ] ] off
+    .timerfloatlim. [ $+ [ $chan ] ] 1 5 floatlimitnow $chan
+  }
+  if ($istok(%settings.channels.delayed.voice,$chan,44)) {
+    set %voicenicks. [ $+ [ $chan ] ] $remtok(%voicenicks. [ $+ [ $chan ] ],$nick,32)
+  }
+}
+
+on *:quit:%settings.channels.delayed.voice:{
+  if ($istok(%settings.channels.float.limit,$chan,44)) {
+    .timerfloatlim. [ $+ [ $chan ] ] off
+    .timerfloatlim. [ $+ [ $chan ] ] 1 5 floatlimitnow $chan
+  }
+  set %voicenicks. [ $+ [ $chan ] ] $remtok(%voicenicks. [ $+ [ $chan ] ],$nick,32)
+}
+on *:voice:%settings.channels.delayed.voice:{
+  if ($istok(%settings.channels.float.limit,$chan,44)) {
+    .timerfloatlim. [ $+ [ $chan ] ] off
+    .timerfloatlim. [ $+ [ $chan ] ] 1 5 floatlimitnow $chan
+  } 
+  set %voicenicks. [ $+ [ $chan ] ] $remtok(%voicenicks. [ $+ [ $chan ] ],$vnick,32)
+}
+on *:kick:%settings.channels.delayed.voice:{
+  if ($istok(%settings.channels.float.limit,$chan,44)) {
+    .timerfloatlim. [ $+ [ $chan ] ] off
+    .timerfloatlim. [ $+ [ $chan ] ] 1 5 floatlimitnow $chan
+  }
+  set %voicenicks. [ $+ [ $chan ] ] $remtok(%voicenicks. [ $+ [ $chan ] ],$knick,32)
+} 

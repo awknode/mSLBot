@@ -1,0 +1,115 @@
+on *:text:Target key is*:?:{
+  if ($nick == *fish) && (%samkeyfish == 1) {
+    set %samkeyfish 0
+    .msg *fish setkey %fishput $gettok($1-,4,32)
+    close -m $nick
+  }
+  if ($nick == *fish) && (%nickchange == 1) {
+    set %nickchange 0
+    .msg *fish setkey %nickchangenewnick $gettok($1-,4,32)
+    close -m $nick
+  }
+  if ($nick == *fish) && (%fishshowkey == 1) {
+    set %fishshowkey 0
+    window -dCo +l @Blowcrypt-Key -1 -1 500 80
+    aline @Blowcrypt-Key �Key for %fishcontact �:
+    aline -p @Blowcrypt-Key $gettok($1-,4,32) 
+    close -m $nick
+  }
+}
+
+on *:text:Target not found*:?:{
+  if ($nick == *fish) {
+    set %fishshowkey 0
+    echo $color(Mode text) -atm *** FiSH: No valid key for %fishcontact found
+    close -m $nick
+  }
+}
+
+on *:text:*:?:{
+  if ($nick == *fish) && (%samkeyfish != 1) && (%fishshowkey != 1) && (%fishshowkey != 1) {
+    echo $color(Mode text) -atm $1-
+    close -m $nick
+  }
+}
+
+on *:NICK:{
+  if (($nick == $me) || ($upper($newnick) == $upper($nick))) { return }
+  if (($query($newnick) == $null) || (%NickTrack != [On])) { return }
+  .msg *fish showkey $nick
+  set %nickchange 1
+  set %nickchangenewnick $newnick
+}
+
+alias FiSH.setkey {
+  if ($1 == /query) var %cur_contact = $active
+  else var %cur_contact = $1
+  if ($2- == $null) return
+
+  .msg *fish setkey %cur_contact $2-
+}
+
+alias FiSH.usechankey {
+  set %samkeyfish 1
+  .msg *fish showkey $2
+  set %fishput $1
+}
+
+alias FiSH.showkey {
+  if ($1 == /query) var %cur_contact = $active
+  else var %cur_contact = $1
+  set %fishshowkey 1
+  set %fishcontact %cur_contact
+  .msg *fish showkey %cur_contact
+}
+
+alias FiSH.removekey {
+  if ($1 == /query) var %cur_contact = $active
+  else var %cur_contact = $1
+  .msg *fish delkey %cur_contact
+}
+
+alias keyx { .msg *fish keyx $1 }
+
+alias FiSH.DH1080_INIT {
+  if ( ($1 == /query) || ($1 == $null) ) var %cur_contact = $active
+  else var %cur_contact = $1
+  .msg *fish keyx $1
+}
+
+menu channel {
+  -
+  FiSH
+  .Show key :FiSH.showkey $chan
+  .Set new key :FiSH.setkey $chan $?
+  .Remove key :FiSH.removekey $chan
+}
+
+menu query {
+  -
+  FiSH
+  .DH1080 keyXchange: FiSH.DH1080_INIT $1
+  .-
+  .Show key :FiSH.showkey $1
+  .Set new key :FiSH.setkey $1 $?
+  .Remove key :FiSH.removekey $1
+}
+
+menu nicklist {
+  -
+  FiSH
+  .DH1080 keyXchange: FiSH.DH1080_INIT $1
+  .-
+  .Show key :FiSH.showkey $1
+  .Set new key :FiSH.setkey $1 $?
+  .Remove key :FiSH.removekey $1
+  .Use same key as $chan :FiSH.usechankey $1 $chan
+}
+
+menu status,channel,nicklist,query {
+  FiSH
+  .-
+  .NickTracker $+ $chr(32) $+ %NickTrack
+  ...Enable :set %NickTrack [On]
+  ...Disable :set %NickTrack [Off]
+}

@@ -1,0 +1,29 @@
+alias masspm {
+  if !$1 { echo -a No message specified }
+  else {
+    echo *** Sending Message To Voices and Regular Users on $chan ..
+    var %a = 1, %b = $nick($chan,0), %c = 1, %massmsg
+    while %a <= %b {
+      var %ok 1
+      if ($nick(#,%a,oh) != $null) { var %ok 0 }
+      if (%ok = 1) { inc %msgtotal 1 }
+      inc %a
+    }
+    var %a = 1, %b = $nick($chan,0), %c = 1, %massmsg
+    while %a <= %b {
+      var %ok 1
+      if ($nick(#,%a,oh) != $null) { var %ok 0 }
+      if (%ok = 1) {
+        var %massmsg $addtok(%massmsg,$nick($chan,%a,r),44)
+        inc %c 2
+        .timer 1 %c /sendmasspm $nick($chan,%a,r) $1-    
+      }
+      inc %a
+    }
+    .timer 1 %c echo -a *** Sent Message To: %massmsg
+  }
+}
+alias -l sendmasspm {
+  echo -a *** PM'ing " $+ $1 $+ " with " $+ $2- $+ "
+  .msg $1 $2-
+}

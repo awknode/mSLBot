@@ -1,0 +1,73 @@
+on *:TEXT:*:#: {
+  if (*dropbox* !iswm $1-) && (*.gov* !iswm $1-) && (!google* !iswm $1-) { 
+    if (*facebook* !iswm $1-) && (*geoip* !iswm $1-) && (@google* !iswm $1-) && (*.mil* !iswm $1-) {
+      rtc $chan $1- 
+    }
+  }
+}
+
+on *:ACTION:*:#: {
+  if (*facebook* !iswm $1-) && (*geoip* !iswm $1-) { 
+    if (*.gov* !iswm $1-) && (*.mil* !iswm $1-) {
+      rtc $chan $1- 
+    }
+  }
+}
+
+on *:sockopen:website.*: {
+  if (!$sockerr) {
+    tokenize 32 $($+(%,$sockname),2)
+    sockwrite -n $sockname GET $2 HTTP/1.1
+    sockwrite -n $sockname Host: $1
+    sockwrite -n $sockname Accept: */*
+    sockwrite -n $sockname Connection: Close
+    sockwrite -n $sockname $crlf
+  }
+  else unset $+(%,$sockname)
+}
+on *:sockread:website.*: {
+  var %x, %z = $sockname, %e = $($+(%,%z),2)
+  sockread -f %x
+  if ($regex(%x,/<title[\w\s="]*>(.*?)<\/title>/i)) {
+    tokenize 32 %e
+    var %s = $btc $+ 7Title: $ptc($regml(1)) $iif($4,$4)
+    msg $3 $iif(c isincs $chan($3).mode,$strip(%s),%s)
+    unset $+(%,$(%z,2))
+    .sockclose %z
+  }
+  if (*HTTP*302* iswm %x) set -e %web.tmp 1
+  if (Location: isin %x) {
+    if ($mtc(%x)) {
+      tokenize 32 %e
+      sockclose %z
+      soc $regml(web,1) $iif($regml(web,2),$v1,/) $iif($3,$3,1) %z $iif(%web.tmp,Redirected)
+      unset %web.tmp
+    }
+  }
+}
+on *:sockclose:website.*: unset $+(%,$sockname)
+alias -l soc {
+  var %x = $iif($4,$4,$+(website.,$r(a,z),$r(a,z),$r(a,z),$r(0,9),$r(0,9),$r(0,9)))
+  set -e $+(%,%x) $1-2 $iif($3 ischan && $me ison $3,$3) $iif($5,$ntc($5))
+  sockopen %x $1 80
+}
+
+
+alias -l mtc return $regex(web,$1,/(?:https?:\/\/)?((?:www\.)?[\w-.]+\.[a-z]{2,4})([\w-_#?=%.\/&\+?]+)?/ig)
+alias -l ptc return $replace($1,&mdash;,-,&quot;,",&amp;,&,&lt;,<,&gt;,>,?,$chr(233),?,$chr(231),&ccedil;,$chr(231),&ntilde;,$chr(241),?,$chr(209),?,$chr(220),?,$chr(244),&#8220;,",&#8221;,",&#8217;,',&#039;,',&raquo;,$chr(187),&#39;,$chr(39),&#x26;,$chr(38),+OK,OK,&#0153;,,&#47;,$chr(47),&#40;,$chr(40),&#38;,$chr(38),&#41;,$chr(41),&#34;,",&#43;,+,é,$chr(63),&trade;,,&lsquo;,',&rsquo;,',&#8211;,-,&#038;,&,&#174;,$chr(174),&bull;,$chr(8226))
+alias -l btc return $+($chr(2),$1,$chr(2))
+alias -l ntc return $+($chr(40),$1,$chr(41))
+alias rtc {
+  if ($mtc($2-)) && (!%website.flood [ $+ [ $regml(web,1) ] ]) {
+    var %x = 1, %v 
+    while ($regml(web,%x)) {
+      var %z = $iif(/ isin $regml(web,$calc(%x +1)),$v2,/), %i = $regml(web,%x)
+      if (/ !isin %i) && (!$istok(%v,%i,32)) {
+        soc %i %z $1
+        %v = %v %i
+      }
+      inc %x 1
+    }
+    set -eu5 %website.flood $+ $regml(web,1) 1
+  }
+}

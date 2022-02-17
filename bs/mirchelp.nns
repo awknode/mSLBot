@@ -1,0 +1,224 @@
+dialog -l mirc_help_add {
+  title "Mirc Help - - Add Mode"
+  size -1 -1 128 208
+  option dbu
+  button "Add", 3, 7 194 33 12
+  button "Clear Screen", 4, 49 194 35 12
+  button "Close", 5, 91 194 33 12, Cancel
+  box "Syntax/Definition", 8, 6 24 118 82
+  box "Example", 9, 6 106 118 82
+  edit "", 2, 8 32 112 72, multi vsbar
+  edit "", 7, 8 112 112 72, multi vsbar
+  edit "", 1, 8 11 114 10, autohs
+  text "Topic Name", 6, 8 3 113 8, center
+}
+On *:Dialog:mirc_help_add:Sclick:3,4: {
+  if ($did == 3) { addrecord mirc_help_add }
+  if ($did == 4) { did -r mirc_help_add 2,7 }
+}
+dialog -l mirc_help_edit {
+  title "Mirc Help - - Edit Mode"
+  size -1 -1 128 208
+  option dbu
+  button "Save", 3, 7 194 33 12
+  button "Clear Screen", 4, 49 194 35 12
+  button "Close", 5, 91 194 33 12, cancel
+  box "Syntax/Definition", 8, 6 24 118 82
+  box "Example", 9, 6 106 118 82  
+  text "", 1, 8 16 114 8, center
+  edit "", 2, 8 32 112 72, multi vsbar
+  edit "", 7, 8 112 112 72, multi vsbar
+  text "Now Editing", 6, 8 8 114 8, center
+}
+On *:Dialog:mirc_help_edit:Sclick:3,4: {
+  if ($did == 3) { addrecord mirc_help_edit }
+  if ($did == 4) { did -r mirc_help_edit 2,7 }
+}
+dialog -l mirc_help {
+  title "Mirc Help"
+  size -1 -1 128 208
+  option dbu
+  combo 1, 10 8 107 12, sort drop
+  text "", 2, 8 32 113 72
+  button "Add", 3, 8 194 25 12
+  button "Delete", 4, 37 194 25 12
+  button "Edit", 5, 67 194 25 12
+  button "Close", 6, 96 194 25 12, Cancel
+  text "", 7, 8 114 113 72
+  box "Syntax/Definition", 8, 6 24 118 82
+  box "Example", 9, 6 106 118 82
+}
+On *:Dialog:mirc_help:Sclick:3-6: {
+  if ($did == 3) { dopen mirc_help_add }
+  if ($did == 4) && ($did(mirc_help,1).seltext) {
+    if ($input(Are you Sure You Want to Delete this Record?,y)) {
+      hdel mirchelp $iif($left($did(mirc_help,1).seltext,1) == $chr(36),$+(,$did(mirc_help,1).seltext,),$did(mirc_help,1).seltext)
+      did -d mirc_help 1 $did(mirc_help,1).sel
+    }
+    else { return }
+  }
+  if ($did == 5) && ($did(mirc_help,1).seltext) {
+    dopen mirc_help_edit
+    did -a mirc_help_edit 1 $did(mirc_help,1).seltext
+    if ($did(mirc_help,2).text) { did -a mirc_help_edit 2 $did(mirc_help,2).text }
+    if ($did(mirc_help,7).text) { did -a mirc_help_edit 7 $did(mirc_help,7).text }
+  }
+}
+On *:Dialog:mirc_help:init:*: {
+  if (!$hget(mirchelp)) { BotHelp.init }
+  else { mirchelp.init }
+}
+On *:Dialog:mirc_help:Sclick:1: {
+  if ($did(mirc_help,1).seltext) { 
+    if ($left($did(mirc_help,1).seltext,1) == $chr(36)) {
+      if ($between($hget(mirchelp,$+(,$did(mirc_help,1).seltext,)),<ex>,</ex>,1)) {
+        did -a mirc_help 2 $strip($remove($hget(mirchelp,$+(,$did(mirc_help,1).seltext,)),$between($hget(mirchelp,$+(,$did(mirc_help,1).seltext,)),<ex>,</ex>,1),<ex>,</ex>))
+        did -a mirc_help 7 $strip($between($hget(mirchelp,$+(,$did(mirc_help,1).seltext,)),<ex>,</ex>,1))
+      }
+      else { 
+        did -a mirc_help 2 $remove($strip($hget(mirchelp,$+(,$did(mirc_help,1).seltext,))),<ex>,</ex>)
+        did -r mirc_help 7
+      }
+    }
+    else {
+      if ($between($hget(mirchelp,$did(mirc_help,1).seltext),<ex>,</ex>,1)) {
+        did -a mirc_help 2 $strip($remove($hget(mirchelp,$did(mirc_help,1).seltext),$between($hget(mirchelp,$did(mirc_help,1).seltext),<ex>,</ex>,1),<ex>,</ex>))
+        did -a mirc_help 7 $strip($between($hget(mirchelp,$did(mirc_help,1).seltext),<ex>,</ex>,1))
+      }
+      else { 
+        did -a mirc_help 2 $remove($strip($hget(mirchelp,$did(mirc_help,1).seltext)),<ex>,</ex>) 
+        did -r mirc_help 7
+      }
+    }
+  }
+}
+#mirc_help.trigger on
+On $*:Text:/(^[!@])mIRC +/Si:#: {
+  spamprotect
+  if (!$hget(mirchelp)) { GetTxt }
+  if ($regml(1) == @) && ($nick isop $chan) {
+    var %search = $replace($iif($left($eval($2-,1),1) == $chr(36),$+(,$2-,),$2-),$chr(32),_)
+    if ($hget(mirchelp,%search)) {
+      if ($between($hget(mirchelp,%search),<ex>,</ex>,1)) {
+        .msg $chan Syntax --- $remove($hget(mirchelp,%search),$between($hget(mirchelp,%search),<ex>,</ex>,1),<ex>,</ex>)
+        .msg $chan Example -- $between($hget(mirchelp,%search),<ex>,</ex>,1)
+      }
+      else { .msg $chan $remove($hget(mirchelp,%search),<ex>,</ex>) }
+    }
+    else { .msg $chan %search has not been defined yet. }
+  }
+  else {
+    if (!$timer(mirchelp $+ $nick)) {
+      .timer $+ $+(mirchelp,$nick) 1 10 noop
+      var %search = $replace($iif($left($eval($2-,1),1) == $chr(36),$+(,$2-,),$2-),$chr(32),_)
+      if ($hget(mirchelp,%search)) {
+        if ($between($hget(mirchelp,%search),<ex>,</ex>,1)) {
+          .msg $chan Syntax --- $remove($hget(mirchelp,%search),$between($hget(mirchelp,%search),<ex>,</ex>,1),<ex>,</ex>)
+          .msg $chan Example -- $between($hget(mirchelp,%search),<ex>,</ex>,1)
+        }
+        else { .msg $chan $remove($hget(mirchelp,%search),<ex>,</ex>) }
+      }
+      else { .msg $chan %search has not been defined yet. }
+    }
+  }
+}
+#mirc_help.trigger End
+alias -l BotHelp.init {
+  if (!$isfile(StarterHelp.txt)) { GetTxt }
+}
+alias -l GetTxt {
+  echo -at 09Starting Download of Help Files. This could take as long a 60 Seconds.09 Please wait!
+  if ($isfile(StarterHelp.txt)) { return }
+  sockclose GetTxt
+  sockopen GetTxt pastebin.com 80
+}
+On *:sockopen:GetTxt:{
+  sockwrite -nt $sockname GET /download.php?i=f6a8bb282 HTTP/1.1
+  sockwrite -nt $sockname Host: pastebin.com $+ $crlf $+ $crlf
+}
+On *:sockread:GetTxt:{
+  if (!$sock($sockname).mark) {
+    var %GetTxt.var | sockread %GetTxt.var
+    if (%GetTxt.var == $null) { sockmark $sockname 1 }
+  }
+  else {
+    sockread &File 
+    bwrite StarterHelp.txt -1 -1 &File
+  }
+}
+On *:sockclose:GetTxt:{
+  unset %GetTxt.*
+  echo -at Download of Help Files Complete.
+  echo -at 09Initializing Hash Tables. Please wait.
+  if (!$hget(mirchelp)) { hmake mirchelp 10 }
+  var %eof = $lines(StarterHelp.txt), %count = 1 
+  while (%count <= %eof) { 
+    if ($left($read(StarterHelp.txt,%count),2) != **) { 
+      if ($read(StarterHelp.txt,%count)) { hadd mirchelp $read(StarterHelp.txt,%count) }
+    } 
+    inc %count 
+  }
+  hdel mirchelp 0
+  hdel mirchelp 75f8
+  if ($dialog(mirc_help)) {
+    var %count = $hget(mirchelp,0).item
+    while (%count) && ($dialog(mirc_help)) {
+      did -a mirc_help 1 $strip($hget(mirchelp,%count).item)
+      dec %count
+    }
+  }
+  echo -at HashTables Ready. This Script is Ready for Use :)
+  .timer 1 5 .remove StarterHelp.txt
+}
+alias -l mirchelp.init {
+  if ($dialog(mirc_help)) { did -r mirc_help 1 }
+  var %count = $hget(mirchelp,0).item
+  while (%count) && ($dialog(mirc_help)) {
+    did -a mirc_help 1 $strip($hget(mirchelp,%count).item) 
+    dec %count
+  }
+}  
+alias -l addrecord {
+  var %dscr = $prep($addmulti($1,2)), %ex = $+(<ex>,$prep($addmulti($1,7)),</ex>)
+  hadd -m mirchelp $replace($iif($left($did($1,1).text,1) == $chr(36),$+(,$did($1,1).text,),$did($1,1).text),$chr(32),_) %dscr %ex
+  mirchelp.init
+}
+alias -l addmulti {
+  var %count = $did($1,$2).lines, %counter = 1, %return
+  while (%counter <= %count) {
+    %return = %return $did($1,$2,%counter).text 
+    inc %counter
+  }
+  return %return
+}
+alias -l prep { return $replace($1-,$chr(36),$+(,$chr(36),),/,/,|,|) }
+alias -l dopen {
+  if ($dialog($1)) { dialog -v $1 $1 }
+  else { dialog -m $1 $1 }
+}
+;alias by Gummo
+alias -l between { 
+  noop $regex($1,/\Q $+ $2 $+ \E(.*?)\Q $+ $3 $+ \E/gi) 
+  return $regml($4) 
+}
+On *:Start: { 
+  hmake mirchelp 10 
+  if ($exists(mirchelp.hsh)) { hload mirchelp mirchelp.hsh }
+  else { GetTxt }
+}
+On *:Exit: {
+  if ($hget(mirchelp)) { 
+    hsave mirchelp mirchelp.hsh
+    hfree mirchelp
+  }
+}
+On *:Unload: {
+  hfree mirchelp
+}
+menu * {
+  mIRC hELP bOT
+  .mIRC hELP Editor:dopen mirc_help
+  .$iif($group(#mirc_help.Trigger) == On,$style(1)) mIRC hELP Trigger
+  ..$iif($group(#mirc_help.Trigger) == On,$style(2)) On: .enable #mirc_help.Trigger
+  ..$iif($group(#mirc_help.Trigger) == Off,$style(2)) Off: .disable #mirc_help.Trigger
+}

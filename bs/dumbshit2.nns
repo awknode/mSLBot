@@ -1,0 +1,37 @@
+ON *:TEXT:*:#:{
+  if ($1 == ?vmode) { msg $chan v <nickname> = Gives Voice to the user (May talk if chan is +m) }
+  if ($1 == ?hmode) { msg $chan h <nickname> = Gives HalfOp status to the user (Limited op access) }
+  if ($1 == ?omode) { msg $chan o <nickname> = Gives Operator status to the user }
+  if ($1 == ?amode) { msg $chan a <nickname> = Gives Channel Admin to the user }
+  if ($1 == ?qmode) { msg $chan q <nickname> = Gives Owner status to the user }
+  if ($1 == ?bmode) { msg $chan b <nick!ident@host> = Bans the nick!ident@host from the channel. (Extended bantypes (for more info see /HELPOP EXTBANS)) [h] }
+  if ($1 == ?cmode) { msg $chan c = Block messages containing mIRC color codes [o] } 
+  if ($1 == ?emode) { msg $chan e <nick!ident@host> = Overrides a ban for matching users [h] } 
+  if ($1 == ?Imode) { msg $chan I <nick!ident@host> = Overrides +i for matching users [h] } 
+  if ($1 == ?fmode) { msg $chan f <floodparams> = Flood protection (for more info see /HELPOP CHMODEF) [o] } 
+  if ($1 == ?imode) { msg $chan i = A user must be invited to join the channel [h] } 
+  if ($1 == ?jmode) { msg $chan j <joins:sec> = Throttle joins per-user to 'joins' per 'sec' seconds [o] } 
+  if ($1 == ?kmode) { msg $chan k <key> = Users must specify <key> to join [h] } 
+  if ($1 == ?lmode) { msg $chan l <number of max users> = Channel may hold at most <number> of users [o] } 
+  if ($1 == ?mmode) { msg $chan m = Moderated channel (only +vhoaq users may speak) [h] } 
+  if ($1 == ?nmode) { msg $chan n = Users outside the channel can not send PRIVMSGs to the channel [h] } 
+  if ($1 == ?pmode) { msg $chan p = Private channel [o] } 
+  if ($1 == ?rmode) { msg $chan r = The channel is registered (settable by services only) } 
+  if ($1 == ?smode) { msg $chan s = Secret channel [o] } 
+  if ($1 == ?tmode) { msg $chan t = Only +hoaq may change the topic [h] } 
+  if ($1 == ?zmode) { msg $chan z = Only Clients on a Secure Connection (SSL) can join [o] } 
+  if ($1 == ?Amode) { msg $chan A = Server/Net Admin only channel (settable by Admins) } 
+  if ($1 == ?Cmode) { msg $chan C = No CTCPs allowed in the channel [o] } 
+  if ($1 == ?Gmode) { msg $chan G = Filters out all Bad words in messages with <censored> [o] } 
+  if ($1 == ?Mmode) { msg $chan M = Must be using a registered nick (+r), or have voice access to talk [o] } 
+  if ($1 == ?Kmode) { msg $chan K = /KNOCK is not allowed [o] } 
+  if ($1 == ?Lmode) { msg $chan L <chan2> = Channel link (If +l is full, the next user will auto-join <chan2>) [q] } 
+  if ($1 == ?Nmode) { msg $chan N = No Nickname changes are permitted in the channel [o] } 
+  if ($1 == ?Omode) { msg $chan O = IRC Operator only channel (settable by IRCops) } 
+  if ($1 == ?Qmode) { msg $chan Q = No kicks allowed [o] } 
+  if ($1 == ?Rmode) { msg $chan R = Only registered (+r) users may join the channel [o] } 
+  if ($1 == ?Smode) { msg $chan S = Strips mIRC color codes [o] } 
+  if ($1 == ?Tmode) { msg $chan T = No NOTICEs allowed in the channel [o] } 
+  if ($1 == ?Vmode) { msg $chan V = /INVITE is not allowed [o] } 
+  if ($1 == ?umode) { msg $chan u = Auditorium mode (/names and /who #channel only show channel ops) [q] } 
+}

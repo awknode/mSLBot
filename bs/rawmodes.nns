@@ -1,0 +1,5 @@
+%check.on on
+%ccc #
+%ccc.list b
+%blow_ini C:\ircbot\blow.ini
+%FiSH_dll C:\ircbot\fish_10.dll

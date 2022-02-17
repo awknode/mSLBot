@@ -1,0 +1,32 @@
+alias GetIdent {
+  var %nick-ident = $remove($gettok($address($1,3),1,$asc(@)),*!*)
+  return %nick-ident
+}
+alias BadIdentCheck {
+  if ($1- == mibbit) {
+    return $true
+  }
+  elseif ($1 == Guest) {
+    return $true
+  }
+  else {
+    return $false
+  }
+}
+ON 1:JOIN:#: {
+  if ($nick != $me) && ($me isop $chan) {
+    if ($BadIdentCheck($GetIdent($nick)) == $true) {
+      whois $nick
+      msg # $nick $+ , bad choice using mibbitch.
+      mode # +b $+(*!,$GetIdent($nick),@*)
+    }
+  }
+}
+
+RAW 311:*: { 
+  if ($3- == *mibbit*) { 
+    var $chan = %chan, $nick = %nick 
+    whois $nick
+    msg %chan %nick is using $3- to connect via mibbit. Mibbitch.
+  }
+}

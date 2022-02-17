@@ -1,0 +1,29 @@
+
+on $*:text:/^[!.@]def(ine|inition)? \w+$/Si:#:{
+  if (!$sock(definition)) {
+    set %definitionword $2
+    set %defchan $chan
+    msg # Looking up results for $+([,$chr(3),12,%definitionword,$chr(15),],:)
+    sockopen definition lookwayup.com 80
+  }
+}
+on *:sockopen:definition: {
+  sockwrite -n $sockname GET /lwu.exe/lwu/d?s=f&w= $+ %definitionword HTTP/1.1
+  sockwrite -n $sockname Host: lookwayup.com
+  sockwrite -n $sockname Connection: Close
+  sockwrite -n $sockname $crlf
+}
+on *:sockread:definition: {
+  sockread %define
+  if (not found. isin %define) { msg %defchan No results found for $+([,$chr(3),12,%definitionword,$chr(15),],.) | sockclose definition }
+  if (Spelling corrected isin %define) { msg %defchan No results found for $+([,$chr(3),12,%definitionword,$chr(15),],.) | sockclose definition }
+  if ($chr(90) isin %define) && ($chr(91) isin %define) { set %definition $nohtml(%define) | set %defyesono yes | set %defyes yes }
+  elseif (%defyesono == yes) { msg %defchan $gettok(%definition,1,46) $+ $chr(46) $+($chr(91),$chr(3),7,$gettok($gettok(%definition,1,93),2,91),$chr(15),$chr(93)) $remove($replace($nohtml(%define),$(&#34;),$chr(34),$(&#39;),$chr(39)),$chr(9)) | unset %defyesono }
+}
+on *:sockclose:definition: {
+  if (%defyes == yes) { msg %defchan End of results for $+([,$chr(3),12,%definitionword,$chr(15),],.) | unset %def* }
+}
+alias nohtml {
+  var %x, %i = $regsub($1-,/(^[^<]*>|<[^>]*>|<[^>]*$)/g,$null,%x), %x = $remove(%x,&nbsp;)
+  return %x
+}

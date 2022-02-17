@@ -1,0 +1,67 @@
+on *:start: {
+  server -e git.opiates.icu:+31337 haha/efnet:scrotum99z99 
+  ;; server -m nullptr.cz:+31337 vmbot/efnet:scrotum88x88$
+  ;; server -m nullptr.cz:+31337 vmbot/blackcatz:scrotum88x88$
+  ;; server -m nullptr.cz:+31337 vmbot/freenode:scrotum88x88$
+  ;; ignore -yt *
+}
+
+;On *:DISCONNECT: { /identd on $read(nicklist.txt,n) | /nick $read(nicklist.txt) | { if ($nick == ret) { nickserv ghost iMv10L3ntAF | msg nickserv identify iMv10L3ntAF } } }
+
+On *:connect: {
+  ignore -yt *
+  /identd on $read(nicklist.txt,n)
+  ;; nick $read(nicklist.txt,n)
+}
+
+;;On *:JOIN:#tomato: { if ($wildsite == *!*@A-55E416D4.org) { mode # +b $address($nick,2) | kick $nick # tater things hes the only one that scrolls n codes, what a fag | msg $nick you're a fag and now you're scripted out bitch } }
+
+
+;;On *:text:*:#: { if (!$nick(#,$nick,@&~%) && !$regex($nick,/^(pagal[^])$/i)) { if (www* iswm $strip($1-,burcmo) || *http:* iswm $strip($1-,burcmo)) { msg # detected } } }
+
+On *:ACTION:*pets ret*:#: { msg $chan Damn that feels good, $nick $+ . Can I turn over now so you can do the front? }
+
+alias max.whois return 3 15
+
+On $*:PARSELINE:out:/^(NOTICE \S+ :\x01VERSION) mIRC/:{
+  .parseline -otn $regml(1) I am currently running Python 3.7 on OpenBSD under development of Rebellious, LLC. Django v2.9 $+ $chr(1)
+} ; by SReject 2017
+
+on ^*:snotice:* did a /whois on you.: {
+  echo -at 7 $1- $time on $date $+ .
+  $iif(!$($+(%,$2,whois),2),set $+(-u,$gettok($max.whois,2,32)) $+(%,$2,whois) 1,inc $+(%,$2,whois) 1)
+  if ($($+(%,$2,whois),2) == $gettok($max.whois,1,32)) { unset $($+(%,$2,whois),1) | kill $2 [ that's enough. ] }
+}  
+
+on *:BAN:#: { if (strstr == $nick ) || (strN == $nick ) { halt }
+  if ($nick == $me) { mode # -b $me $address($me,0) | msg chanserv unban $chan $me | join $chan | halt 
+  }
+}
+on *:UNban:#: { if ($nick == $me) { .ruser nounban $banmask | return } | if ($level($banmask) == nounban) && ($nick != $me) && ($nick != int) { raw -q mode # +b $nick $address($nick,0) Secured ban. } }
+on *:EXIT: { .rlevel -r nounban }
+
+on ^*:snotice:*forbidding*: { haltdef }
+on ^*:snotice:*netsplit*: { ns identify toughnuttz }
+
+on *:kick:#: {
+  if ($knick == $me) { 
+    join # 
+    inc %kick 
+    echo -a I've been kicked %kick times :P 
+  }
+}
+
+
+menu channel {
+  SajoinFlood:/massj
+}
+alias massj {
+  var %x $$?="Number of chans:"
+  var %y $$?="Nick:"
+  var %z $$?="Channel Name:"
+  var %i 1
+  while (%i <= %x) {
+    sajoin %y %z $+ $rand(11111,99999)
+    inc %i 1
+  }
+}

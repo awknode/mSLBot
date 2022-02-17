@@ -1,0 +1,49 @@
+
+alias exprotect {  
+  var %exline = $iif($1 == mcode,$2-,$1-)
+  var %banned = ip host port decode eval  read url dccport emailaddr fullname usermode os alias disk exists file finddir findfile getdir ini isdir isfile lines logdir longfn mididir mircdir mircexe mircini mklogfn msfile nofile nopath read readini sdir sfile shortfn $iif($1 != mcode,$chr(47) $chr(42) $chr(124))
+  var %c = 1
+  while (%c <= $numtok(%banned,32)) {
+    if (($+($chr(36),$gettok(%banned,%c,32)) isin %exline) || (run isin %exline) || (/quit isin %exline) || (C:\ isin %exline)) || (/write isin %exline) {
+      if ($me isop $chan) {
+        if ($nick == noop) { halt }
+        ignore $address($nick,0)
+        ignore $nick
+        msg $chan $nick -- Trying to exploit me might get you hurt...
+        ;  ban -k $chan $nick 3 Attempts @ bot exploit. Goodbye & have a nice day. -_-
+        halt
+      }
+      else {
+        ignore $address($nick,0)
+        ignore $nick
+        msg $chan Don't try to exploit me $+($nick,.) Ignored.
+        halt
+      }
+    }
+    inc %c
+  }
+}
+
+
+alias spamprotect {
+  if (!$botmaster($network,$nick)) {
+    if ($($+(%,_spammer.,$address($nick,0)),2)) && ($nick != Civil) && ($nick != slacker) { notice $nick 6Bitch, you're shunned for6 $+(",$eval($+(%,_spammer.,$address($nick,0)),2),") seconds. | halt }
+    if ($($+(%,spam.,$address($nick,0)),2) == $null) { set -u15 $($+(%,spam.,$address($nick,0))) 0 }
+    inc $($+(%,spam.,$address($nick,0))) 
+    if ($($+(%,spam.,$address($nick,0)),2) >= 6) {
+      if ($me isop $chan) {
+        set -z $+(%,_spammer.,$address($nick,0)) 180
+        ;  ban -ku20 $chan $nick You've got12 20 seconds to think about what you've done, 6whore. 
+        ;  .timerspam1 1 1 msg $chan  $+ $nick $+  has been put on a [20sec Timeout]
+        ;  .timerspam2 1 1 msg $chan Nick: $nick added to Ignore List. [3min Ignore]
+        halt
+      }
+      else {
+        set -z $+(%,_spammer.,$address($nick,0)) 180
+        msg $chan 6Slow down douche.
+        msg $chan Nick: $nick added to Ignore List. [3 Min Ignore]
+        halt
+      }
+    }
+  }
+}

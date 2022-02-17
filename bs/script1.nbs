@@ -1,0 +1,36 @@
+alias c1 { return $+($chr(3),14,$1-,$chr(3)) }
+alias c2 { return $+($chr(3),10,$1-,$chr(3)) }
+
+on $*:TEXT:/^[@!.]ud/Si:#:{
+  if ($sock(urban)) .sockclose $sockname
+  if ($2) && ($2- !isnum) {
+    set %urban.display $iif($left($1,1) == @, msg $chan, notice $nick)
+    set %urban.word $2-
+    sockopen urban http://www.urbandictionary.com 80
+  }
+  else { notice $nick 14¤10Syntax14¤ 10!urban 14word }
+}
+
+on *:SOCKOPEN:Urban: {
+  sockwrite -nt $sockname GET $+(/define.php?term=,%urban.word) HTTP/1.1
+  sockwrite -nt $sockname Host: http://www.urbandictionary.com
+  sockwrite -nt $sockname $crlf
+}
+on *:SOCKREAD:Urban: {
+  if ($sockerr) { msg $chan ERROR: $sockname $+ . Code: $sockerr }
+  else {
+    var %sockread
+    sockread %sockread
+    if (*<p>*</p> iswm %sockread) {
+      var %definition $remove(%sockread,<p>,</p>))
+      %urban.display 14¤10Definition14¤14 $+ %definition
+      unset %urban.*
+      Sockclose Urban
+    }
+    elseif (*isn't defined* iswm %sockread) {
+      %urban.display $c1(Error:) $c2(The word was not found in urbandictionary.com)
+      unset %urban.*
+      sockclose urban
+    }
+  }
+}

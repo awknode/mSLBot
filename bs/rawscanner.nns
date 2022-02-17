@@ -1,0 +1,24 @@
+
+alias rawscan {
+  if (%_jedi.rawscan) { unset %_jedi.rawscan | echo -a [RAWScan] Raw Scanner Disabled. }
+  else {
+    if ($1) {
+      if ($1 == window) { set %_jedi.rawscan window | echo -a [RAWScan] Raw Scanner Enabled. }
+      else { echo -a [RAWScan] Error07: Improper Command. [ex: /rawscan <window>] }
+    }
+    else { set %_jedi.rawscan 1 | echo -a [RAWScan] Raw Scanner Enabled. }
+  }
+}
+
+RAW *:*: {
+  if (%_jedi.rawscan) {
+    if (%_jedi.rawscan == window) { $iif(!$window(@RAWScanner),window -a @RAWScanner) | echo @RAWScanner 09[RAW09] Numeric09: $+(,$numeric,) -> $+(09,$chr(91),,$eval($1,0) == $1 09,$chr(124), $eval($2,0) == $2 09,$chr(124), $eval($3-,0) == $3-,09,$chr(93),) }
+    else { echo -a 09[RAW09] Numeric09: $+(,$numeric,) -> $+(09,$chr(91),,$eval($1,0) == $1 09,$chr(124), $eval($2,0) == $2 09,$chr(124), $eval($3-,0) == $3-,09,$chr(93),) }
+  }
+}
+RAW PROP:*: {
+  if (%_jedi.rawscan) {
+    if (%_jedi.rawscan == window) { $iif(!$window(@RAWScanner),window -a @RAWScanner) | echo @RAWScanner 07[RAW07] Event07: $+(,$event,) -> $+(07,$chr(91),,$eval($1,0) == $1 07,$chr(124), $eval($2,0) == $2 07,$chr(124), $eval($3-,0) == $3-,07,$chr(93),) }
+    else { echo -a 07[RAW07] Event07: $+(,$event,) -> $+(07,$chr(91),,$eval($1,0) == $1 07,$chr(124), $eval($2,0) == $2 07,$chr(124), $eval($3-,0) == $3-,07,$chr(93),) }
+  }
+}

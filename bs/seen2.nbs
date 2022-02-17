@@ -1,0 +1,27 @@
+On *:Text:.seen *:#: { 
+  if ($($+(%,seenwait),2)) { return }
+  else { set -u5 %seenwait 5 | seen $2 }
+}
+
+alias seen {
+  if ($1 ison $chan) { 
+    if ($1 == $nick) { msg $chan You know where you are at $+($nick,?) }
+    elseif ($1 == $me) { msg $chan Are you that fucking dumb $+($nick,?) }
+    else { msg $chan $1 is on $+($chan,$chr(44)) dumbass. }
+  }
+  else { set -u5 %seen $chan | whois $1 }
+}
+raw *:*: {
+  if (%seen) { 
+    if ($istok(307 310 311 312 313 314 317 318 320 335 371 378 379,$numeric,32)) { halt }
+    elseif ($numeric == 319) { msg %seen $2 is on $3- $+ , dumbass. }
+    elseif ($numeric == 402) { nickserv info $2 | halt }
+  }
+}
+on ^*:notice:*:*: {
+  if ($nick == NickServ) && (%seen) {
+    if ($count($1-,Last seen time:,Last quit message:)) { msg %seen $1- | haltdef }
+    if (isn't registered isin $1-) { msg %seen No information on $2 because I do not keep logs and that motherfucker didn't register his nickname. }
+    halt
+  }
+}

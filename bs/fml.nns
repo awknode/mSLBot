@@ -1,0 +1,27 @@
+Alias cc1 return $+($chr(3),$1-)
+Alias cc2 return $+($chr(3),$1-)
+Alias lg return $1
+On $*:Text:/^[$]fml(\s|$)/Si:#: { 
+  sockopen FML. rscript.org 80 
+  set %fml.temp $iif($mid($1,0,1) == $chr(64),msg #,msg #)
+}
+On *:SOCKOPEN:FML.: {
+  sockwrite -n $sockname GET /lookup.php?type=fml HTTP/1.1 
+  sockwrite -n $sockname Host: rscript.org
+  sockwrite -n $sockname $crlf 
+}
+On *:SOCKREAD:FML.: {
+  if ($sockerr) { halt }
+  Else {
+    var %fml 
+    sockread %fml
+    if (Text:* iswm %fml) {
+      tokenize 32 %fml
+      set %fml.text $cc2($2-) 
+      %fml.temp $l %fml.text 
+      unset %fml.*
+      sockclose FML.
+    }
+  }
+}    
+;;rscript.org/lookup.php?type=fml

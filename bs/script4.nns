@@ -1,0 +1,29 @@
+alias check {
+  $iif($sock(sitecheck),sockclose sitecheck)
+  sockopen sitecheck www.downforeveryoneorjustme.com 80
+  sockmark sitecheck $$1
+  dns $$1-
+}
+
+on *:sockopen:sitecheck: {
+  var %x = sockwrite -n $sockname
+  %x GET $+(/,$sock(sitecheck).mark) HTTP/1.1
+  %x Host: www.downforeveryoneorjustme.com
+  %x Connection: close
+  %x
+}
+on *:sockread:sitecheck: {
+  var %x | sockread %x
+  if $regex(%x,/(.+)[\.!]\s+<.+>(.+)<\/a>(.+)\./) {
+    echo 3 -at $regml(1) $regml(2) $iif(is up isin $remove($regml(3),</span>), Online, 4Offline)
+  }
+}
+
+on *:DNS:{
+  var %y echo 3 -at
+  %y * Host: $naddress
+  %y * IP: $iaddress
+  %y * $raddress
+  %y ***** End of /check *****
+  %y --------------------------------------------------------------
+}

@@ -1,0 +1,13 @@
+on *:TEXT:*:#:{
+  if ($1 == .calculator) || ($1 == !calc) || ($1 == .calc) {
+    spamprotect
+    exprotect $1-
+    if ($2) {
+      if ($regex($2-,/^[\d\+\*\-\(\)/^%x.\x20]+$/)) {
+        msg $chan 6[Calculator6] $2- = $calc($iif(x isin $2-,$replace($2-,x,*),$2-))
+      }
+      else { notice $nick Invalid calculation. 6[ie: 3.14159 * (2 ^ 44 % 3) - (420 / (10000 + 1)) 6] }
+    }
+    else { notice $nick 6No numbers to calculate. }
+  }
+}

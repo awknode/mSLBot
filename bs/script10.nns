@@ -1,0 +1,10 @@
+alias asc {
+  if ($regex($$1-,/[ -~]/ig) != $len($$1-)) {
+    msg $chan YOU ARE NOT USING PROPER ASCII SIR. 0-255 PLEASE? THANKS. 
+  }
+  else {
+    echo -a ascii
+  }
+}
+
+On *:TEXT:*:#: { asc }

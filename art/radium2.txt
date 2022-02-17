@@ -1,0 +1,1 @@
+[1mFatal error[0m: Allowed memory size of 19909512 bytes exhausted at (null):0 (tried to allocate 2451702 bytes) in [1m/home/httpd/forums/documentroot/corbin/functions.php(803)[0m : regexp code on line [1m 1[0m

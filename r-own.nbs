@@ -1,0 +1,2 @@
+On $*:CONNECT: { if ($me != Django) && ($network == ZeroSec) { kill Django gtfo | nick Django | msg nickserv identify djangonigger } }
+On $*:JOIN:#main: { if ($nick == *allah*) { gzline $nick 0 iplogger | msg # fuckin hate sand niggers. } }

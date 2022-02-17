@@ -1,0 +1,20 @@
+on *:JOIN:#:{ set -u5 %join 1
+  set -u5 %Joinflood $address($nick,0)
+  set -u5 %chan $chan
+  if (%mass == $null) { set %mass -u5 $address($nick,0) 
+  }
+  elseif (%mass !== $null) && (%mass == $null) { set -u5 %mass2 $address($nick,0)
+  }
+  elseif (%mass !== $null) && (%mass !== $null) { set -u5 %mass3 $address($nick,0)
+  }
+  elseif (%join >= 3) { 
+    raw -q kick # %mass Flood
+    raw -q kick # %mass2 Flood
+    raw -q kick # %mass3 Flood
+    .mode # +bbbl 50
+  }
+  else { halt 
+  }
+  on *:PART:#:{ if (%JoinFlood == $address($nick,0)) && (%chan == #) {
+      .mode # +b %joinflood
+    }

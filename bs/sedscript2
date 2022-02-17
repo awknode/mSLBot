@@ -1,0 +1,6 @@
+on *:TEXT:*:#: {
+  if ($regex($1-,/^s\x2F(.*)\x2F(.*)\x2F$/)) {
+    var %pattern = $regml(1) , %substitution = $regml(2) , %line = $line($nick,0) - 1
+    msg $chan $regsubex($line($nick,%line),$+(/,%pattern,/g), [ %substitution ] )
+  }
+}

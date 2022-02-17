@@ -1,0 +1,167 @@
+code {
+  var %r1 = /(\$[^\s\(\),\x03]+)/g | var %r2 = /([\(\)\[\]])/g | var %r3 = /([,\:><=&|!])/g | var %r4 = /(%[^\s\(\),\x03]+)/g
+  var %r5 = /([\{\}])/g | var %r6 = /(?:^|\G)(\s)/g | var %r7 = /(#[^\s\(\),\x03]*)/g
+  var %loop = 1, %end = $cb(0)
+  while (%loop <= %end) {
+    say $regsubex($regsubex($regsubex($regsubex($regsubex($regsubex($regsubex($cb(%loop),%r1,09\1),%r2,12\1),%r3,07\1),%r4,14\1),%r5,13\1),%r6,\1),%r7,04\1)
+    inc %loop 1
+  }
+}
+
+codepaste {
+  var %totl = $cb(0)
+  var %c = 1
+  while (%c <= %totl) {
+    var %clip = $iif($cb(%c),$replace($cb(%c),$chr(2),$chr(25),$chr(3),$chr(25),$chr(15),$chr(25),$chr(22),$chr(25),$chr(29),$chr(25),$chr(31),$chr(25)),$chr(160))
+    var %rsub1 = $regsubex(%clip,/(\$[^(),  ]*)/g,  12\1  )
+    var %rsub2 = $regsubex(%rsub1,/(\%[^(),  ]*)/g,  09\1  )
+    var %rsub3 = $regsubex(%rsub2,/(\(|\)|\{|\}|\[|\])/g,  04\1  )
+    var %rsub4 = $regsubex(%rsub3,/(\=|\<|\>|\!|\/|\\|\||\&|\,|\.)/g,  07\1  )
+    var %rsub5 = $regsubex(%rsub4,/(if|elseif|else|while|isin|isincs|iswm|iswmcs|isnum|return) /g,  14\1   )
+    var %rsub6 = $regsubex(%rsub5,/(isletter|isalnum|isalpha|islower|isupper|ison|echo|alias|unset) /g,  14\1   )
+    var %rsub7 = $regsubex(%rsub6,/(isop|ishop|isvoice|isreg|ischan|isban|isaop|isavoice|say|scon) /g,  14\1   )
+    var %rsub8 = $regsubex(%rsub7,/(isignore|isprotect|isnotify|var|set|inc|dec|msg|describe) /g,  14\1   )
+    ;var %output = $regsubex(%rsub5,/ ( *) /g,\1 )
+    $iif($1 == e,echo -a,msg $active) $replace(%rsub8,$chr(32),$chr(160))
+    inc %c
+  }
+}
+
+
+debugg2 { window -ze2Dj2000k @debug | titlebar @debug active= $+ $scid($window(@debug).cid).network logging: $addtok($gettok($window(@debug).titlebar,3-,32),$network,32) | debug -pir44o52 @debug $!+([,$time,],[,$network,] $!1-) } ; Raccoon's altered by maroon
+
+nohilite { return $regsubex(_nohilite,$1-,/\S\S\K(?=\S)/gu,$chr(8205)) } ; by Raccoon 2018 use to prevent highlighting nicknames.
+/jewstomp {
+
+  say [[[ Jewstomp Activated ]]]
+  timer 1 1 say [ Scanning for a kyke ]
+  timer 1 1 say [ . ]
+  timer 1 1.5 say [ .. ]
+  :begin
+  set %kicknick $nick($chan,$rand(1,$nick($chan,0)))
+  if %kicknick isop # goto begin | if myg0t isin %kicknick goto begin | if %kicknick isvo # goto begin
+  timer 1 5 say [ Jew: %kicknick Found ]
+  timer 1 7 kick # %kicknick STOMPED FUCKING JEW!!!!
+  invite %kicknick #
+}
+
+/rage {
+  say 0,1RAGE in progress. ██████████████]99% Complete. Would you like to open now [Y/n] ?
+  say 7GO GO GADGET 0,1RAGE COPTER!!!
+  say     ╭╬╮ ◢
+  say -_╭▅▇□□█▇▆▅▄▃▂▁(╳)█╮
+  say   ╰═▃_▁∠════▔▔▔
+  say     ╙O ╙O
+}
+
+
+/tits {
+  say 1,1... .. $+ %kaler $+ ,1,~â€': : \|: : : : : :::::: : : : : : : |Â¯â€'~~â€~,â€,: : \:::::: ... /
+  say 1,1.. $+ %kaler $+ ,1,-â€œ: : : : : : : : : : ::::::: : : : : : : \: : : : : : â€œ~'-,:\::::: \,
+  say 1,1.. $+ %kaler $+ ,1|: : : : : : : |: : : : : : |::: : : : : : : : : : : : : : : :â€-,-\::: : \
+  say 1,1.. $+ %kaler $+ ,1| : : : : : : : : : : : : : |::: : : : : : : : : : : : : : : : : :â€-'\,|:
+  say 1,1... $+ %kaler $+ ,1\ : : : : : : : : : :'\: : :\:: : : : : : : : : :~,,: : : : : : : : :â€œ~ ,_
+  say 1,1... $+ %kaler $+ ,1\: : : : : : : : : : :\: / :/: : : : : : : : : : ::::â€œ-,: : : : : : : : : : '-,
+  say 1,1...... $+ %kaler $+ ,1\: : : : : : : : : : :\|: |/: : : : : : : : : : : : : '\: : : : : : : : : : : : \
+  say 1,1...... $+ %kaler $+ ,1\: : : : : : : : : : \|: : : : : : : : : : : : : : : : : : : : : : : : : : : : : :'\
+  say 1,1.......  $+ %kaler $+ ,1\ : : : : : : : : : : : '\': : : ; : : : : : : : : : : : : : : : : : : : : : : : |
+  say 1,1.........  $+ %kaler $+ ,1\ : : : : : : : : : '\ : : : : : : : : : : : â€¢): ) : : : : : : : : : : : : (â€¢)
+  say 1,1............ $+ %kaler $+ ,1\ : : : : : : : : : \ : : : : : : : : : : : : : ,-â€œ: : : : :,: : : : : : : : : /
+  say 1,1... .......... $+ %kaler $+ ,1\ : : : : : : : : : \: : : : : : : : : : ,â€: : : : : :', : : : : : : : : /
+  say 1,1... ... ... ...  $+ %kaler $+ ,1\,: : : : : : : : : \: Â¯â€'~---~â€Â¯: : : : : : : : Â¯â€'~---~â€Â¯/
+}
+
+/smilefag {
+  say  1,1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1,1XXXXXXXXXX1,1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  say  1,1XXXXXXXXXXXXXXXXXXXXXXXXXX1,1XXXX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XXXX1,1XXXXXXXXXXXXXXXXXXXXXXXXXX
+  say  1,1XXXXXXXXXXXXXXXXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXXXXXX1,1XX1,1XXXXXXXXXXXXXXXXXXXXXXXX
+  say  1,1XXXXXXXXXXXXXXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXX1,1XX1,1XXXXXXXXXXXXXXXXXXXXXX
+  say  1,1XXXXXXXXXXXXXXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXX1,1XX1,1XXXXXXXXXXXXXXXXXXXXXX
+  say  1,1XXXXXXXXXXXXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XX1,1XXXXXXXXXXXXXXXXXXXX
+  say  1,1XXXXXXXXXXXX1,1XX1,1XXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XX1,1XXXXXX1,1XX1,1XXXXXXXXXXXX
+  say  1,1XXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX1,1XXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXXXXXXXXXX1,1XX1,1XXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX1,1XXXXXXXxxxx
+  say  1,1XXXX1,1XXXXXX  $+ %kalerw $+ , $+ %kalerw  XXXX1,1XX1,1XXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXXXXXXXXXX1,1XX1,1XXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXX1,1XXXXXX1,1XXXX
+  say  1,1XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX1,1XXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXXXXXXXX1,1XX1,1XXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXX1,1XX
+  say  1 1,1XX  $+ %kalerw $+ , $+ %kalerw XXXXXXXXXX1,1XX1,1XXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXXXXXX1,1XX1,1XXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XX
+  say  1 1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXX1,1XX1,1XXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXX1,1XXXX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXX1,1XX1,1XXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXX1,1XX
+  say  1 1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXX1,1XX1,1XXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXX1,1XXXXXX  $+ %kalerw $+ , $+ %kalerw  XXXXXX1,1XX1,1XXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXX1,1XX
+  say  1 1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXX1,1XX1,1XXXXXXXX1,1XXXX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XXXX1,1XXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXXXXXX1,1XX
+  say  1,1XX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XX1,1XXXXXXXXXXXXXX1,1XXXXXXXXXX1,1XXXXXXXXXXXXXX1,1XX  $+ %kalerw $+ , $+ %kalerw  XXXXXXXXXX1,1XX1,1XX
+  say  1,1XXXX1,1XXXXXXXXXX1,1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1,1XXXXXXXXXX1,1XXXX
+  say  1,1------------------------------------------------------------- ------ 0 You Got This One4 $$1
+}
+
+/ass {
+  say Â /Â Â Â Â Â \Â Â Â Â Â Â Â Â Â Â Â Â Â \Â Â Â Â Â Â Â Â Â Â Â Â /Â Â Â Â \Â Â Â Â Â Â Â 
+  say |Â Â Â Â Â Â Â |Â Â Â Â Â Â Â Â Â Â Â Â Â \Â Â Â Â Â Â Â Â Â Â |Â Â Â Â Â Â |Â Â Â Â Â Â 
+  say |Â Â Â Â Â Â Â `.Â Â Â Â Â Â Â Â Â Â Â Â Â |Â Â Â Â Â Â Â Â Â |Â Â Â Â Â Â Â :Â Â Â Â Â 
+  say `Â Â Â Â Â Â Â Â |Â Â Â Â Â Â Â Â Â Â Â Â Â |Â Â Â Â Â Â Â Â \|Â Â Â Â Â Â Â |Â Â Â Â Â 
+  say Â \Â Â Â Â Â Â Â |Â /Â Â Â Â Â Â Â /Â Â \\\Â Â Â --__Â \\Â Â Â Â Â Â Â :Â Â Â Â 
+  say Â Â \Â Â Â Â Â Â \/Â Â Â _--~~Â Â Â Â Â Â Â Â Â Â ~--__|Â \Â Â Â Â Â |Â Â Â Â 
+  say Â Â Â \Â Â Â Â Â Â \_-~Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â ~-_\Â Â Â Â |Â Â Â Â 
+  say Â Â Â Â \_Â Â Â Â Â \Â Â Â Â Â Â Â Â _.--------.______\|Â Â Â |Â Â Â Â 
+  say Â Â Â Â Â Â \Â Â Â Â Â \______//Â _Â ___Â _Â (_(__>Â Â \Â Â Â |Â Â Â Â 
+  say Â Â Â Â Â Â Â \Â Â Â .Â Â CÂ ___)Â Â ______Â (_(____>Â Â |Â Â /Â Â Â Â 
+  say Â Â Â Â Â Â Â /\Â |Â Â Â CÂ ____)/Â Â Â Â Â Â \Â (_____>Â Â |_/Â Â Â Â Â 
+  say Â Â Â Â Â Â /Â /\|Â Â Â C_____)Â Â Â Â Â Â Â |Â Â (___>Â Â Â /Â Â \Â Â Â Â 
+  say Â Â Â Â Â |Â Â Â (Â Â Â _C_____)\______/Â Â //Â _/Â /Â Â Â Â Â \Â Â Â 
+  say Â Â Â Â Â |Â Â Â Â \Â Â |__Â Â Â \\_________//Â (__/Â Â Â Â Â Â Â |Â Â 
+  say Â Â Â Â |Â \Â Â Â Â \____)Â Â Â `----Â Â Â --'Â Â Â Â Â Â Â Â Â Â Â Â Â |Â Â 
+  say Â Â Â Â |Â Â \_Â Â Â Â Â Â Â Â Â Â ___\Â Â Â Â Â Â Â /_Â Â Â Â Â Â Â Â Â Â _/Â |Â 
+  say Â Â Â |Â Â Â Â Â Â Â Â Â Â Â Â Â Â /Â Â Â Â |Â Â Â Â Â |Â Â \Â Â Â Â Â Â Â Â Â Â Â Â |Â 
+  say Â Â Â |Â Â Â Â Â Â Â Â Â Â Â Â Â |Â Â Â Â /Â Â Â Â Â Â Â \Â Â \Â Â Â Â Â Â Â Â Â Â Â |Â 
+  say Â Â Â |Â Â Â Â Â Â Â Â Â Â /Â /Â Â Â Â |Â Â Â Â Â Â Â Â Â |Â Â \Â Â Â Â Â Â Â Â Â Â Â |
+  say Â Â Â |Â Â Â Â Â Â Â Â Â /Â /Â Â Â Â Â Â \__/\___/Â Â Â Â |Â Â Â Â Â Â Â Â Â Â |
+  say Â Â |Â Â Â Â Â Â Â Â Â /Â /Â Â Â Â Â Â Â Â |Â Â Â Â |Â Â Â Â Â Â Â |Â Â Â Â Â Â Â Â Â |
+  say Â Â |Â Â Â Â Â Â Â Â Â Â |Â Â Â Â Â Â Â Â Â |Â Â Â Â |Â Â Â Â Â Â Â |Â Â Â Â Â Â Â Â Â |
+}
+
+
+/stfu  {
+  say   |^^^^^^^^^^^\||____
+  say   |Â TheÂ STFUÂ TruckÂ |||""'|""\__
+  say   |______________Â Â ||Â __|__|__|
+  say   Â (@)@)"""""""**|(@)(@)**|(@)
+  say   OH LOOK YOUR RIDE IS HERE!
+  say   I hate faggots
+  say   TitsÂ (Â .Â YÂ .Â )Â orÂ GTFO
+}
+
+/nazi  {
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==================
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==0,0============0,0==4,4==
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==0,0==1,1==0,0==1,1======0,0==4,4==
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==0,0==1,1==0,0==1,1==0,0======4,4==
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==0,0==1,1==========0,0==4,4==
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==0,0======1,1==0,0==1,1==0,0==4,4==
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==0,0==1,1======0,0==1,1==0,0==4,4==
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==0,0============0,0==4,4==
+  say   Â Â Â Â Â Â Â Â Â Â Â 4,4==================
+
+}
+
+
+/grids {
+  say  4G.7R.8I.9D.6S. 13/!\
+}
+
+/gunner {
+  say  Ì¿ Ì¿Ì¿'Ì¿'\ÌµÍ‡Ì¿Ì¿\=(â€¢Ìªâ—‹)=/ÌµÍ‡Ì¿Ì¿/'Ì¿Ì¿ Ì¿ Ì¿ Ì¿
+}
+
+/fu {
+  say hey $$1- â”Œâˆ©â”(â—£_â—¢)â”Œâˆ©â” FUCK YOU
+}
+
+/fag {
+  say ┌∩┐(　*¯∇¯)┌∩┐ ☆ Ｆ Ａ Ｇ Ｇ Ｏ Ｔ ☆
+}
+
+
+/sg {
+  /say http://www.google.com/search?q= $+ $replace($1-,$chr(32),+)
+}
+urlreg return /((?:(?:(?:http|https|ftp|gopher)\72\/\/)|(?:www|ftp)\.)\S+)/Sig
+urlcolor return 121,0You0,4Tube 00[07Link00] http://youtu.be/GqmRDV0a_70 00[07Title00] 		Tool - Sober 00[07Views00] 6,570,854 00[07Length00] 5:04 00[07User00] 			arsenal665
+dedupetok { return $regsubex($1,$replace(/(?<=^|x)x*+(?:([^x]++)x++(?=(?:.*?x)??\1(?:x|$)))?|x+$/g,x,\Q $+ $chr($$2) $+ \E),) } ; by Raccoon Ouims Saturn 2017
+max.whois return 3 15

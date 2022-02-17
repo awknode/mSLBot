@@ -1,0 +1,15 @@
+on $*:TEXT:*:#: {
+  if ($regex($1,/^!(owner|co-owners|admins|ops|hops|voices)$/Si)) {
+    msg # $+ $iif($regml(1) = owner, This Is, These Are) The $regml(1) of $iif($2,$v1,#)   
+    var -g %chan #, %cmd $regml(1), %chan2 $2, %check $true 
+    msg chanserv access $iif($2,$v1,#) list
+  }
+}
+
+on *:notice:*:{
+  if ($nick = ChanServ) { 
+    if (%check && $1- = not registered.) { msg %chan 12 $+ %chan2 is not registered | unset %check }
+    elseif (%check && $1- = Permission denied.) { msg %chan 12 $+ I don't have access to %chan2 alist. | unset %check }
+    if ($istok(owner founder:co-owners co-founder:admins sop:ops aop:hops hop:voices vop,%cmd $5,58)) msg %chan $2  
+  }
+}  

@@ -1,0 +1,577 @@
+dialog wtd {
+  title "World Time Dialog"
+  size -1 -1 143 94
+  option dbu
+  box "Countries:", 1, 2 2 64 59
+  combo 2, 4 10 60 50, size vsbar
+  box "City:/State:", 3, 68 2 73 59
+  text "City:", 4, 70 10 13 8
+  edit "", 5, 87 10 51 9, autohs
+  text "State:", 6, 70 25 16 8
+  edit "", 7, 87 24 51 9, autohs
+  button "Get Time", 8, 71 36 67 10, flat
+  button "Close", 9, 71 48 67 10, flat cancel
+  box "Results:", 10, 2 61 139 31
+  list 11, 4 69 134 10, size
+  button "Clear", 12, 4 80 40 10, flat
+  button "Clip", 13, 51 80 40 10, flat
+  button "Message", 14, 98 80 40 10, flat
+}
+alias wtd { dialog $iif($dialog(wtd),-v,-md) wtd wtd }
+menu menubar,channel {
+  .World Time Dialog:{ wtd }
+}
+on *:dialog:wtd:init:0:{
+  if $read(Countries.txt) { 
+    var %x = 1
+    while ( %x <= $lines(Countries.txt)) {
+      did -a wtd 2 $read(Countries.txt,%x)
+      inc %x
+    }
+  }
+}
+on *:dialog:wtd:sclick:*:{
+  if ($did == 8) {
+    if ($sock(wtime))  .sockclose wtime
+    if ($istok(%find,$did(2).seltext,44)) { 
+      var %b $findtok(%find,$did(2).seltext,1,44), %c $gettok(%find,%b,44)
+      set %l $replace(%c,$chr(32),$chr(43))
+      $wtime1
+    }
+    elseif (!$istok(%find,$did(2).seltext,44)) {
+      set %l $did(2).seltext
+      set %city $replace($did(5).text,$chr(32),$chr(43))
+    }
+    if ($did(5).text) { $wtime7 }
+    if ($did(2).seltext == UnitedStates) { set %l $did(2).seltext | set %3 $did(5).text | set %4 $did(7).text | $wtime2 } 
+    if (!$did(5).text) { $wtime1 }
+  }
+  if ($did == 2) { did -r wtd 5,7,11 }
+  if ($did == 12) { 
+    did -r wtd 2,5,7,11  
+    var %x = 1
+    while ( %x <= $lines(Countries.txt)) {
+      did -a wtd 2 $read(Countries.txt,%x)
+      inc %x
+    }
+  }
+  if ($did == 13) { 
+    if (!$did(11).seltext) { 
+      noop $input(Please Highlite The Time,uwo,Error)
+    }
+    else {
+      clipboard $did(11).seltext 
+    }
+  }
+  if ($did == 14) { 
+    if (!$did(11).seltext) { 
+      noop $input(Please Highlite The Time,uwo,Error)
+    }
+    else {
+      msg $active 14,1[12,1»0,1:: $did(11).seltext ::12,1«14,1] 
+    }
+  }
+}
+on *:load: { 
+  echo 12 -a You Have Just Loaded Napa182's World Time Bot 
+  echo 12 -a A Script0rs Inc. Production 
+  $setcitys
+  $makeini
+  $maketxt
+}
+alias -l wtime7 {
+  if ($sock(wtime)) .sockclose wtime
+  set %ftime $readini(wtimebot.ini,codes,%l) $+ %l $+ &city= $+ %city $+ &state=
+  sockopen wtime www.what-time-is-it.com 80
+  set %time4 on
+}
+alias -l wtime2 { 
+  if ($sock(wtime)) .sockclose wtime
+  set %ftime $readini(wtimebot.ini,codes,%l) $+ United+States $+ &city= $+ %3 $+ &state= $+ %4 
+  sockopen wtime www.what-time-is-it.com 80
+  set %time2 on
+}
+alias -l wtime1 { 
+  if ($sock(wtime))  .sockclose wtime
+  set %ftime $readini(wtimebot.ini,codes,%l) $+ %l $+ &city= $+ &state=  
+  sockopen wtime www.what-time-is-it.com 80
+  set %time1 on
+}
+alias -l wtime5 {
+  var %g 
+  sockread %g
+  if (*Unable* iswm %g ) {
+    did -ra wtd 11 Unable to complete your request 
+    sockclose wtime
+    unset %city %ftime %l %time4 %time1 %time2 %3 %4 %time3
+  }
+  if (*<TD COLSPAN=3>* iswm %g) {
+    var %y $htmlfree(%g)
+    did -ra wtd 11 %3 %y 
+    unset %city %ftime %l %time4 %time1 %time2 %3 %4 %time3
+    sockclose wtime
+  }
+}
+
+alias -l wtime4 {
+  var %g
+  sockread %g
+  if (*<TR VALIGN=MIDDLE BGCOLOR=* iswm %g) {
+    var %x $htmlfree(%g)
+    unset %city %ftime %l %time4 %time1 %time2 %3 %4 %time3 
+    did -ra wtd 11 %x
+    sockclose wtime
+  }
+}
+alias -l wtime8 {
+  var %g 
+  sockread %g
+  if (*Unable* iswm %g ) {
+    did -ra wtd 11 Unable to complete your request 
+    sockclose wtime
+    unset %city %ftime %l %time4 %time1 %time2 %3 %4 %time3
+  }
+  if (*<TD COLSPAN=2>* iswm %g ) || (*<TD COLSPAN=3>* iswm %g) {
+    var %w $htmlfree(%g)
+    did -ra wtd 11 $replace(%city,$chr(43),$chr(32)) %w 
+    sockclose wtime
+    unset %city %ftime %l %time4 %time1 %time2 %3 %4 %time3
+  }
+}
+;Unable to complete your request
+on *:SOCKOPEN:wtime: {
+  sockwrite -nt $sockname GET /cgi-bin/decoder/tzdecoder.cgi?country= $+ %ftime $+ &Submit=What+time+is+it%3F HTTP/1.1
+  sockwrite -nt $sockname Host: www.what-time-is-it.com
+  sockwrite -nt $sockname $crlf
+}
+on *:SOCKREAD:wtime: {
+  if ($sockerr) {
+    did -ra wtd 11 Socket Error World Time Script
+    unset %city %ftime %l %time4 %time1 %time2 %3 %4 %time3
+  }
+  else {
+    if (%time1) { $wtime4 }
+    if (%time2) { $wtime5 }
+    if (%time4) { $wtime8 }
+  }
+}
+alias -l htmlfree { 
+  var %b,%p 
+  %p = $regsub($1-,/[^<]*>|<[^>]*>|<[^>]*/g,$chr(32),%b)
+  %b = $remove(%b,&nbsp;) 
+  return %b 
+}
+alias -l setcitys { 
+  if (!%find) {
+    set %find Antigua and Barbuda,El Salvador,Dominican Republic,British Virgin Islands,Burkina Faso,Cape Verde,Cayman Islands,Central African Republic,Christmas Island,Cocos Keeling Islands,Congo Kinshasa,Cook Islands,Czech Republic,Costa Rica,American Samoa,United Kingdom,Puerto Rico,Viet Nam,South Africa,Solomon Islands,Saudi Arabia,North Korea,South Korea,Norfolk Island,Falkland Islands 
+  }
+}
+alias -l makeini { 
+  if (!$readini(wtimebot.ini,codes,UnitedStates)) {
+    writeini wtimebot.ini codes UnitedStates 840%2CUS%2CUSA%2CNAM%2C 
+    writeini wtimebot.ini codes Australia 36%2CAU%2CAUS%2CAUO%2C
+    writeini wtimebot.ini codes United+Kingdom 826%2CGB%2CGBR%2CEUR%2C
+    writeini wtimebot.ini codes Vatican 336%2CVA%2CVAT%2CEUR%2C
+    writeini wtimebot.ini codes Venezuela 862%2CVE%2CVEN%2CSAM%2C
+    writeini wtimebot.ini codes Afghanistan 4%2CAF%2CAFG%2CASA%2C
+    writeini wtimebot.ini codes Albania 8%2CAL%2CALB%2CEUR%2C
+    writeini wtimebot.ini codes Algeria 12%2CDZ%2CDZA%2CAFR%2C
+    writeini wtimebot.ini codes Andorra 20%2CAD%2CAND%2CEUR%2C
+    writeini wtimebot.ini codes Angola 24%2CAO%2CAGO%2CAFR%2C
+    writeini wtimebot.ini codes Anguilla 660%2CAI%2CAIA%2CCAM%2C
+    writeini wtimebot.ini codes Antarctica 10%2CAQ%2CATA%2CANT%2C
+    writeini wtimebot.ini codes Argentina 32%2CAR%2CARG%2CSAM%2C
+    writeini wtimebot.ini codes Armenia 51%2CAM%2CARM%2CEUR%2C
+    writeini wtimebot.ini codes Aruba 533%2CAW%2CABW%2CISL%2C
+    writeini wtimebot.ini codes Australia 36%2CAU%2CAUS%2CAUO%2C
+    writeini wtimebot.ini codes Austria 40%2CAT%2CAUT%2CEUR%2C
+    writeini wtimebot.ini codes Azerbaijan 31%2CAZ%2CAZE%2CASA%2C
+    writeini wtimebot.ini codes Bahamas 44%2CBS%2CBHS%2CISL%2C
+    writeini wtimebot.ini codes Bahrain 48%2CBH%2CBHR%2CAFR%2C
+    writeini wtimebot.ini codes Bangladesh 50%2CBD%2CBGD%2CASA%2C
+    writeini wtimebot.ini codes Barbados 52%2CBB%2CBRB%2CISL%2C
+    writeini wtimebot.ini codes Belarus 112%2CBY%2CBLR%2CEUR%2C
+    writeini wtimebot.ini codes Belgium 56%2CBE%2CBEL%2CEUR%2C
+    writeini wtimebot.ini codes Belize 84%2CBZ%2CBLZ%2CCAM%2C
+    writeini wtimebot.ini codes Benin 204%2CBJ%2CBEN%2CAFR%2C
+    writeini wtimebot.ini codes Bermuda 60%2CBM%2CBMU%2CISL%2C
+    writeini wtimebot.ini codes Bhutan 64%2CBT%2CBTN%2CASA%2C
+    writeini wtimebot.ini codes Bolivia 68%2CBO%2CBOL%2CSAM%2C
+    writeini wtimebot.ini codes Botswana 72%2CBW%2CBWA%2CAFR%2C
+    writeini wtimebot.ini codes Brazil 76%2CBR%2CBRA%2CSAM%2C
+    writeini wtimebot.ini codes Brunei 96%2CBN%2CBRN%2CASA%2C
+    writeini wtimebot.ini codes Bulgaria 100%2CBG%2CBGR%2CEUR%2C
+    writeini wtimebot.ini codes Burundi 108%2CBI%2CBDI%2CAFR%2C
+    writeini wtimebot.ini codes Cambodia 116%2CKH%2CKHM%2CASA%2C
+    writeini wtimebot.ini codes Cameroon 120%2CCM%2CCMR%2CAFR%2C
+    writeini wtimebot.ini codes Canada 124%2CCA%2CCAN%2CNAM%2C
+    writeini wtimebot.ini codes Chad 148%2CTD%2CTCD%2CAFR%2C
+    writeini wtimebot.ini codes Chile 152%2CCL%2CCHL%2CSAM%2C
+    writeini wtimebot.ini codes China 156%2CCN%2CCHN%2CASA%2C
+    writeini wtimebot.ini codes Colombia 170%2CCO%2CCOL%2CSAM%2C
+    writeini wtimebot.ini codes Comoros 174%2CKM%2CCOM%2CAFR%2C
+    writeini wtimebot.ini codes Croatia 191%2CHR%2CHRV%2CEUR%2C
+    writeini wtimebot.ini codes Cuba 192%2CCU%2CCUB%2CISL%2C
+    writeini wtimebot.ini codes Cyprus 196%2CCY%2CCYP%2CEUR%2C
+    writeini wtimebot.ini codes Denmark 208%2CDK%2CDNK%2CEUR%2C
+    writeini wtimebot.ini codes Djibouti 262%2CDJ%2CDJI%2CAFR%2C
+    writeini wtimebot.ini codes Dominica 212%2CDM%2CDMA%2CCAM%2C
+    writeini wtimebot.ini codes Ecuador 218%2CEC%2CECU%2CSAM%2C
+    writeini wtimebot.ini codes Egypt 818%2CEG%2CEGY%2CAFR%2C
+    writeini wtimebot.ini codes Eritrea 232%2CER%2CERI%2CAFR%2C
+    writeini wtimebot.ini codes Estonia 233%2CEE%2CEST%2CEUR%2C
+    writeini wtimebot.ini codes Ethiopia 231%2CET%2CETH%2CAFR%2C
+    writeini wtimebot.ini codes Fiji 242%2CFJ%2CFJI%2CISL%2C
+    writeini wtimebot.ini codes Finland 246%2CFI%2CFIN%2CEUR%2C
+    writeini wtimebot.ini codes France 250%2CFR%2CFRA%2CEUR%2C
+    writeini wtimebot.ini codes Gabon 266%2CGA%2CGAB%2CAFR%2C
+    writeini wtimebot.ini codes Gambia 270%2CGM%2CGMB%2CAFR%2C
+    writeini wtimebot.ini codes Georgia 268%2CGE%2CGEO%2CASA%2C
+    writeini wtimebot.ini codes Germany 276%2CDE%2CDEU%2CEUR%2C
+    writeini wtimebot.ini codes Ghana 288%2CGH%2CGHA%2CAFR%2C
+    writeini wtimebot.ini codes Gibraltar 292%2CGI%2CGIB%2CEUR%2C
+    writeini wtimebot.ini codes Greece 300%2CGR%2CGRC%2CEUR%2C
+    writeini wtimebot.ini codes Greenland 304%2CGL%2CGRL%2CNAM%2C
+    writeini wtimebot.ini codes Grenada 308%2CGD%2CGRD%2CISL%2C
+    writeini wtimebot.ini codes Guadeloupe 312%2CGP%2CGLP%2CCAM%2C
+    writeini wtimebot.ini codes Guam 316%2CGU%2CGUM%2CISL%2C
+    writeini wtimebot.ini codes Guatemala 320%2CGT%2CGTM%2CCAM%2C
+    writeini wtimebot.ini codes Guinea 324%2CGN%2CGIN%2CAFR%2C
+    writeini wtimebot.ini codes Guyana 328%2CGY%2CGUY%2CSAM%2C 
+    writeini wtimebot.ini codes Haiti 332%2CHT%2CHTI%2CISL%2C
+    writeini wtimebot.ini codes Honduras 340%2CHN%2CHND%2CCAM%2C
+    writeini wtimebot.ini codes Hungary 348%2CHU%2CHUN%2CEUR%2C
+    writeini wtimebot.ini codes American+Samoa 16%2CAS%2CASM%2CISL%2C
+    writeini wtimebot.ini codes Antigua+and+Barbuda 28%2CAG%2CATG%2CISL%2
+    writeini wtimebot.ini codes Bosnia+and+Herzegowina 70%2CBA%2CBIH%2CEUR%2C
+    writeini wtimebot.ini codes British+Virgin+Islands 92%2CVG%2CVGB%2CISL%2C
+    writeini wtimebot.ini codes Burkina+Faso 854%2CBF%2CBFA%2CAFR%2C
+    writeini wtimebot.ini codes Cape+Verde 132%2CCV%2CCPV%2CISL%2C
+    writeini wtimebot.ini codes Cayman+Islands 136%2CKY%2CCYM%2CISL%2C
+    writeini wtimebot.ini codes Central+African+Republic 140%2CCF%2CCAF%2CAFR%2C
+    writeini wtimebot.ini codes Christmas+Island 162%2CCX%2CCXR%2CISL%2C
+    writeini wtimebot.ini codes Cocos+Keeling+Islands 166%2CCC%2CCCK%2CISL%2C
+    writeini wtimebot.ini codes Congo+Kinshasa 180%2CCD%2CCOD%2CAFR%2C
+    writeini wtimebot.ini codes Cook+Islands 184%2CCK%2CCOK%2CISL%2C
+    writeini wtimebot.ini codes Costa+Rica 188%2CCR%2CCRI%2CISL%2C
+    writeini wtimebot.ini codes Czech+Republic 203%2CCZ%2CCZE%2CEUR%2C
+    writeini wtimebot.ini codes Dominican+Republic 214%2CDO%2CDOM%2CCAM%2C
+    writeini wtimebot.ini codes El+Salvador 222%2CSV%2CSLV%2CCAM%2C
+    writeini wtimebot.ini codes Falkland+Islands 238%2CFK%2CFLK%2CISL%2C
+    writeini wtimebot.ini codes Iceland 352%2CIS%2CISL%2CEUR%2C
+    writeini wtimebot.ini codes India 356%2CIN%2CIND%2CASA%2C
+    writeini wtimebot.ini codes Indonesia 360%2CID%2CIDN%2CASA%2C
+    writeini wtimebot.ini codes Iran 364%2CIR%2CIRN%2CMIE%2C
+    writeini wtimebot.ini codes Iraq 368%2CIQ%2CIRQ%2CMIE%2C
+    writeini wtimebot.ini codes Ireland 372%2CIE%2CIRL%2CEUR%2C
+    writeini wtimebot.ini codes Israel 376%2CIL%2CISR%2CMIE%2C
+    writeini wtimebot.ini codes Italy 380%2CIT%2CITA%2CEUR%2C
+    writeini wtimebot.ini codes Jamaica 388%2CJM%2CJAM%2CISL%2C
+    writeini wtimebot.ini codes Japan 392%2CJP%2CJPN%2CASA%2C
+    writeini wtimebot.ini codes Jordan 400%2CJO%2CJOR%2CMIE%2C
+    writeini wtimebot.ini codes Kazakhstan 398%2CKZ%2CKAZ%2CASA%2C
+    writeini wtimebot.ini codes Kenya 404%2CKE%2CKEN%2CAFR%2C
+    writeini wtimebot.ini codes Kiribati 296%2CKI%2CKIR%2CISL%2C
+    writeini wtimebot.ini codes Kuwait 414%2CKW%2CKWT%2CMIE%2C
+    writeini wtimebot.ini codes Kyrgyzstan 417%2CKG%2CKGZ%2CASA%2C
+    writeini wtimebot.ini codes Laos 418%2CLA%2CLAO%2CASA%2C
+    writeini wtimebot.ini codes Latvia 428%2CLV%2CLVA%2CEUR%2C
+    writeini wtimebot.ini codes Lebanon 422%2CLB%2CLBN%2CMIE%2C
+    writeini wtimebot.ini codes Lesotho 426%2CLS%2CLSO%2CAFR%2C
+    writeini wtimebot.ini codes Liberia 430%2CLR%2CLBR%2CAFR%2C
+    writeini wtimebot.ini codes Libya 434%2CLY%2CLBY%2CAFR%2C
+    writeini wtimebot.ini codes Liechtenstein 438%2CLI%2CLIE%2CEUR%2C
+    writeini wtimebot.ini codes Lithuania 440%2CLT%2CLTU%2CEUR%2C
+    writeini wtimebot.ini codes Luxembourg 442%2CLU%2CLUX%2CEUR%2C
+    writeini wtimebot.ini codes Macau 446%2CMO%2CMAC%2CASA%2C
+    writeini wtimebot.ini codes Macedonia 807%2CMK%2CMKD%2CEUR%2C
+    writeini wtimebot.ini codes Madagascar 450%2CMG%2CMDG%2CAFR%2C
+    writeini wtimebot.ini codes Malawi 454%2CMW%2CMWI%2CAFR%2C
+    writeini wtimebot.ini codes Malaysia 458%2CMY%2CMYS%2CASA%2C
+    writeini wtimebot.ini codes Maldives 462%2CMV%2CMDV%2CASA%2C
+    writeini wtimebot.ini codes Mali 466%2CML%2CMLI%2CAFR%2C
+    writeini wtimebot.ini codes Malta 470%2CMT%2CMLT%2CISL%2C
+    writeini wtimebot.ini codes Martinique 474%2CMQ%2CMTQ%2CISL%2C
+    writeini wtimebot.ini codes Mauritania 478%2CMR%2CMRT%2CAFR%2C
+    writeini wtimebot.ini codes Mauritius 480%2CMU%2CMUS%2CAFR%2C
+    writeini wtimebot.ini codes Mexico 484%2CMX%2CMEX%2CNAM%2C
+    writeini wtimebot.ini codes Micronesia 583%2CFM%2CFSM%2CISL%2C
+    writeini wtimebot.ini codes Moldova 498%2CMD%2CMDA%2CEUR%2C
+    writeini wtimebot.ini codes Monaco 492%2CMC%2CMCO%2CEUR%2C
+    writeini wtimebot.ini codes Mongolia 496%2CMN%2CMNG%2CASA%2C
+    writeini wtimebot.ini codes Montserrat 500%2CMS%2CMSR%2CCAM%2C
+    writeini wtimebot.ini codes Morocco 504%2CMA%2CMAR%2CAFR%2C
+    writeini wtimebot.ini codes Mozambique 508%2CMZ%2CMOZ%2CAFR%2C
+    writeini wtimebot.ini codes Myanmar 104%2CMM%2CMMR%2CASA%2C
+    writeini wtimebot.ini codes Namibia 516%2CNA%2CNAM%2CAFR%2C
+    writeini wtimebot.ini codes Nauru 520%2CNR%2CNRU%2CAUO%2C
+    writeini wtimebot.ini codes Nepal 524%2CNP%2CNPL%2CASA%2C
+    writeini wtimebot.ini codes Netherlands 528%2CNL%2CNLD%2CEUR%2C
+    writeini wtimebot.ini codes NewZealand 554%2CNZ%2CNZL%2CAUO%2C
+    writeini wtimebot.ini codes Nicaragua 558%2CNI%2CNIC%2CCAM%2C
+    writeini wtimebot.ini codes Niger 562%2CNE%2CNER%2CAFR%2C
+    writeini wtimebot.ini codes Nigeria 566%2CNG%2CNGA%2CAFR%2C
+    writeini wtimebot.ini codes Niue 570%2CNU%2CNIU%2CISL%2C
+    writeini wtimebot.ini codes Norfolk+Island 574%2CNF%2CNFK%2CISL%2C
+    writeini wtimebot.ini codes North+Korea 408%2CKP%2CPRK%2CASA%2C
+    writeini wtimebot.ini codes Norway 578%2CNO%2CNOR%2CEUR%2C
+    writeini wtimebot.ini codes Oman 512%2COM%2COMN%2CMIE%2C
+    writeini wtimebot.ini codes Pakistan 586%2CPK%2CPAK%2CASA%2C
+    writeini wtimebot.ini codes Palau 585%2CPW%2CPLW%2CISL%2C
+    writeini wtimebot.ini codes Panama 591%2CPA%2CPAN%2CCAM%2C
+    writeini wtimebot.ini codes Paraguay 600%2CPY%2CPRY%2CSAM%2C
+    writeini wtimebot.ini codes Peru 604%2CPE%2CPER%2CSAM%2C
+    writeini wtimebot.ini codes Philippines 608%2CPH%2CPHL%2CISL%2C
+    writeini wtimebot.ini codes Poland 616%2CPL%2CPOL%2CEUR%2C
+    writeini wtimebot.ini codes Portugal 620%2CPT%2CPRT%2CEUR%2C
+    writeini wtimebot.ini codes Puerto+Rico 630%2CPR%2CPRI%2CISL%2C
+    writeini wtimebot.ini codes Qatar 634%2CQA%2CQAT%2CMIE%2C
+    writeini wtimebot.ini codes Reunion 638%2CRE%2CREU%2CISL%2C
+    writeini wtimebot.ini codes Romania 642%2CRO%2CROM%2CEUR%2C
+    writeini wtimebot.ini codes Russia 643%2CRU%2CRUS%2CASA%2C
+    writeini wtimebot.ini codes Rwanda 646%2CRW%2CRWA%2CAFR%2C
+    writeini wtimebot.ini codes Saudi+Arabia 682%2CSA%2CSAU%2CMIE%2C
+    writeini wtimebot.ini codes Senegal 686%2CSN%2CSEN%2CAFR%2C
+    writeini wtimebot.ini codes Seychelles 690%2CSC%2CSYC%2CISL%2C
+    writeini wtimebot.ini codes Singapore 702%2CSG%2CSGP%2CASA%2C
+    writeini wtimebot.ini codes Slovakia 703%2CSK%2CSVK%2CEUR%2C
+    writeini wtimebot.ini codes Slovenia 705%2CSI%2CSVN%2CEUR%2C
+    writeini wtimebot.ini codes Solomon+Islands 90%2CSB%2CSLB%2CISL%2C
+    writeini wtimebot.ini codes Somalia 706%2CSO%2CSOM%2CAFR%2C
+    writeini wtimebot.ini codes South+Africa 710%2CZA%2CZAF%2CAFR%2C
+    writeini wtimebot.ini codes South+Korea 410%2CKR%2CKOR%2CASA%2C
+    writeini wtimebot.ini codes Spain 724%2CES%2CESP%2CEUR%2C
+    writeini wtimebot.ini codes Sudan 736%2CSD%2CSDN%2CAFR%2C
+    writeini wtimebot.ini codes Suriname 740%2CSR%2CSUR%2CSAM%2C
+    writeini wtimebot.ini codes Swaziland 748%2CSZ%2CSWZ%2CAFR%2C
+    writeini wtimebot.ini codes Sweden 752%2CSE%2CSWE%2CEUR%2C
+    writeini wtimebot.ini codes Switzerland 756%2CCH%2CCHE%2CEUR%2C
+    writeini wtimebot.ini codes Taiwan 158%2CTW%2CTWN%2CASA%2C
+    writeini wtimebot.ini codes Tajikistan 762%2CTJ%2CTJK%2CASA%2C
+    writeini wtimebot.ini codes Tanzania 834%2CTZ%2CTZA%2CAFR%2C
+    writeini wtimebot.ini codes Thailand 764%2CTH%2CTHA%2CASA%2C
+    writeini wtimebot.ini codes Togo 768%2CTG%2CTGO%2CISL%2C
+    writeini wtimebot.ini codes Tokelau 772%2CTK%2CTKL%2CISL%2C
+    writeini wtimebot.ini codes Tonga 776%2CTO%2CTON%2CISL%2C
+    writeini wtimebot.ini codes Tunisia 788%2CTN%2CTUN%2CAFR%2C
+    writeini wtimebot.ini codes Turkey 792%2CTR%2CTUR%2CEUR%2C
+    writeini wtimebot.ini codes Turkmenistan 795%2CTM%2CTKM%2CASA%2C
+    writeini wtimebot.ini codes Tuvalu 798%2CTV%2CTUV%2CISL%2C
+    writeini wtimebot.ini codes Uganda 800%2CUG%2CUGA%2CAFR%2C
+    writeini wtimebot.ini codes Ukraine 804%2CUA%2CUKR%2CEUR%2C
+    writeini wtimebot.ini codes Uruguay 858%2CUY%2CURY%2CSAM%2C
+    writeini wtimebot.ini codes Uzbekistan 860%2CUZ%2CUZB%2CASA%2C
+    writeini wtimebot.ini codes Vanuatu 548%2CVU%2CVUT%2CISL%2C
+    writeini wtimebot.ini codes Venezuela 862%2CVE%2CVEN%2CSAM%2C
+    writeini wtimebot.ini codes Viet+Nam 704%2CVN%2CVNM%2CASA%2C
+    writeini wtimebot.ini codes Yemen 887%2CYE%2CYEM%2CMIE%2C
+    writeini wtimebot.ini codes Yugoslavia 891%2CYU%2CYUG%2CEUR%2C
+    writeini wtimebot.ini codes Zambia 894%2CZM%2CZMB%2CAFR%2C
+    writeini wtimebot.ini codes Zimbabwe 716%2CZW%2CZWE%2CAFR%2C         
+    writeini wtimebot.ini codes UnitedArabEmirates 784%2CAE%2CARE%2CMIE%2C
+  }
+}
+alias -l maketxt {
+  if (!$read(Countries.txt)) {
+    write Countries.txt
+    write Countries.txt UnitedStates
+    write Countries.txt Australia
+    write Countries.txt United Kingdom
+    write Countries.txt Vatican
+    write Countries.txt Venezuela
+    write Countries.txt Afghanistan
+    write Countries.txt Albania
+    write Countries.txt Algeria
+    write Countries.txt Andorra
+    write Countries.txt Angola
+    write Countries.txt Anguilla
+    write Countries.txt Antarctica
+    write Countries.txt Argentina
+    write Countries.txt Armenia
+    write Countries.txt Aruba
+    write Countries.txt Australia
+    write Countries.txt Austria
+    write Countries.txt Azerbaijan
+    write Countries.txt Bahamas
+    write Countries.txt Bahrain
+    write Countries.txt Bangladesh
+    write Countries.txt Barbados
+    write Countries.txt Belarus
+    write Countries.txt Belgium
+    write Countries.txt Belize
+    write Countries.txt Benin
+    write Countries.txt Bermuda
+    write Countries.txt Bhutan
+    write Countries.txt Bolivia
+    write Countries.txt Botswana
+    write Countries.txt Brazil
+    write Countries.txt Brunei
+    write Countries.txt Bulgaria
+    write Countries.txt Burundi
+    write Countries.txt Cambodia
+    write Countries.txt Cameroon
+    write Countries.txt Canada
+    write Countries.txt Chad
+    write Countries.txt Chile
+    write Countries.txt China
+    write Countries.txt Colombia
+    write Countries.txt Comoros
+    write Countries.txt Croatia
+    write Countries.txt Cuba
+    write Countries.txt Cyprus
+    write Countries.txt Denmark
+    write Countries.txt Djibouti
+    write Countries.txt Dominica
+    write Countries.txt Ecuador
+    write Countries.txt Egypt
+    write Countries.txt Eritrea
+    write Countries.txt Estonia
+    write Countries.txt Ethiopia
+    write Countries.txt Fiji
+    write Countries.txt Finland
+    write Countries.txt France
+    write Countries.txt Gabon
+    write Countries.txt Gambia
+    write Countries.txt Georgia
+    write Countries.txt Germany
+    write Countries.txt Ghana
+    write Countries.txt Gibraltar
+    write Countries.txt Greece
+    write Countries.txt Greenland
+    write Countries.txt Grenada
+    write Countries.txt Guadeloupe
+    write Countries.txt Guam
+    write Countries.txt Guatemala
+    write Countries.txt Guinea
+    write Countries.txt Guyana
+    write Countries.txt Haiti
+    write Countries.txt Honduras
+    write Countries.txt Hungary
+    write Countries.txt American Samoa
+    write Countries.txt British Virgin Islands
+    write Countries.txt Burkina Faso
+    write Countries.txt Cape Verde
+    write Countries.txt Cayman Islands
+    write Countries.txt Central African Republic
+    write Countries.txt Christmas Island
+    write Countries.txt Cocos Keeling Islands
+    write Countries.txt Congo Kinshasa
+    write Countries.txt Cook Islands
+    write Countries.txt Costa Rica
+    write Countries.txt Czech Republic
+    write Countries.txt Dominican Republic
+    write Countries.txt El Salvador
+    write Countries.txt Falkland Islands
+    write Countries.txt Iceland
+    write Countries.txt India
+    write Countries.txt Indonesia
+    write Countries.txt Iran
+    write Countries.txt Iraq
+    write Countries.txt Ireland
+    write Countries.txt Israel
+    write Countries.txt Italy
+    write Countries.txt Jamaica
+    write Countries.txt Japan
+    write Countries.txt Jordan
+    write Countries.txt Kazakhstan
+    write Countries.txt Kenya
+    write Countries.txt Kiribati
+    write Countries.txt Kuwait
+    write Countries.txt Kyrgyzstan
+    write Countries.txt Laos
+    write Countries.txt Latvia
+    write Countries.txt Lebanon
+    write Countries.txt Lesotho
+    write Countries.txt Liberia
+    write Countries.txt Libya
+    write Countries.txt Liechtenstein
+    write Countries.txt Lithuania
+    write Countries.txt Luxembourg
+    write Countries.txt Macau
+    write Countries.txt Macedonia
+    write Countries.txt Madagascar
+    write Countries.txt Malawi
+    write Countries.txt Malaysia
+    write Countries.txt Maldives
+    write Countries.txt Mali
+    write Countries.txt Malta
+    write Countries.txt Martinique
+    write Countries.txt Mauritania
+    write Countries.txt Mauritius
+    write Countries.txt Mexico
+    write Countries.txt Micronesia
+    write Countries.txt Moldova
+    write Countries.txt Monaco
+    write Countries.txt Mongolia
+    write Countries.txt Montserrat
+    write Countries.txt Morocco
+    write Countries.txt Mozambique
+    write Countries.txt Myanmar
+    write Countries.txt Namibia
+    write Countries.txt Nauru
+    write Countries.txt Nepal
+    write Countries.txt Netherlands
+    write Countries.txt NewZealand
+    write Countries.txt Nicaragua
+    write Countries.txt Niger
+    write Countries.txt Nigeria
+    write Countries.txt Niue
+    write Countries.txt Norfolk Island
+    write Countries.txt North Korea
+    write Countries.txt Norway
+    write Countries.txt Oman
+    write Countries.txt Pakistan
+    write Countries.txt Palau
+    write Countries.txt Panama
+    write Countries.txt Paraguay
+    write Countries.txt Peru
+    write Countries.txt Philippines
+    write Countries.txt Poland
+    write Countries.txt Portugal
+    write Countries.txt Puerto Rico
+    write Countries.txt Qatar
+    write Countries.txt Reunion
+    write Countries.txt Romania
+    write Countries.txt Russia
+    write Countries.txt Rwanda
+    write Countries.txt Saudi Arabia
+    write Countries.txt Senegal
+    write Countries.txt Seychelles
+    write Countries.txt Singapore
+    write Countries.txt Slovakia
+    write Countries.txt Slovenia
+    write Countries.txt Solomon Islands
+    write Countries.txt Somalia
+    write Countries.txt South Africa
+    write Countries.txt South Korea
+    write Countries.txt Spain
+    write Countries.txt Sudan
+    write Countries.txt Suriname
+    write Countries.txt Swaziland
+    write Countries.txt Sweden
+    write Countries.txt Switzerland
+    write Countries.txt Taiwan
+    write Countries.txt Tajikistan
+    write Countries.txt Tanzania
+    write Countries.txt Thailand
+    write Countries.txt Togo
+    write Countries.txt Tokelau
+    write Countries.txt Tonga
+    write Countries.txt Tunisia
+    write Countries.txt Turkey
+    write Countries.txt Turkmenistan
+    write Countries.txt Tuvalu
+    write Countries.txt Uganda
+    write Countries.txt Ukraine
+    write Countries.txt Uruguay
+    write Countries.txt Uzbekistan
+    write Countries.txt Vanuatu
+    write Countries.txt Venezuela
+    write Countries.txt Viet Nam
+    write Countries.txt Yemen
+    write Countries.txt Yugoslavia
+    write Countries.txt Zambia
+    write Countries.txt Zimbabwe
+    write Countries.txt UnitedArabEmirates
+  }
+}

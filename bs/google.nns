@@ -1,0 +1,164 @@
+;Advanced Google Search by Ford_Lawnmower irc.mindforge.org #USA-Chat
+alias -l GetAdvancedGoogle {
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;Start of Simple Setup;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;Change %MaxResults(below) to get a different number of results.(must be a number between 1 and 9)
+  var %MaxResults 2
+  ;;Change %GoogleLogo(below) to change the logo at the start of each line.(You cannot remove this, only change)
+  var %GoogleLogo 06Google
+  ;;Change %NameColor(below) to change the color of the results description.(You cannot remove this, only change)
+  var %NameColor 
+  ;;Change %LinkColor(below) to change the color of the results link.(You cannot remove this, only change)
+  var %LinkColor 06
+  ;;Change %UseTinyURL(below) if you don't want links converted to tinyurl. Valid numbers are: 1 for convert and 0 for don't convert.
+  var %UseTinyURL 0
+  ;;Change %CountryCode(below) if you want your searches in a different language. Look here if you don't know your code -->> http://xml.coverpages.org/country3166.html
+  var %CountryCode en
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;Do not leave any of these variables blank!!!;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+  ;;;;;;End of Setup;;;;;; 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+  $1-2 Connecting Google socket, please wait.
+  var %sockname $+(AdvancedGoogle,$network,$2,$ticks)
+  sockopen %sockname ajax.googleapis.com 80
+  sockmark %sockname $1-2 %MaxResults %GoogleLogo %NameColor %LinkColor %UseTinyURL $+(/ajax/services/search/,$3,?v=1.0&rsz=large&q=,$urlencode($4-),&ql=,%CountryCode,&lr=lang_,%CountryCode)
+}
+menu Channel,Status {
+  .$iif($group(#AdvancedGoogle) == On,$style(1)) AdvancedGoogle Trigger
+  ..$iif($group(#AdvancedGoogle) == On,$style(2)) On: .enable #AdvancedGoogle
+  ..$iif($group(#AdvancedGoogle) == Off,$style(2)) Off: .disable #AdvancedGoogle
+}
+#AdvancedGoogle on
+On $owner:Text:/^(\+|-|!|@)G(oogle|local|video|news|books|images|patent|help|site).*/Si:#: {
+  spamprotect
+  exprotect $1-
+  var %action $regml(1), %type $regml(2)
+  if (%action isin +-) && ($regex($nick($chan,$nick).pnick,/(!|~|&|@|%)/)) {
+    if (%action == +) {
+      if ($istok(%AdvancedGoogleChanList,$+($network,$chan),32)) { .msg $chan 00[ 8G 00] script is currently on. }
+      else { 
+        .enable #AdvancedGoogle
+        Set %AdvancedGoogleChanList $addtok(%AdvancedGoogleChanList,$+($network,$chan),32)
+        .msg $chan 00[ 8G 00] script activated.
+      }
+    }
+    else {
+      if (!$istok(%AdvancedGoogleChanList,$+($network,$chan),32)) { .msg $chan 00[ 8G 00] script is currently off. }
+      else { 
+        Set %AdvancedGoogleChanList $remtok(%AdvancedGoogleChanList,$+($network,$chan),1,32)
+        .msg $chan 00[ 8G 00] script deactivated. 
+      }
+    }
+  }
+  elseif (!$timer($+(AdvancedGoogle,$network,$nick))) && ($istok(%AdvancedGoogleChanList,$+($network,$chan),32)) {
+    .timer $+ $+(AdvancedGoogle,$network,$nick) 1 6 noop
+    var %method $iif(%action == !,.msg $chan,$iif($regex($nick($chan,$nick).pnick,/(!|~|&|@|%|\+)/),.msg $chan,.msg $chan))
+    if (%type == help) || (!$2) { AdvancedGoogleHelp %method %action }
+    elseif (%type == site) { GetAdvancedGoogle %method $replace(%type,oogle,web,site,web) $+(+site:,$2-) }
+    else { GetAdvancedGoogle %method $replace(%type,oogle,web) $2- }
+  }
+}
+#AdvancedGoogle end
+alias Google {
+  if ($istok(-local -video -news -books -images -patent,$1,32)) { GetAdvancedGoogle echo -a $mid($1,2) $2- }
+  else { GetAdvancedGoogle echo -a web $1- }
+}
+On *:sockopen:AdvancedGoogle*: {
+  if (!$sockerr) {
+    hmake $sockname
+    hadd $sockname max $gettok($sock($sockname).mark,3,32)
+    hadd $sockname urlcount 1
+    hadd $sockname itemcount 1
+    sockwrite -nt $sockname GET $gettok($sock($sockname).mark,8,32) HTTP/1.1
+    sockwrite -n $sockname Host: ajax.googleapis.com
+    sockwrite -n $sockname User-Agent: Opera 9.6
+    sockwrite -n $sockname $crlf
+  }
+  else { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+}
+On *:sockread:AdvancedGoogle*: {
+  if ($sockerr) { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+  else {
+    sockread &AdvancedGoogle
+    var %count 1
+    while ($hget($sockname,max) >= $hget($sockname,urlcount)) && ($bintween(&AdvancedGoogle,"url":",",%count)) {
+      hadd $sockname $+(url,$hget($sockname,urlcount)) $dehex($ifmatch)
+      hinc $sockname urlcount      
+      inc %count
+    }
+    %count = 1
+    while ($hget($sockname,max) >= $hget($sockname,itemcount)) && ($bintween(&AdvancedGoogle,"content":",",%count) || $bintween(&AdvancedGoogle,"titlenoformatting":",",%count)) {
+      hadd $sockname $+(item,$hget($sockname,itemcount)) $replace($fix&#($dehex($ifmatch)),<b>,,</b>,)
+      hinc $sockname itemcount      
+      inc %count
+    }
+    if ($matchtok($hget($sockname,itemcount) $hget($sockname,urlcount),$hget($sockname,max),0,32) > 1) || ($bintween(&AdvancedGoogle,"responseStatus",200,1)) { clearhash }
+  }
+}
+On *:sockclose:AdvancedGoogle*: { hfree $+(AdvancedGoogle,$sockname) }
+alias -l clearhash {
+  tokenize 32 $sock($sockname).mark
+  var %start 1, %matches $hfind($sockname,item[1-9],0,r)
+  if (%matches) {
+    while (%start <= %matches) {
+      if ($7) { Tiny $1-2 $hget($sockname,$+(url,%start)) $4 $+($5,$hget($sockname,$+(item,%start))) $+(,$6,$hget($sockname,$+(url,%start)),) }
+      else { $1-2 $4 $+($5,$hget($sockname,$+(item,%start))) $+(,$6,$hget($sockname,$+(url,%start)),) }
+      inc %start
+    }
+  }
+  else { $1-2 $4 No results matching that criteria. Learn to google or type !ghelp/@ghelp }
+  hfree $sockname
+  sockclose $sockname
+  return
+}
+alias -l AdvancedGoogleHelp {
+  $1-2 14(Google14) Triggers to search: $+($3,google) $+($3,glocal) $+($3,gvideo) $+($3,gnews) $+($3,gbooks) $+($3,gimages) $+($3,gpatent)
+  $1-2 14(Google14) Search parameters: 14(8Example14) $+($3,gvideo) Squirting in her Anal Gape Vol. 8.mkv
+}
+alias -l urlencode return $regsubex($1-,/([^a-z0-9])/ig,% $+ $base($asc(\t),10,16,2))
+alias -l fix&# { return $remove($replace($regsubex($1-,/&#([0-9]{2});/g,$chr(\t)),&quot;,",&amp;,&,&middot;,·),\n,\n ) }
+alias -l bintween {
+  var %count = 1, %mark = 0, %mark2 = 0
+  while (%count <= $4) {
+    if ($bfind($1, %mark2, $2).text) {
+      %mark = $calc($bfind($1, %mark2, $2).text + $len($2))
+      if ($bfind($1, %mark, $3).text) {
+        %mark2 = $bfind($1, %mark, $3).text
+      }
+      else { return 0 } 
+    }
+    else { return 0 }
+    inc %count
+  }
+  return $bvar($1, $iif(%mark > 0,%mark,1), $calc(%mark2 - %mark)).text
+}
+alias -l dehex { return $regsubex($1-,/\\u([a-f0-9]{4})|\%([a-f0-9]{2})/gi,$chr($base(\t,16,10))) }
+alias -l Tiny {
+  var %sockname $+(GTinyUrl,$network,$ticks,$r(1,$ticks))
+  sockopen %sockname tinyurl.com 80
+  sockmark %sockname $1-2 $+(/api-create.php?url=,$3) $3 $4-
+}
+On *:sockopen:GTinyUrl*: {
+  if (!$sockerr) {
+    sockwrite -nt $sockname GET $gettok($sock($sockname).mark,3,32) HTTP/1.0
+    sockwrite -n $sockname Host: tinyurl.com
+    sockwrite -n $sockname $crlf
+  }
+  else { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+}
+On *:sockread:GTinyUrl*: {
+  if ($sockerr) { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+  else {
+    sockread -f &tiny | var %tiny $bvar(&tiny,1-).text
+    if (http://* iswm %tiny) {
+      tokenize 32 $sock($sockname).mark
+      $1-2 $replace($5-,$4,%tiny)
+      sockclose $sockname
+      return
+    }
+  }
+}
+On *:Unload: { unset %AdvancedGoogleChanList* | hfree -w AdvancedGoogle* }

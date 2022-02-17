@@ -1,0 +1,81 @@
+on *:TEXT:*:*: {
+  hadd -m xSeen $nick T $nick $ctime $chan $1-
+  if (%spam [ $+ [ $nick ] ] >= 3) { 
+    if ($1 = !seen) || ($1 = !idle) { 
+      msg $chan Do not abuse the !seen or !idle commands
+      halt 
+    }
+  }
+  if ($1 = !seen) {
+    inc -u300 %spam [ $+ [ $nick ] ]
+    if (!$2) { msg $chan are you looking for someone? | halt }
+    elseif ($2 = $nick) { msg $chan Are you trying to find yourself $nick $+ ? I know of some great Counselors that might be able to help you :-\ | halt }
+    elseif ($2 = $me) { msg $chan Find my yet, $nick $+ ? | halt }
+    elseif ($2 ison $chan) { msg $chan $2 is currently on the channel. | halt }
+    elseif (%xseen = $null) {
+      raw whois $2 $2
+      set %xseen ON
+      set %xseen.chan $chan
+      set %xseen.nick $nick
+      set %xseen.target $2
+    }
+    elseif (%xseen != $null) {
+      msg $chan There is currently already a !seen check in progress $nick $+ , please wait a second and try again.
+    }
+  }
+  if ($1 = !search) && (%xfind. [ $+ [ $nick ] ]) {
+    msg %xfind. [ $+ [ $nick ] ] Hello there, I am an automated bot, please do not reply.
+    msg %xfind. [ $+ [ $nick ] ] $nick performed a !seen command on you and wanted me to let you know he was looking for you.
+    msg $chan Message has been send.
+    unset %xfind*
+  }
+  if ($1 = !idle) {
+    inc -u300 %spam [ $+ [ $nick ] ]
+    if (!$2) { msg $chan I need a nick to idle :P | halt }
+    if ($2 = $nick) { msg $chan Idle'n youself, $nick $+ ? | halt }
+    if ($2 = $me) { msg $chan I never idle $nick $+ . :) | halt }
+    else {
+      if (%idle.time.get) { msg $chan I am sorry $nick $+ , but there is already an idle check in progress, please try in a second. | halt }
+      raw whois $2 $2
+      set %idle.time.get on
+      set %idle.chan $chan
+      set %idle.nick $2
+      set %idle.x $nick
+    }
+  }
+}
+
+on *:START: {
+  if (!$hget(xSeen)) { hmake xSeen 10000 }
+  if ($isfile(xSeen.hsh)) { hload xSeen xSeen.hsh }
+  xseen.save
+  xtimedclear
+}
+
+on *:UNLOAD: {
+  timerxseensave off
+}
+
+on *:EXIT: {
+  hsave xSeen xSeen.hsh
+}
+
+on *:QUIT: {
+  hadd -m xSeen $nick Q $nick $ctime $1-
+}
+
+on *:KICK:#: {
+  hadd -m xSeen $knick K $nick $ctime $chan $1-
+}
+
+on *:JOIN:#: {
+  hadd -m xSeen $nick J $nick $ctime $chan
+}
+
+on *:NICK: {
+  hadd -m xSeen $nick N $nick $ctime $newnick
+}
+
+on *:PART:#: {
+  hadd -m xSeen $nick P $nick $ctime $chan $1-
+}

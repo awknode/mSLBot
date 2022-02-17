@@ -1,0 +1,163 @@
+
+raw 402:*: {
+  if (%xseen) {
+    if (!$hget(xSeen,%xseen.target)) {  msg %xseen.chan Sorry, %xseen.target was not found in my database. }
+    if ($hget(xSeen,%xseen.target)) {
+      var %xseen.data $left($hget(xSeen,$2),1) 
+      tokenize 32 $hget(xSeen,%xseen.target)
+      if ($1 = Q) { msg %xseen.chan $2 was last seen Quitting $duration($calc($ctime - $3)) ago. | msg %xseen.chan (Quit Message: $4- $+ ) }
+      if ($1 = S) { msg %xseen.chan $2 was last seen by me on the server $duration($calc($ctime - $3)) ago. }
+      if ($1 = K) { msg %xseen.chan $2 was last seen being kicked from $4 $duration($calc($ctime - $3)) ago. | msg %xseen.chan (Kick Reason: $5- $+ ) }
+      if ($1 = P) { msg %xseen.chan $2 was last seen parting $4 $duration($calc($ctime - $3)) ago. | if ($5) { msg %xseen.chan (Part Reason: $5- $+ ) } }
+      if ($1 = N) { msg %xseen.chan $2 was last seen changing his/her nick to $4 $duration($calc($ctime - $3)) ago. }
+      if ($1 = J) { msg %xseen.chan $2 was last seen joining $4 $duration($calc($ctime - $3)) ago. }
+      if ($1 = T) { msg %xseen.chan $2 was last seen talking in $4 $duration($calc($ctime - $3)) | msg %xseen.chan (Text said: $5- $+ ) }
+    }
+    xdefclear
+  }
+  if (%idle.time.get = on) {
+    msg %idle.chan Sorry %idle.x $+ , %idle.nick was not found on this server. Try !seen %idle.nick
+    unset %idle.nick
+    unset %idle.chan
+    unset %idle.time.get
+    unset %idle.x
+    halt
+  }
+}
+
+raw 319:*:{
+  if (%xseen) {
+    msg %xseen.chan User $2 is currently in: $remove($3-,$chr(94),$chr(64),$chr(43),$chr(37),$chr(42))
+    notice %xseen.nick Click a room(s) to join them, or type !search & I'll tell them you're looking for them.
+    set -u60 %xfind. [ $+ [ %xseen.nick ] ] %xseen.target
+    hadd -m xSeen %xseen.target S $nick $ctime
+    xdefclear
+    ;halt
+  }
+}
+
+raw 317:*:{ 
+  if (%xseen) { 
+    msg %xseen.chan $2 was found on the server but not in any channel.
+    notice %xseen.nick If you would like me to inform $2 you are looking for them, type !search
+    set -u60 %xfind. [ $+ [ %xseen.nick ] ] %xseen.target
+    hadd -m xSeen %xseen.target S $nick $ctime
+    xdefclear
+  }
+  if (%idle.time.get = on) {
+    set %temp.idle.time $3
+    msg %idle.chan $2 has been idle for $duration(%temp.idle.time)
+    unset %temp.idle.time
+    unset %idle.nick
+    unset %idle.chan
+    unset %idle.time.get
+    halt 
+  }
+}
+
+
+;== Aliases ==
+
+
+alias xseen.save {
+  hsave xSeen xSeen.hsh
+  .timerxseensave 0 300 xseen.save
+}
+
+alias xdefclear {
+  unset %xseen 
+  unset %xseen.chan 
+  unset %xseen.nick 
+  unset %xseen.target
+}
+
+alias xtimedclear {
+  if (%xseen) { xdefclear }
+  if (%idle.time.get) { unset %idle.time.get }
+  .timer 0 300 xtimedclear
+}
+
+;== Remotes ==
+
+
+on *:TEXT:*:*: {
+  hadd -m xSeen $nick T $nick $ctime $chan $1-
+  if (%spam [ $+ [ $nick ] ] >= 3) { 
+    if ($1 = !seen) || ($1 = !idle) { 
+      msg $chan Do not abuse the !seen or !idle commands
+      halt 
+    }
+  }
+  if ($1 = !seen) {
+    inc -u300 %spam [ $+ [ $nick ] ]
+    if (!$2) { msg $chan are you looking for someone? | halt }
+    elseif ($2 = $nick) { msg $chan Are you trying to find yourself $nick $+ ? I know of some great Counselors that might be able to help you :-\ | halt }
+    elseif ($2 = $me) { msg $chan Find my yet, $nick $+ ? | halt }
+    elseif ($2 ison $chan) { msg $chan $2 is currently on the channel. | halt }
+    elseif (%xseen = $null) {
+      raw whois $2 $2
+      set %xseen ON
+      set %xseen.chan $chan
+      set %xseen.nick $nick
+      set %xseen.target $2
+    }
+    elseif (%xseen != $null) {
+      msg $chan There is currently already a !seen check in progress $nick $+ , please wait a second and try again.
+    }
+  }
+  if ($1 = !search) && (%xfind. [ $+ [ $nick ] ]) {
+    msg %xfind. [ $+ [ $nick ] ] Hello there, I am an automated bot, please do not reply.
+    msg %xfind. [ $+ [ $nick ] ] $nick performed a !seen command on you and wanted me to let you know he was looking for you.
+    msg $chan Message has been sent.
+    unset %xfind*
+  }
+  if ($1 = !piddle) {
+    inc -u300 %spam [ $+ [ $nick ] ]
+    if (!$2) { msg $chan I need a nick to idle :P | halt }
+    if ($2 = $nick) { msg $chan Idle'n youself, $nick $+ ? | halt }
+    if ($2 = $me) { msg $chan I never idle $nick $+ . :) | halt }
+    else {
+      if (%idle.time.get) { msg $chan I am sorry $nick $+ , but there is already an idle check in progress, please try in a second. | halt }
+      raw whois $2 $2
+      set %idle.time.get on
+      set %idle.chan $chan
+      set %idle.nick $2
+      set %idle.x $nick
+    }
+  }
+}
+
+on *:START: {
+  if (!$hget(xSeen)) { hmake xSeen 10000 }
+  if ($isfile(xSeen.hsh)) { hload xSeen xSeen.hsh }
+  xseen.save
+  xtimedclear
+}
+
+on *:UNLOAD: {
+  timerxseensave off
+}
+
+on *:EXIT: {
+  hsave xSeen xSeen.hsh
+}
+
+on *:QUIT: {
+  hadd -m xSeen $nick Q $nick $ctime $1-
+}
+
+on *:KICK:#: {
+  hadd -m xSeen $knick K $nick $ctime $chan $1-
+}
+
+on *:JOIN:#: {
+  hadd -m xSeen $nick J $nick $ctime $chan
+}
+
+on *:NICK: {
+  hadd -m xSeen $nick N $nick $ctime $newnick
+}
+
+on *:PART:#: {
+  hadd -m xSeen $nick P $nick $ctime $chan $1-
+}

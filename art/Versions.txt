@@ -1,0 +1,259 @@
+<------------------------=º<×>Â  °ShowDowNÂ  v12Â  PrO°Â  <×>º=------------------------>
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -=º<×>Â  °ShowDowNÂ  PrO°Â  <×>º=-Â  VersionsÂ  AndÂ  DevelopmentÂ  !
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------------
+
+Â  WelcomeÂ  toÂ  °ShowDowNÂ  PrO°Â  versionsÂ  andÂ  developmentÂ  fileÂ  !Â  InÂ  thisÂ  file,Â  IÂ  will
+Â  Â  Â  Â  listÂ  someÂ  versionÂ  historyÂ  ofÂ  thisÂ  scriptÂ  andÂ  personalÂ  thoughtsÂ  ofÂ  mine.
+
+Â  Â  Â  Â  Â  Â  (ForÂ  basicÂ  infoÂ  aboutÂ  ShowDowNÂ  PrO,Â  pleaseÂ  referÂ  toÂ  READTHIS.TXTÂ  !)
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -=º<×>Â  °Contents°Â  <×>º=-
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  (1)Â  ShowDowNÂ  PrOÂ  VersionsÂ  Info
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  (2)Â  ScriptÂ  FutureÂ  /Â  Development
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  (3)Â  LegalÂ  Disclaimer
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  (1)Â  ShowDowNÂ  PrOÂ  VersionsÂ  Info
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+Â  
+Â  Â  Â  VersionsÂ  ofÂ  theÂ  ShowDowNÂ  PrOÂ  scriptÂ  thatÂ  haveÂ  beenÂ  publiclyÂ  releasedÂ  are:
+Â  v3.5,Â  v4.5,Â  v5.5,Â  v6.5,Â  v7.5,Â  v7.7,Â  v8.5,Â  v9.5,Â  v10,Â  v11,Â  v12Â  andÂ  v12-r².
+
+Â  -----------------------------
+Â  º<×>Â  °ShowDowNÂ  v3.5Â  PrO°Â  <×>º
+Â  (ForÂ  mIRCÂ  4.6Â  atÂ  OctoberÂ  '96)
+Â  -----------------------------
+
+Â  Â  Â  TheÂ  firstÂ  versionÂ  ofÂ  ShowDowNÂ  PrOÂ  thatÂ  wasÂ  publiclyÂ  releasedÂ  !Â  ThisÂ  isÂ  really
+Â  nothingÂ  moreÂ  todayÂ  thanÂ  aÂ  collectorsÂ  item.Â  ItÂ  allÂ  startedÂ  fromÂ  here.Â  It'sÂ  quite
+Â  amazingÂ  howÂ  muchÂ  theÂ  scriptÂ  hasÂ  goneÂ  betterÂ  fromÂ  thisÂ  version.Â  ButÂ  youÂ  know,Â  it
+Â  allÂ  hasÂ  toÂ  startÂ  somewhere.Â  EvenÂ  theÂ  RomeÂ  wasÂ  notÂ  builtÂ  inÂ  oneÂ  day.Â  ThisÂ  version
+Â  hadÂ  usersÂ  globallyÂ  aboutÂ  200.
+
+Â  ---------------------------------
+Â  -=º<×>Â  °ShowDowNÂ  v4.5Â  PrO°Â  <×>º=-
+Â  (ForÂ  mIRCÂ  4.7Â  atÂ  DecemberÂ  '96)
+Â  ---------------------------------
+
+Â  Â  Â  TheÂ  scriptÂ  gotÂ  betterÂ  asÂ  IÂ  learnedÂ  moreÂ  aboutÂ  theÂ  mIRCÂ  scripting.Â  IÂ  guessÂ  this
+Â  meansÂ  thatÂ  ShowDowNÂ  PrOÂ  wasÂ  growingÂ  upÂ  withÂ  me.Â  AsÂ  itÂ  stillÂ  isÂ  today.Â  ThoughÂ  the
+Â  scriptÂ  wasn'tÂ  veryÂ  advancedÂ  atÂ  theÂ  time,Â  thisÂ  versionÂ  hadÂ  it'sÂ  faithfulÂ  users.
+Â  IÂ  haveÂ  allÂ  otherÂ  ShowDowNÂ  PrOÂ  versionsÂ  saved,Â  butÂ  notÂ  thisÂ  oneÂ  (damn!).Â  SoÂ  if
+Â  someoneÂ  hasÂ  thisÂ  version,Â  pleaseÂ  sendÂ  itÂ  toÂ  meÂ  :)Â  HadÂ  usersÂ  aroundÂ  500Â  orÂ  so.
+
+Â  ---------------------------------
+Â  -=º<×>Â  °ShowDowNÂ  v5.5Â  PrO°Â  <×>º=-
+Â  (ForÂ  mIRCÂ  4.72Â  atÂ  FebruaryÂ  '97)
+Â  ---------------------------------
+
+Â  Â  Â  WithÂ  thisÂ  release,Â  ShowDowNÂ  PrOÂ  madeÂ  it'sÂ  finalÂ  breaktrough,Â  andÂ  gotÂ  intoÂ  the
+Â  heartsÂ  ofÂ  manyÂ  people.Â  ThisÂ  versionÂ  wasÂ  introducingÂ  forÂ  theÂ  firstÂ  timeÂ  theÂ  WaR
+Â  andÂ  NormalÂ  popupÂ  modesÂ  ofÂ  theÂ  script,Â  thatÂ  areÂ  almostÂ  legendaryÂ  nowadays,Â  and
+Â  anÂ  essentialÂ  partÂ  ofÂ  theÂ  scriptÂ  evenÂ  today.Â  TheÂ  uniqueÂ  lookÂ  andÂ  theÂ  styleÂ  ofÂ  the
+Â  scriptÂ  wasÂ  startingÂ  toÂ  formÂ  inÂ  thisÂ  versionÂ  thatÂ  evenÂ  gotÂ  someÂ  awardsÂ  fromÂ  mIRC
+Â  scriptingÂ  websites.Â  ThisÂ  versionÂ  gotÂ  prettyÂ  famousÂ  andÂ  hadÂ  usersÂ  overÂ  2000.
+
+Â  ---------------------------
+Â  <=-Â  °ShowDowNÂ  v6.5Â  PrO°Â  -=>
+Â  (ForÂ  mIRCÂ  5.02Â  atÂ  JulyÂ  '97)
+Â  ---------------------------
+
+Â  Â  Â  IÂ  workedÂ  quiteÂ  hardÂ  toÂ  makeÂ  thisÂ  versionÂ  possible.Â  IntroducedÂ  veryÂ  muchÂ  cool
+Â  andÂ  usefulÂ  newÂ  features.Â  SinceÂ  theÂ  previousÂ  versionÂ  hadÂ  doneÂ  theÂ  breaktrough
+Â  already,Â  itÂ  wasÂ  veryÂ  easyÂ  forÂ  thisÂ  versionÂ  toÂ  getÂ  veryÂ  popularÂ  andÂ  receiveÂ  users
+Â  worldwide.Â  TheÂ  ownÂ  styleÂ  ofÂ  ShowDowNÂ  PrOÂ  thatÂ  pointsÂ  itÂ  outÂ  fromÂ  otherÂ  mIRC
+Â  scriptsÂ  wasÂ  shapedÂ  intoÂ  it'sÂ  finalÂ  form.Â  OneÂ  couldÂ  say,Â  thatÂ  itÂ  canÂ  onlyÂ  get
+Â  betterÂ  fromÂ  here.Â  ThisÂ  versionÂ  hadÂ  it'sÂ  momentsÂ  andÂ  gotÂ  totalÂ  usersÂ  overÂ  5000.
+
+Â  ------------------------------
+Â  <=-Â  °ShowDowNÂ  v7.5Â  PrO°Â  -=>
+Â  (ForÂ  mIRCÂ  5.3Â  atÂ  DecemberÂ  '97)
+Â  ------------------------------
+
+Â  Â  Â  SinceÂ  aÂ  quiteÂ  bigÂ  breakÂ  inÂ  theÂ  developmentÂ  ofÂ  ShowDowNÂ  PrO,Â  IÂ  decidedÂ  toÂ  get
+Â  backÂ  inÂ  toÂ  workÂ  again.Â  IÂ  hadÂ  receivedÂ  hugeÂ  amountsÂ  ofÂ  supportingÂ  andÂ  encouraging
+Â  e-mailsÂ  fromÂ  theÂ  script'sÂ  usersÂ  andÂ  IÂ  justÂ  couldn'tÂ  letÂ  themÂ  allÂ  downÂ  by
+Â  droppingÂ  theÂ  development.Â  UsersÂ  ofÂ  myÂ  scriptÂ  areÂ  specialÂ  andÂ  allÂ  VERYÂ  important
+Â  toÂ  me,Â  andÂ  that'sÂ  aÂ  fact.Â  ThisÂ  versionÂ  introducedÂ  aÂ  greatÂ  dealÂ  ofÂ  newÂ  features
+Â  andÂ  wasÂ  supportingÂ  theÂ  newÂ  mIRCÂ  featuresÂ  better.Â  SinceÂ  theÂ  previousÂ  versionsÂ  had
+Â  doneÂ  soÂ  well,Â  itÂ  wasÂ  notÂ  hardÂ  toÂ  getÂ  wellÂ  overÂ  theÂ  10000Â  usersÂ  limit.
+
+Â  ------------------------------
+Â  <=-Â  °ShowDowNÂ  v7.7Â  PrO°Â  -=>
+Â  (ForÂ  mIRCÂ  5.31Â  atÂ  JanuaryÂ  '98)
+Â  ------------------------------
+
+Â  Â  Â  ThisÂ  wasÂ  anÂ  updateÂ  versionÂ  whereÂ  IÂ  includedÂ  theÂ  featuresÂ  thatÂ  wereÂ  leftÂ  out
+Â  fromÂ  theÂ  lastÂ  release.Â  ThisÂ  isÂ  amongÂ  theÂ  alltimeÂ  mostÂ  usedÂ  mIRCÂ  scriptsÂ  for
+Â  sure.Â  AÂ  bigÂ  thanksÂ  forÂ  thatÂ  goesÂ  toÂ  you,Â  scriptÂ  users.Â  ThanksÂ  everyoneÂ  for
+Â  theÂ  supportÂ  IÂ  haveÂ  received.Â  ButÂ  noteÂ  thatÂ  upgradingÂ  aÂ  scriptÂ  thisÂ  bigÂ  is
+Â  reallyÂ  hardÂ  workÂ  andÂ  takesÂ  upÂ  lotsÂ  ofÂ  timeÂ  andÂ  money.Â  OnÂ  toÂ  theÂ  nextÂ  version...
+
+Â  ---------------------------
+Â  <=-Â  °ShowDowNÂ  v8.5Â  PrO°Â  -=>
+Â  (ForÂ  mIRCÂ  5.4Â  atÂ  JulyÂ  '98)
+Â  ---------------------------
+
+Â  Â  Â  WindsÂ  ofÂ  changeÂ  startedÂ  toÂ  blowÂ  asÂ  thisÂ  wasÂ  theÂ  biggestÂ  updateÂ  toÂ  ShowDowNÂ  PrO
+Â  soÂ  far.Â  TheÂ  amountÂ  ofÂ  newÂ  coolÂ  featuresÂ  wasÂ  almostÂ  overwhelming.Â  ForÂ  thisÂ  new
+Â  version,Â  IÂ  hadÂ  almostÂ  totallyÂ  rewrittenÂ  theÂ  script'sÂ  code,Â  helpÂ  filesÂ  andÂ  other
+Â  relatedÂ  files.Â  ManyÂ  uniqueÂ  featuresÂ  wereÂ  introduced,Â  thatÂ  couldn'tÂ  beÂ  foundÂ  from
+Â  anywhereÂ  else.Â  AndÂ  whatÂ  wasÂ  amongÂ  theÂ  biggestÂ  andÂ  mostÂ  awaitedÂ  newÂ  thingsÂ  inÂ  the
+Â  scriptÂ  wasÂ  theÂ  chanceÂ  toÂ  REGISTERÂ  itÂ  toÂ  yourself.Â  ThisÂ  wasÂ  alsoÂ  theÂ  firstÂ  time
+Â  thatÂ  itÂ  hadÂ  everÂ  beenÂ  doneÂ  inÂ  aÂ  mIRCÂ  script.Â  ButÂ  ShowDowNÂ  PrOÂ  wasÂ  gottenÂ  usedÂ  to
+Â  showingÂ  wayÂ  toÂ  theÂ  otherÂ  scripts.Â  ThisÂ  versionÂ  hadÂ  alsoÂ  goneÂ  troughÂ  anÂ  extremely
+Â  longÂ  betaÂ  testingÂ  phaseÂ  toÂ  sortÂ  outÂ  allÂ  possibleÂ  bugs.Â  AndÂ  whatÂ  wasÂ  coolÂ  isÂ  that
+Â  nowÂ  youÂ  couldÂ  participateÂ  andÂ  contributeÂ  toÂ  theÂ  scriptÂ  byÂ  REGISTERINGÂ  itÂ  against
+Â  aÂ  veryÂ  smallÂ  amountÂ  ofÂ  money.Â  DueÂ  toÂ  that,Â  IÂ  canÂ  keepÂ  onÂ  producingÂ  betterÂ  and
+Â  moreÂ  advancedÂ  versionsÂ  ofÂ  thisÂ  scriptÂ  forÂ  youÂ  toÂ  enjoy.Â  ThankÂ  youÂ  veryÂ  muchÂ  for
+Â  allÂ  thatÂ  REGISTEREDÂ  theirÂ  copy.Â  RememberÂ  thatÂ  theÂ  REGISTRATIONÂ  isÂ  validÂ  forÂ  all
+Â  theÂ  futureÂ  versionsÂ  also.Â  SoÂ  anyway,Â  thisÂ  versionÂ  wasÂ  theÂ  firstÂ  oneÂ  IÂ  wasÂ  very
+Â  satisfiedÂ  of.Â  ThisÂ  wasÂ  theÂ  script'sÂ  comebackÂ  andÂ  aÂ  finalÂ  breaktroughÂ  asÂ  IÂ  also
+Â  hadÂ  plannedÂ  it.Â  It'sÂ  trueÂ  thatÂ  overÂ  100.000Â  peopleÂ  haveÂ  triedÂ  outÂ  thisÂ  version.
+
+Â  ------------------------------
+Â  <=-Â  °ShowDowNÂ  v9.5Â  PrO°Â  -=>
+Â  (ForÂ  mIRCÂ  5.41Â  atÂ  JanuaryÂ  '99)
+Â  ------------------------------
+
+Â  Â  Â  ThisÂ  wasÂ  aÂ  versionÂ  IÂ  actuallyÂ  codedÂ  whileÂ  IÂ  wasÂ  inÂ  theÂ  army,Â  doingÂ  myÂ  military
+Â  service(!).Â  IÂ  guessÂ  thisÂ  showsÂ  howÂ  muchÂ  dedicationÂ  IÂ  haveÂ  towardsÂ  thisÂ  "job"Â  as
+Â  IÂ  mayÂ  callÂ  itÂ  today.Â  LetÂ  meÂ  tellÂ  youÂ  aÂ  littleÂ  storyÂ  aboutÂ  this...Â  WeÂ  hadÂ  aÂ  one
+Â  monthÂ  breakÂ  inÂ  theÂ  militaryÂ  training.Â  OtherÂ  guysÂ  wereÂ  playingÂ  gamesÂ  andÂ  watching
+Â  moviesÂ  butÂ  notÂ  me.Â  IÂ  broughtÂ  myÂ  computerÂ  toÂ  theÂ  baseÂ  andÂ  plantedÂ  itÂ  intoÂ  aÂ  small
+Â  officeÂ  atÂ  theÂ  topÂ  floor.Â  IÂ  satÂ  thereÂ  everydayÂ  fromÂ  morningÂ  toÂ  lateÂ  nightÂ  coding
+Â  SDÂ  PrO,Â  drinkingÂ  sodaÂ  andÂ  smokingÂ  cigarettes.Â  Hehe,Â  thatÂ  wasÂ  againstÂ  theÂ  strict
+Â  regulationsÂ  though...Â  butÂ  itÂ  wasÂ  essentialÂ  forÂ  theÂ  developmentÂ  =DÂ  Oh,Â  thoseÂ  were
+Â  theÂ  days.Â  ThereÂ  wereÂ  quiteÂ  remarkableÂ  newÂ  featuresÂ  inÂ  thisÂ  one,Â  includingÂ  a
+Â  chanceÂ  toÂ  turnÂ  ON/OFFÂ  allÂ  script'sÂ  colours,Â  theÂ  menubarÂ  themesÂ  andÂ  languages.
+Â  PeopleÂ  reallyÂ  appreciatedÂ  these,Â  andÂ  theyÂ  provokedÂ  meÂ  toÂ  makeÂ  effortÂ  boostingÂ  up
+Â  theÂ  configurabilityÂ  inÂ  ShowDowNÂ  PrO.Â  IÂ  assumeÂ  afterÂ  thisÂ  version,Â  allÂ  the
+Â  expectationsÂ  hadÂ  toÂ  beÂ  veryÂ  highÂ  forÂ  peopleÂ  thatÂ  hadÂ  gottenÂ  usedÂ  toÂ  theÂ  good
+Â  qualityÂ  andÂ  rangeÂ  ofÂ  features.Â  TheÂ  scriptÂ  homepagesÂ  brokeÂ  theÂ  500000Â  visitors
+Â  limit.Â  IÂ  workedÂ  muchÂ  onÂ  theÂ  scriptÂ  homepage,Â  makingÂ  itÂ  aÂ  coolÂ  placeÂ  toÂ  visit.
+
+Â  --------------------------------
+Â  °ShowDowNÂ  v10Â  PrO°
+Â  (ForÂ  mIRCÂ  5.61Â  atÂ  JanuaryÂ  '2000)
+Â  --------------------------------
+
+Â  Â  Â  IÂ  hadÂ  bigÂ  difficultiesÂ  findingÂ  timeÂ  toÂ  makeÂ  thisÂ  version,Â  sinceÂ  IÂ  hadÂ  so
+Â  littleÂ  spareÂ  time.Â  IÂ  tookÂ  myÂ  timeÂ  toÂ  arrangeÂ  thingsÂ  inÂ  myÂ  realÂ  life.Â  GotÂ  outÂ  of
+Â  theÂ  army,Â  movedÂ  toÂ  aÂ  biggerÂ  apartment,Â  boughtÂ  aÂ  newÂ  carÂ  andÂ  gotÂ  aÂ  newÂ  job.Â  When
+Â  allÂ  ofÂ  thisÂ  wasÂ  done,Â  IÂ  couldÂ  sitÂ  backÂ  andÂ  startÂ  toÂ  codeÂ  aÂ  newÂ  versionÂ  ofÂ  the
+Â  scriptÂ  again.Â  AndÂ  IÂ  workedÂ  reallyÂ  hardÂ  onÂ  thisÂ  version.Â  IÂ  actuallyÂ  codedÂ  8Â  hours
+Â  almostÂ  everyÂ  dayÂ  forÂ  aÂ  month.Â  AÂ  totalÂ  faceliftÂ  wasÂ  doneÂ  toÂ  ensureÂ  easyÂ  usage.
+Â  ProfessionalÂ  dialogÂ  setups,Â  themesÂ  forÂ  popups,Â  adjustableÂ  protections,Â  dynamic
+Â  menusÂ  etc.Â  etc.Â  URLÂ  forÂ  theÂ  scriptÂ  homepageÂ  changedÂ  toÂ  www.sci.fi/~showdown/.
+
+Â  -----------------------------
+Â  °ShowDowNÂ  v11Â  PrO°
+Â  (ForÂ  mIRCÂ  5.71Â  atÂ  JuneÂ  '2000)
+Â  -----------------------------
+
+Â  Â  Â  ThisÂ  scriptÂ  version,Â  asÂ  usual,Â  wasÂ  fullÂ  ofÂ  newÂ  excitingÂ  andÂ  unseenÂ  features.
+Â  FromÂ  these,Â  myÂ  favoriteÂ  wouldÂ  haveÂ  beenÂ  beÂ  theÂ  ScriptÂ  SkinsÂ  addition.Â  TheÂ  script
+Â  usedÂ  moreÂ  dialogsÂ  throughout.Â  KeyÂ  wordsÂ  are:Â  clearÂ  userÂ  interface,Â  easyÂ  toÂ  use,
+Â  comprehensive,Â  goodÂ  designÂ  andÂ  WORKINGÂ  items.Â  AllÂ  setupsÂ  canÂ  beÂ  seenÂ  toÂ  come
+Â  fromÂ  theÂ  sameÂ  scriptÂ  andÂ  that'sÂ  important.Â  Indeed.Â  °ShowDowNÂ  PrO°Â  ShopÂ  opened.
+Â  ThisÂ  versionÂ  wasÂ  quiteÂ  good,Â  noÂ  majorÂ  bugsÂ  orÂ  anything.Â  BackgroundÂ  picturesÂ  and
+Â  titlebarÂ  SkinsÂ  haveÂ  beenÂ  aÂ  goodÂ  success.Â  KeepÂ  sendingÂ  themÂ  toÂ  meÂ  !
+
+Â  ---------------------------------
+Â  ((ShowDowNÂ  v12Â  PrO))
+Â  (ForÂ  mIRCÂ  5.82Â  atÂ  FebruaryÂ  '2001)
+Â  ---------------------------------
+
+Â  Â  Â  ThisÂ  isÂ  theÂ  funÂ  part.Â  AllÂ  theÂ  codingÂ  isÂ  behindÂ  andÂ  theÂ  newÂ  scriptÂ  versionÂ  just
+Â  can'tÂ  waitÂ  toÂ  beÂ  released.Â  °ShowDowNÂ  PrO°Â  hasÂ  comeÂ  aÂ  veryÂ  longÂ  wayÂ  fromÂ  year
+Â  1996Â  toÂ  2001.Â  That'sÂ  aÂ  longÂ  timeÂ  forÂ  aÂ  mIRCÂ  script,Â  actuallyÂ  °ShowDowNÂ  PrO°Â  is
+Â  theÂ  world'sÂ  oldestÂ  mIRCÂ  scriptÂ  stillÂ  updated.Â  That'sÂ  reallyÂ  something,Â  don'tÂ  you
+Â  think?Â  Anyway,Â  IÂ  saveÂ  allÂ  (useful)Â  feedbackÂ  e-mailsÂ  IÂ  get.Â  ThisÂ  timeÂ  IÂ  gaveÂ  an
+Â  extraÂ  strongÂ  effortÂ  toÂ  makeÂ  allÂ  requestedÂ  features.Â  TheÂ  ratio-FileServerÂ  wasÂ  the
+Â  mostÂ  requestedÂ  featureÂ  IÂ  think.Â  TheÂ  scriptÂ  isÂ  moreÂ  networkÂ  compatibleÂ  thanÂ  ever
+Â  before,Â  willÂ  workÂ  in:Â  IRCNet,Â  EFNet,Â  DALNet,Â  UnderNet,Â  GalaxyNet,Â  AustNet,Â  MSN
+Â  ChatÂ  etc.Â  YouÂ  areÂ  usingÂ  theÂ  bestÂ  scriptÂ  inÂ  theÂ  worldÂ  andÂ  IÂ  intendÂ  toÂ  keepÂ  it
+Â  thatÂ  wayÂ  withÂ  updatesÂ  andÂ  newÂ  versions.Â  AllÂ  IÂ  canÂ  sayÂ  nowÂ  isÂ  thatÂ  withÂ  theÂ  help
+Â  ofÂ  allÂ  peopleÂ  whoÂ  haveÂ  REGISTEREDÂ  theirÂ  copy,Â  IÂ  amÂ  ableÂ  toÂ  doÂ  allÂ  this.Â  IÂ  hope
+Â  youÂ  likeÂ  thisÂ  newÂ  releaseÂ  andÂ  continueÂ  toÂ  supportÂ  myÂ  workÂ  byÂ  Â  REGISTERINGÂ  your
+Â  copy.Â  NotÂ  muchÂ  askedÂ  nowÂ  isÂ  itÂ  ?Â  JustÂ  oneÂ  letter.Â  SeeÂ  youÂ  inÂ  ShowDowNÂ  v13Â  PrO.
+
+---------------------------------
+Â  ((ShowDowNÂ  v12Â  PrO)Â  r²)
+Â  (ForÂ  mIRCÂ  5.91Â  atÂ  OctoberÂ  '2001)
+Â  ---------------------------------
+
+Â  Â  Â  ThisÂ  isÂ  anÂ  updateÂ  toÂ  fixÂ  allÂ  theÂ  problemsÂ  thatÂ  mIRC'sÂ  changedÂ  commandÂ  formats
+Â  andÂ  propertiesÂ  caused.Â  VersionÂ  numberÂ  isÂ  notÂ  changedÂ  becauseÂ  featuresÂ  aren't
+Â  addedÂ  much,Â  justÂ  beenÂ  updatedÂ  fixed.Â  IÂ  amÂ  sorryÂ  thatÂ  youÂ  hadÂ  toÂ  waitÂ  soÂ  longÂ  for
+Â  thisÂ  releaseÂ  butÂ  IÂ  wasÂ  soÂ  busyÂ  withÂ  allÂ  myÂ  severalÂ  IRLÂ  projects.Â  IÂ  amÂ  makingÂ  a
+Â  careedÂ  asÂ  aÂ  singerÂ  tooÂ  nowadaysÂ  besidesÂ  allÂ  otherÂ  things.Â  °ShowDowNÂ  PrO°Â  LIVESÂ  !
+
+Â  *Â  SMALLÂ  UPDATE!Â  (MarchÂ  2003):
+Â  IÂ  hadÂ  toÂ  removeÂ  theÂ  WaRÂ  ClonesÂ  totallyÂ  fromÂ  theÂ  script.Â  TheyÂ  wereÂ  triggering
+Â  falseÂ  alarmsÂ  withÂ  someÂ  virusÂ  scanners.Â  AndÂ  anyway,Â  theyÂ  areÂ  uselessÂ  nowadays.
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  (2)Â  ScriptÂ  FutureÂ  /Â  Development
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+
+Â  Â  Â  TheÂ  developmentÂ  hasÂ  takenÂ  aÂ  newÂ  turnÂ  nowÂ  thatÂ  soÂ  manyÂ  peopleÂ  offerÂ  theirÂ  help.
+Â  IÂ  getÂ  offeredÂ  freeÂ  sites,Â  graphics,Â  codingÂ  assistance,Â  advertising,Â  co-operation
+Â  offersÂ  andÂ  theÂ  listÂ  goesÂ  on.Â  InÂ  theÂ  future,Â  IÂ  willÂ  continueÂ  toÂ  makeÂ  allÂ  theÂ  code
+Â  andÂ  designÂ  ofÂ  theÂ  scriptÂ  myself.Â  IÂ  amÂ  sorryÂ  butÂ  theÂ  onlyÂ  oneÂ  IÂ  canÂ  trustÂ  about
+Â  itÂ  isÂ  me.Â  IÂ  amÂ  acceptingÂ  lotsÂ  ofÂ  graphics,Â  externalÂ  programsÂ  andÂ  stuffÂ  thatÂ  have
+Â  beenÂ  essentiallyÂ  madeÂ  forÂ  ShowDowNÂ  PrO.Â  KeepÂ  itÂ  going,Â  IÂ  reallyÂ  appreciateÂ  that.
+
+Â  -------------------------------------
+Â  ForÂ  ShowDowNÂ  PrOÂ  developersÂ  andÂ  fans:
+Â  -------------------------------------
+
+Â  -Â  °ShowDowNÂ  PrO°Â  Shop:Â  YouÂ  canÂ  nowÂ  buyÂ  T-shirts,Â  mousepads,Â  mugs,Â  capsÂ  etc.Â  from
+Â  Â  Â  myÂ  onlineÂ  store.Â  ReasonableÂ  pricesÂ  andÂ  aÂ  guaranteed,Â  fastÂ  delivery.Â  SoÂ  wann
+Â  Â  Â  seeÂ  what'sÂ  offeredÂ  ?Â  VISIT:Â  http://www.cafepress.com/showdown/Â  NOWÂ  !
+
+Â  -Â  ScriptÂ  Skins:Â  http://www.sci.fi/~showdown/skins.htm
+
+Â  -Â  ScriptÂ  bannersÂ  andÂ  graphics:Â  http://www.sci.fi/~showdown/banners.htm
+
+Â  -Â  SDÂ  PrOjectÂ  mp3Â  music:Â  http://www.mp3.com/sdproject
+
+Â  YouÂ  needÂ  moreÂ  hitsÂ  toÂ  yourÂ  homepage?Â  YouÂ  haveÂ  somethingÂ  IRCÂ  relatedÂ  contentÂ  in
+Â  yourÂ  site?Â  IfÂ  so,Â  joinÂ  "IRCÂ  usersÂ  Webring"Â  nowÂ  toÂ  increaseÂ  yourÂ  visitorÂ  rates.
+Â  It'sÂ  free.Â  See:Â  http://w.webring.com/hub?ring=ircuserswebring&id=1&hub
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  (3)Â  LegalÂ  Disclaimer
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+
+Â  Â  Â  ShowDowNÂ  PrOÂ  IsÂ  ProvidedÂ  OnÂ  AnÂ  ASÂ  ISÂ  BasisÂ  WithoutÂ  WarrantyÂ  OfÂ  AnyÂ  Kind.Â  In
+Â  NoÂ  EventÂ  ShallÂ  [-ShaD-]Â  OrÂ  ShowDowNÂ  PrOÂ  SoftWareÂ  BeÂ  LiableÂ  ForÂ  AnyÂ  Damages
+Â  WhatsoeverÂ  CausedÂ  ByÂ  TheÂ  Script'sÂ  AnyÂ  RelatedÂ  Files,Â  EvenÂ  IfÂ  [-ShaD-]Â  HasÂ  Been
+Â  AdvisedÂ  OfÂ  TheÂ  PossibilityÂ  OfÂ  SuchÂ  Damages.Â  RegistrationÂ  IsÂ  Optional,Â  AndÂ  Is
+Â  DoneÂ  ByÂ  FreeÂ  Will.Â  ShowDowNÂ  PrOÂ  MayÂ  NotÂ  BeÂ  DistributedÂ  AsÂ  AÂ  PartÂ  OfÂ  Any
+Â  CommercialÂ  Package.Â  AllÂ  RightsÂ  OfÂ  ShowDowNÂ  PrOÂ  AreÂ  OwnedÂ  ByÂ  TheÂ  Author.Â  Any
+Â  ViolationsÂ  ToÂ  ThisÂ  Script'sÂ  CopyrightsÂ  WillÂ  BeÂ  ProsecutedÂ  ByÂ  TheÂ  Law.Â  RightsÂ  Of
+Â  TheÂ  ExternalÂ  ProgramsÂ  InÂ  TheÂ  ScriptÂ  AreÂ  OwnedÂ  ByÂ  TheirÂ  RespectiveÂ  Authors.
+
+Â  ------------------------------------------------------------------------------
+Â  Â  Â  AndÂ  nowÂ  thatÂ  youÂ  haveÂ  gottenÂ  toÂ  theÂ  endÂ  ofÂ  thisÂ  fileÂ  IÂ  wouldÂ  personally
+Â  likeÂ  toÂ  thankÂ  youÂ  againÂ  forÂ  choosingÂ  ShowDowNÂ  PrOÂ  asÂ  yourÂ  mIRCÂ  script.Â  IÂ  really
+Â  Â  Â  Â  Â  hopeÂ  youÂ  willÂ  enjoyÂ  usingÂ  itÂ  asÂ  muchÂ  asÂ  IÂ  enjoyedÂ  makingÂ  itÂ  forÂ  youÂ  !
+Â  ------------------------------------------------------------------------------
+
+Â  -Â  PleaseÂ  readÂ  theÂ  REGISTER.TXTÂ  forÂ  informationÂ  howÂ  toÂ  REGISTERÂ  thisÂ  scriptÂ  to
+Â  Â  Â  yourÂ  name.Â  It'sÂ  cheap,Â  easyÂ  andÂ  risk-freeÂ  !Â  ThankÂ  youÂ  forÂ  yourÂ  contributionÂ  !
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ----------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ©Â  [-ShaD-]Â  /Â  ShowDowNÂ  PrOÂ  SoftWareÂ  1996-2003
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  showdown@sci.fi
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  http://www.sci.fi/~showdown/
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ----------------------------------------------------
+
+<------------------------=º<×>Â  °ShowDowNÂ  v12Â  PrO°Â  <×>º=------------------------>

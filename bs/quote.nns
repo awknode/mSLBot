@@ -1,0 +1,682 @@
+ON *:NICK: {
+  var %botabuse_count = $hget(botabuse ,$nick)
+  if (%botabuse_count > 1 ) {
+    hinc -zm botabuse $newnick 1800
+    ignore -pcntikdu1800 $newnick
+    echo -s ALSO IGNORED: $nick changed to $newnick on $chan at $date(mm/dd/yyyy) $time(HH:nn.ss)
+
+  }
+}
+
+alias botabuse {
+
+  var %botabuse_count = $hget(botabuse ,$nick)
+  if (%botabuse_count > 60 ) {
+    .notice $nick is citing bot abuse. $me is now ignoring you.
+    .notice eqrunner -IGNORED- $nick
+    .msg BotServ ACT $chan adds $nick to $me $+ 's ignore list
+    hinc -zm botabuse $nick 1800
+    echo -s IGNORED: $nick on $chan at $date(mm/dd/yyyy) $time(HH:nn.ss)
+    ignore -pcntikdu1800 $nick
+  }
+  if ($nick isop #) { hinc -zm botabuse $nick 15 }
+  if ($nick ishop #) { hinc -zm botabuse $nick 30 }
+  if ($nick isvoice #) { hinc -zm botabuse $nick 30 }
+  if ($nick isreg #) { hinc -zm botabuse $nick 35 }
+}
+
+
+;----------------------------------------------------------------------------------------------------------------------------------
+
+;----------------------------------------------------#redarmy starts here------------------------------------------------------------
+
+on *:TEXT:qowner:#redarmy: {
+  if ($readini(quotes2.ini,owner,owner) == $null) {
+    /query $nick You are now the owner of the quotes system. Type !qhelp for comands.
+    /enable #quotes
+    /writeini quotes2.ini owner owner $nick
+  }  
+  else {
+    /query $nick A quote owner is already selected!!
+  }
+}
+
+
+#quotes on
+on *:TEXT:*:#redarmy: { 
+  if (!%quoteflood) { 
+    if ($1 == !quote) {
+      exprotect $1-
+      spamprotect
+      if ($nick !isin $readini(quotes2.ini,bans,bans)) {
+        if ($2) { 
+          if ($2 > $lines(quotes2.txt)) {
+            set -u3 %quoteflood on
+            ; /msg $chan Sorry, but there are only $lines(quotes2.txt) quotes in database! Add one by typing !addquote <quote> <comment>
+          }
+          else {
+            set -u3 %quoteflood on
+            /msg $chan 00 $chr(91) 7Quote $2 $+ 00 $chr(93)  $read(quotes2.txt,n,$2)
+          }
+        }
+        else {
+          set -u3 %quoteflood on
+          var %quotes = $read(quotes2.txt)
+          /msg $chan 00 $chr(91) 7Quote $readn $+ 00 $chr(93)  %quotes
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+    }
+    if ($1 == !addquote) {
+      exprotect $1-
+      spamprotect
+      if ($nick isin $readini(quotes2.ini,bans,bans)) {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+      elseif ($2-) {
+        /write quotes2.txt   $+ $strip($($2-,1))  - $chr(32) 7Added by0: $nick $chr(32) 7On0: $adate
+        /msg $chan Added as quote $lines(quotes2.txt)
+        /writeini quotes.ini stats $nick $calc($readini(quotes2.ini,stats,$nick) + 1 )
+        /writeini quotes.ini stats all $calc($readini(quotes2.ini,stats,all) + 1 )
+      }
+    }
+
+    if ($1 == !qban) {
+      if ($nick isin $readini(quotes2.ini,mods,mods)) || ($nick == $readini(quotes2.ini,owner,owner)) {
+        if ($2 == add) {
+          if ($3 isin $readini(quotes2.ini,bans,bans)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 is already banned from quotes!
+          }
+          else {
+            set -u3 %quoteflood on
+            /writeini quotes.ini bans bans $addtok($readini(quotes2.ini,bans,bans),$3,32)
+            /msg $chan Quote ban added!
+            if ($chr(42) isin $readini(quotes2.ini,bans,bans)) {
+              /writeini quotes2.ini bans bans $remtok($readini(quotes2.ini,bans,bans),$chr(42),1,32)
+            }
+          }
+        }
+        if ($2 == del) {
+          if ($3 !isin $readini(quotes2.ini,bans,bans)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 isn't banned from quotes. How can I unban him?
+          }
+          else {
+            var %t = $remtok($readini(quotes2.ini,bans,bans),$3,1,32) | /writeini quotes2.ini bans bans $iif(%t == $null,$chr(42),%t)
+            set -u3 %quoteflood on
+            /msg $chan $3 $+ 's Quote ban deleted!!
+          }
+        }
+        if ($2 == list) {
+          set -u3 %quoteflood on
+          /msg $chan Quote Bans
+          /msg $chan $readini(quotes2.ini,bans,bans)
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan Access Denied!!
+      }
+    }
+    if ($1 == !qmod) {
+      if ($nick == $readini(quotes2.ini,owner,owner)) {
+        if ($2 == add) {
+          if ($3 isin $readini(quotes2.ini,mods,mods)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 is already a quote mod.
+          }
+          else {
+            set -u3 %quoteflood on
+            /writeini quotes2.ini mods mods $addtok($readini(quotes2.ini,mods,mods),$3,32)
+            /msg $chan $3 added as a quote mod!!
+            if ($chr(42) isin $readini(quotes2.ini,mods,mods)) {
+              /writeini quotes.ini mods mods $remtok($readini(quotes2.ini,mods,mods),$chr(42),1,32)
+            }
+          }
+        }
+        if ($2 == del) {
+          if ($3 !isin $readini(quotes2.ini,mods,mods)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 isn't a quote mod. How can I remove him?
+          }
+          else {
+            set -u3 %quoteflood on
+            var %r = $remtok($readini(quotes2.ini,mods,mods),$3,1,32) | /writeini quotes2.ini mods mods $iif(%r == $null,$chr(42),%r)
+            /msg $chan $3 deleted from quote mod list!!
+          }
+        }
+        if ($2 == list) {
+          set -u3 %quoteflood on
+          /msg $chan Quote Mods
+          /msg $chan $readini(quotes2.ini,mods,mods)
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan Access Denied
+      }
+    }
+    if ($1 == !qdel) {
+      if ($nick isin $readini(quotes2.ini,mods,mods)) || ($nick == $readini(quotes2.ini,owner,owner)) {
+        if ($2 > $lines(quotes2.txt)) {
+          set -u3 %quoteflood on
+          /msg $chan There are only $lines(quotes2.txt) quotes in the database!
+        }
+        else {
+          set -u3 %quoteflood on
+          /write -dl $+ $2 quotes2.txt
+          /msg $chan Quote $2 deleted from database.
+        }
+      }
+      else {
+        /msg $chan Access Denied!!
+      }
+    }
+    if ($1 == !qnum) {
+      if ($nick !isin $readini(quotes2.ini,bans,bans)) {
+        set -u3 %quoteflood on
+        /msg $chan There are $lines(quotes2.txt) quotes in the database.
+      } 
+      else {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+    }
+
+    if ($1 == !qsearch) {
+      var %x $lines(quotes.txt)
+      while (%x) {
+        if ($2- isin $read(quotes2.txt,%x)) {
+          inc %quotes.search
+          set %quotes.return $addtok(%quotes.return,%x,32)
+        }
+        dec %x
+      }
+      if (!%quotes.search) { 
+        set -u3 %quoteflood on
+      msg # 00[ 7search 00]   No quotes found from string $replace($+(",$2-,"),+ok,ok) | unset %quotes.* | halt }
+      if (%quotes.search = 1) { 
+        set -u3 %quoteflood on
+      msg # 00[ 7search 00] 1 quote found: $+([,%quotes.return,]) $replace($read(quotes2.txt,n,%quotes.return),+ok,ok) | unset %quotes.* }
+      else {
+        set -u3 %quoteflood on
+        msg #   00[ 7search 00] Found %quotes.search quotes that contain $replace($+(",$2-,"),+ok,ok) 
+        .timer 1 2 msg # 00[ 7Quote $+($gettok(%quotes.return,1,32),/,$lines(quotes2.txt),  00])  $replace($read(quotes2.txt, n, $gettok(%quotes.return,1,32)),|,$!chr(124),+ok,ok)   
+        .timer 1 4 msg # 00[ 7Quote No. 00] $right(%quotes.return,-2) also contains $replace($+(",$2-,"),+ok,ok) 
+        unset %quotes.*
+      }
+    }
+
+
+
+    if ($1 == !qhelp) {
+      if ($nick !isin $readini(quotes2.ini,bans,bans)) {
+        set -u3 %quoteflood on
+        /notice $nick Normal Commands
+        /notice $nick !quote <number> - Displays quote <number> from quote database. If there is no <number>, it displays a 
+        /notice $nick random quote.
+        /notice $nick !addquote <quote> - Adds <quote> to database.
+        /notice $nick !qnum - Displays the number of quotes in the database.
+        /notice $nick !qsearch [text] - Places a search on second string of [text] in quote databas.
+        /notice $nick Moderation Commands
+        /notice $nick !qban [add-del] <nick> - Adds or deletes <nick> to the banlist.
+        /notice $nick !qban [list] - Lists the names on the ban list.
+        /notice $nick !qdel <number> - Deletes quote <number> from the database.
+        /notice $nick And all the commands listed above.
+        /notice $nick Owner Commands
+        /notice $nick !qmod [add-del] <nick> - Adds or deletes <nick> to the mod list.
+        /notice $nick !qmod [list] - Lists the names on the quote mod list.
+        /notice $nick And all the commands listed above. 
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+    }
+  }
+}
+
+;----------------------------------------------------#redarmy stops here--------------------------------------------------------
+;----------------------------------------------------#myg0t begins here---------------------------------------------------------
+
+
+on *:TEXT:qowner:#tgasdestzza: {
+  if ($readini(quotes1.ini,owner,owner) == $null) {
+    /query $nick You are now the owner of the quotes system. Type !qhelp for comands.
+    /enable #quotes
+    /writeini quotes1.ini owner owner $nick
+  }  
+  else {
+    /query $nick A quote owner is already selected!!
+  }
+}
+
+
+on *:TEXT:*:#testgdessdaf: { 
+  if (!%quoteflood) { 
+    if ($1 == !quote) {
+      exprotect $1-
+      spamprotect
+      if ($2) { halt
+        if ($2 > $lines(quotes1.txt)) {
+          set -u3 %quoteflood on
+          ; /msg $chan Sorry, but there are only $lines(quotes1.txt) quotes in database! Add one by typing !addquote <quote> <comment>
+        }
+        else {
+          set -u3 %quoteflood on
+          /msg $chan 00 $chr(91) 7Quote $2 $+ 00 $chr(93)  $read(quotes1.txt,n,$2)
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        var %quotes = $read(quotes1.txt)
+        /msg $chan 00 $chr(91) 7Quote $readn $+ 00 $chr(93)  %quotes
+      }
+    }
+    else {
+      set -u3 %quoteflood on
+      /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+    }
+  }
+
+  if ($1 == !addquote) {
+    exprotect $1-
+    spamprotect
+    if ($nick isin $readini(quotes1.ini,bans,bans)) {
+      set -u3 %quoteflood on
+      /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+    }
+    elseif ($2-) {
+      /write quotes1.txt   $+ $strip($($2-,1))  - $chr(32) 7Added by0: $nick $chr(32) 7On0: $adate
+      /msg $chan Added as quote $lines(quotes1.txt)
+      /writeini quotes.ini stats $nick $calc($readini(quotes1.ini,stats,$nick) + 1 )
+      /writeini quotes.ini stats all $calc($readini(quotes1.ini,stats,all) + 1 )
+    }
+  }
+
+  if ($1 == !qban) {
+    if ($nick isin $readini(quotes1.ini,mods,mods)) || ($nick == $readini(quotes1.ini,owner,owner)) {
+      if ($2 == add) {
+        if ($3 isin $readini(quotes1.ini,bans,bans)) {
+          set -u3 %quoteflood on
+          /msg $chan $3 is already banned from quotes!
+        }
+        else {
+          set -u3 %quoteflood on
+          /writeini quotes.ini bans bans $addtok($readini(quotes1.ini,bans,bans),$3,32)
+          /msg $chan Quote ban added!
+          if ($chr(42) isin $readini(quotes1.ini,bans,bans)) {
+            /writeini quotes1.ini bans bans $remtok($readini(quotes1.ini,bans,bans),$chr(42),1,32)
+          }
+        }
+      }
+      if ($2 == del) {
+        if ($3 !isin $readini(quotes1.ini,bans,bans)) {
+          set -u3 %quoteflood on
+          /msg $chan $3 isn't banned from quotes. How can I unban him?
+        }
+        else {
+          var %t = $remtok($readini(quotes1.ini,bans,bans),$3,1,32) | /writeini quotes1.ini bans bans $iif(%t == $null,$chr(42),%t)
+          set -u3 %quoteflood on
+          /msg $chan $3 $+ 's Quote ban deleted!!
+        }
+      }
+      if ($2 == list) {
+        set -u3 %quoteflood on
+        /msg $chan Quote Bans
+        /msg $chan $readini(quotes1.ini,bans,bans)
+      }
+    }
+    else {
+      set -u3 %quoteflood on
+      /msg $chan Access Denied!!
+    }
+  }
+
+  if ($1 == !qmod) {
+    if ($nick == $readini(quotes1.ini,owner,owner)) {
+      if ($2 == add) {
+        if ($3 isin $readini(quotes1.ini,mods,mods)) {
+          set -u3 %quoteflood on
+          /msg $chan $3 is already a quote mod.
+        }
+        else {
+          set -u3 %quoteflood on
+          /writeini quotes1.ini mods mods $addtok($readini(quotes1.ini,mods,mods),$3,32)
+          /msg $chan $3 added as a quote mod!!
+          if ($chr(42) isin $readini(quotes1.ini,mods,mods)) {
+            /writeini quotes.ini mods mods $remtok($readini(quotes1.ini,mods,mods),$chr(42),1,32)
+          }
+        }
+      }
+      if ($2 == del) {
+        if ($3 !isin $readini(quotes1.ini,mods,mods)) {
+          set -u3 %quoteflood on
+          /msg $chan $3 isn't a quote mod. How can I remove him?
+        }
+        else {
+          set -u3 %quoteflood on
+          var %r = $remtok($readini(quotes1.ini,mods,mods),$3,1,32) | /writeini quotes1.ini mods mods $iif(%r == $null,$chr(42),%r)
+          /msg $chan $3 deleted from quote mod list!!
+        }
+      }
+      if ($2 == list) {
+        set -u3 %quoteflood on
+        /msg $chan Quote Mods
+        /msg $chan $readini(quotes1.ini,mods,mods)
+      }
+    }
+    else {
+      set -u3 %quoteflood on
+      /msg $chan Access Denied
+    }
+  }
+  if ($1 == !qdel) {
+    if ($nick isin $readini(quotes1.ini,mods,mods)) || ($nick == $readini(quotes1.ini,owner,owner)) {
+      if ($2 > $lines(quotes1.txt)) {
+        set -u3 %quoteflood on
+        /msg $chan There are only $lines(quotes1.txt) quotes in the database!
+      }
+      else {
+        set -u3 %quoteflood on
+        /write -dl $+ $2 quotes1.txt
+        /msg $chan Quote $2 deleted from database.
+      }
+    }
+    else {
+      /msg $chan Access Denied!!
+    }
+  }
+
+  if ($1 == !qnum) {
+    if ($nick !isin $readini(quotes1.ini,bans,bans)) {
+      set -u3 %quoteflood on
+      /msg $chan There are $lines(quotes1.txt) quotes in the database.
+    } 
+    else {
+      set -u3 %quoteflood on
+      /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+    }
+  }
+
+  if ($1 == !qsearch) {
+    var %x $lines(quotes.txt)
+    while (%x) {
+      if ($2- isin $read(quotes1.txt,%x)) {
+        inc %quotes.search
+        set %quotes.return $addtok(%quotes.return,%x,32)
+      }
+      dec %x
+    }
+    if (!%quotes.search) { 
+      set -u3 %quoteflood on
+    msg # 00[ 7search 00]   No quotes found from string $replace($+(",$2-,"),+ok,ok) | unset %quotes.* | halt }
+    if (%quotes.search = 1) { 
+      set -u3 %quoteflood on
+    msg # 00[ 7search 00] 1 quote found: $+([,%quotes.return,]) $replace($read(quotes1.txt,n,%quotes.return),+ok,ok) | unset %quotes.* }
+    else {
+      set -u3 %quoteflood on
+      msg #   00[ 7search 00] Found %quotes.search quotes that contain $replace($+(",$2-,"),+ok,ok) 
+      .timer 1 2 msg # 00[ 7Quote $+($gettok(%quotes.return,1,32),/,$lines(quotes1.txt),  00])  $replace($read(quotes1.txt, n, $gettok(%quotes.return,1,32)),|,$!chr(124),+ok,ok)   
+      .timer 1 4 msg # 00[ 7Quote No. 00] $right(%quotes.return,-2) also contains $replace($+(",$2-,"),+ok,ok) 
+      unset %quotes.*
+    }
+  }
+
+  if ($1 == !qhelp) {
+    if ($nick !isin $readini(quotes1.ini,bans,bans)) {
+      set -u3 %quoteflood on
+      /notice $nick Normal Commands
+      /notice $nick !quote <number> - Displays quote <number> from quote database. If there is no <number>, it displays a 
+      /notice $nick random quote.
+      /notice $nick !addquote <quote> - Adds <quote> to database.
+      /notice $nick !qnum - Displays the number of quotes in the database.
+      /notice $nick !qsearch [text] - Places a search on second string of [text] in quote databas.
+      /notice $nick Moderation Commands
+      /notice $nick !qban [add-del] <nick> - Adds or deletes <nick> to the banlist.
+      /notice $nick !qban [list] - Lists the names on the ban list.
+      /notice $nick !qdel <number> - Deletes quote <number> from the database.
+      /notice $nick And all the commands listed above.
+      /notice $nick Owner Commands
+      /notice $nick !qmod [add-del] <nick> - Adds or deletes <nick> to the mod list.
+      /notice $nick !qmod [list] - Lists the names on the quote mod list.
+      /notice $nick And all the commands listed above. 
+    }
+    else {
+      set -u3 %quoteflood on
+      /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+    }
+  }
+}
+
+
+;----------------------------------------------------#myg0t ends here-------------------------------------------------------------
+;----------------------------------------------------#bottalk beings here---------------------------------------------------------
+
+on *:TEXT:qowner:#main: {
+  if ($readini(quotes.ini,owner,owner) == $null) {
+    /query $nick You are now the owner of the quotes system. Type !qhelp for comands.
+    /enable #quotes
+    /writeini quotes.ini owner owner $nick
+  }  
+  else {
+    /query $nick A quote owner is already selected!!
+  }
+}
+
+on *:TEXT:*:#main: {
+  if (!%quoteflood) {
+    if ($1 == !quote) {
+      exprotect $1-
+      spamprotect
+      if ($nick !isin $readini(quotes.ini,bans,bans)) {
+        if ($2) {
+          if ($2 > $lines(quotes.txt)) {
+            set -u3 %quoteflood on
+            ; /msg $chan Sorry, but there are only $lines(quotes.txt) quotes in database! Add one by typing !addquote <quote> <comment>
+          }
+          else {
+            set -u3 %quoteflood on
+            /msg $chan 00 $chr(91) 7Quote $2 $+ 00 $chr(93)  $read(quotes.txt,n,$2)
+          }
+        }
+        else {
+          set -u3 %quoteflood on
+          var %quotes = $read(quotes.txt)
+          /msg $chan 00 $chr(91) 7Quote $readn $+ 00 $chr(93)  %quotes
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+    }
+
+    if ($1 == !addquote) {
+      exprotect $1-
+      spamprotect
+      if ($nick isin $readini(quotes.ini,bans,bans)) {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+      elseif ($2-) {
+        set -u3 %quoteflood on
+        /write quotes.txt   $+ $strip($($2-,1))  - $chr(32) 7Added by0: $nick $chr(32) 7On0: $adate
+        /msg $chan Added as quote $lines(quotes.txt)
+        /writeini quotes.ini stats $nick $calc($readini(quotes.ini,stats,$nick) + 1 )
+        /writeini quotes.ini stats all $calc($readini(quotes.ini,stats,all) + 1 )
+      }
+    }
+
+    if ($1 == !qban) {
+      exprotect $1-
+      spamprotect
+      if ($nick isin $readini(quotes.ini,mods,mods)) || ($nick == $readini(quotes.ini,owner,owner)) {
+        if ($2 == add) {
+          if ($3 isin $readini(quotes.ini,bans,bans)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 is already banned from quotes!
+          }
+          else {
+            set -u3 %quoteflood on
+            /writeini quotes.ini bans bans $addtok($readini(quotes.ini,bans,bans),$3,32)
+            /msg $chan Quote ban added!
+            if ($chr(42) isin $readini(quotes.ini,bans,bans)) {
+              /writeini quotes.ini bans bans $remtok($readini(quotes.ini,bans,bans),$chr(42),1,32)
+            }
+          }
+        }
+
+        if ($2 == del) {
+          if ($3 !isin $readini(quotes.ini,bans,bans)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 isn't banned from quotes. How can I unban him?
+          }
+          else {
+            var %t = $remtok($readini(quotes.ini,bans,bans),$3,1,32) | /writeini quotes.ini bans bans $iif(%t == $null,$chr(42),%t)
+            set -u3 %quoteflood on
+            /msg $chan $3 $+ 's Quote ban deleted!!
+          }
+        }
+        if ($2 == list) {
+          set -u3 %quoteflood on
+          /msg $chan Quote Bans
+          /msg $chan $readini(quotes.ini,bans,bans)
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan Access Denied!!
+      }
+    }
+    if ($1 == !qmod) {
+      exprotect $1-
+      spamprotect
+      if ($nick == $readini(quotes.ini,owner,owner)) {
+        if ($2 == add) {
+          if ($3 isin $readini(quotes.ini,mods,mods)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 is already a quote mod.
+          }
+          else {
+            set -u3 %quoteflood on
+            /writeini quotes.ini mods mods $addtok($readini(quotes.ini,mods,mods),$3,32)
+            /msg $chan $3 added as a quote mod!!
+            if ($chr(42) isin $readini(quotes.ini,mods,mods)) {
+              /writeini quotes.ini mods mods $remtok($readini(quotes.ini,mods,mods),$chr(42),1,32)
+            }
+          }
+        }
+        if ($2 == del) {
+          if ($3 !isin $readini(quotes.ini,mods,mods)) {
+            set -u3 %quoteflood on
+            /msg $chan $3 isn't a quote mod. How can I remove him?
+          }
+          else {
+            set -u3 %quoteflood on
+            var %r = $remtok($readini(quotes.ini,mods,mods),$3,1,32) | /writeini quotes.ini mods mods $iif(%r == $null,$chr(42),%r)
+            /msg $chan $3 deleted from quote mod list!!
+          }
+        }
+        if ($2 == list) {
+          set -u3 %quoteflood on
+          /msg $chan Quote Mods
+          /msg $chan $readini(quotes.ini,mods,mods)
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan Access Denied
+      }
+    }
+    if ($1 == !qdel) {
+      exprotect $1-
+      spamprotect
+      if ($nick isin $readini(quotes.ini,mods,mods)) || ($nick == $readini(quotes.ini,owner,owner)) {
+        if ($2 > $lines(quotes.txt)) {
+          set -u3 %quoteflood on
+          /msg $chan There are only $lines(quotes.txt) quotes in the database!
+        }
+        else {
+          set -u3 %quoteflood on
+          /write -dl $+ $2 quotes.txt
+          /msg $chan Quote $2 deleted from database.
+        }
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan Access Denied!!
+      }
+    }
+    if ($1 == !qnum) {
+      exprotect $1-
+      spamprotect
+      if ($nick !isin $readini(quotes.ini,bans,bans)) {
+        set -u3 %quoteflood on
+        /msg $chan There are $lines(quotes.txt) quotes in the database.
+      } 
+      else {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+    }
+
+    if ($1 == !qsearch) {
+      exprotect $1-
+      spamprotect
+      var %x $lines(quotes.txt)
+      while (%x) {
+        if ($2- isin $read(quotes.txt,%x)) {
+          inc %quotes.search
+          set %quotes.return $addtok(%quotes.return,%x,32)
+        }
+        dec %x
+      }
+      if (!%quotes.search) { 
+        set -u3 %quoteflood on
+      msg # 00[ 7search 00]   No quotes found from string " $+ $2- $+ " | unset %quotes.* | halt }
+      if (%quotes.search = 1) { 
+        set -u3 %quoteflood on
+      msg # 00[ 7search 00] 1 quote found: $+([,%quotes.return,]) $read(quotes.txt,n,%quotes.return) | unset %quotes.* }
+      else {
+        set -u3 %quoteflood on
+        msg #   00[ 7search 00] Found %quotes.search quotes that contain $+(",$2-,") 
+        .timer 1 2 msg # 00[ 7Quote $+($gettok(%quotes.return,1,32),/,$lines(quotes.txt), $chr(32) 00])  $replace($read(quotes.txt, n, $gettok(%quotes.return,1,32)),|,$!chr(124))   
+        .timer 1 4 msg # 00[ 7Quote No. 00] $right(%quotes.return,-2) also contains $+(",$2-,") 
+        unset %quotes.*
+      }
+    }
+
+    if ($1 == !qhelp) {
+      exprotect $1-
+      spamprotect
+      if ($nick !isin $readini(quotes.ini,bans,bans)) {
+        set -u3 %quoteflood on
+        /notice $nick Normal Commands
+        /notice $nick !quote <number> - Displays quote <number> from quote database. If there is no <number>, it displays a 
+        /notice $nick random quote.
+        /notice $nick !addquote <quote> - Adds <quote> to database.
+        /notice $nick !qnum - Displays the number of quotes in the database.
+        /notice $nick !qsearch [text] - Places a search on second string of [text] in quote databas.
+        /notice $nick Moderation Commands
+        /notice $nick !qban [add-del] <nick> - Adds or deletes <nick> to the banlist.
+        /notice $nick !qban [list] - Lists the names on the ban list.
+        /notice $nick !qdel <number> - Deletes quote <number> from the database.
+        /notice $nick And all the commands listed above.
+        /notice $nick Owner Commands
+        /notice $nick !qmod [add-del] <nick> - Adds or deletes <nick> to the mod list.
+        /notice $nick !qmod [list] - Lists the names on the quote mod list.
+        /notice $nick And all the commands listed above. 
+      }
+      else {
+        set -u3 %quoteflood on
+        /msg $chan You are banned from quotes. Please see a quote moderator to resolve this problem.
+      }
+    }
+  }
+}

@@ -1,0 +1,484 @@
+;YouTube Script (Parse Vids and Search) v6.4
+;Made by nick1
+;Last edit June 20, 2016
+;For help/setup type /YouTube in mIRC
+;2D0 -- You tell me in the comments! http://hawkee.com/snippet/8577/
+;EDITS -- Fixed bug where youtube.com would say invalid video (and cleaned up some other code in the parse section)
+
+alias -l yversion { return v6.4 }
+alias -l yapi { return AIzaSyBZFSgBuREDKNRwHqvHix68W3WiMyZ3N6c }
+
+menu status,channel,query {
+  YouTube:youtube
+}
+
+alias YouTube { dialog -m YouTube YouTube }
+
+dialog Youtube {
+  title "YouTube v6.4"
+  size -1 -1 242 196
+  option dbu
+  icon $mircdirYoutube.ico, 0
+  link "View Script On Hawkee", 1, 3 2 59 8
+  button "Exit", 7, 88 181 72 12, cancel
+  tab "About", 10, 2 9 235 169
+  link "YouTube Script (Parse Vids and Search) v6.4 -- Post Bugs and Feature Requests Here", 24, 16 26 208 8, tab 10
+  text "Last updated on June 20 2016", 19, 7 66 95 8, tab 10
+  text "Please post suggestions, complaints, or bugs on the hawkee link (or in chat)", 20, 7 37 188 8, tab 10
+  text "!commands will notice the user; @commands will be public to the channel", 13, 7 93 175 8, tab 10
+  text "Default behavior is to run on every channel for every nick. Use the Nick and Channel Settings Tabs to change it for invidividual channels or nicks.", 65, 7 114 208 14, tab 10
+  link "Click here to chat (leave a message for nick1)", 66, 58 50 110 8, tab 10
+  text "Use the Basic Options Tab to adjust which parts of the script will run and basic formatting options.", 23, 7 142 195 13, tab 10
+  button "Check for Updates", 21, 102 64 54 12, tab 10
+  tab "Basic Options", 2
+  box "Search Commands/Options", 60, 7 52 209 29, tab 2
+  text "youtube <search terms>; ytsearch <search>; ysearch <search terms>", 62, 10 60 175 8, tab 2
+  box "Disable Options", 5, 7 23 209 27, tab 2
+  check "Disable Search - Disables search commands below", 11, 11 29 133 10, tab 2 flat
+  check "Disable Parse - Disables the script from automatically sending info", 14, 11 38 175 10, tab 2 flat
+  box "Output Options", 9, 7 83 209 93, tab 2
+  check "Disable Views - Removes 'Views: <Views>'", 15, 11 90 123 10, tab 2
+  check "Disable Length - Removes 'Length: <Length>'", 16, 11 99 130 10, tab 2
+  check "Disable User - Removes 'User: <User>'", 17, 11 108 113 10, tab 2
+  check "Disable Formatting - Removes Colors and Bold", 22, 11 117 127 10, tab 2
+  edit "", 58, 99 69 15 10, tab 2 limit 1
+  text "Number of search results displayed:", 25, 10 70 87 8, tab 2
+  check "Enable Date - Adds 'Uploaded: <Date>'", 57, 11 126 120 10, tab 2
+  check "Enable Likes - Adds 'Likes: <Likes>", 27, 11 135 130 10, tab 2
+  check "Enable Dislikes - Adds 'Dislikes: <Dislikes>", 28, 11 144 130 10, tab 2
+  check "Enable Description - Adds 'Description <Description>", 29, 11 153 139 10, tab 2
+  check "Enable Notice Mode (Does Not Message Channel)", 30, 11 163 139 10, tab 2
+  tab "Channel Settings", 3
+  list 6, 8 56 220 116, tab 3 sort size extsel vsbar
+  edit "", 8, 9 26 155 25, tab 3 multi autohs autovs
+  text "List of channels the script will NOT run on", 12, 48 50 101 6, tab 3
+  button "Add", 4, 190 25 37 12, tab 3
+  button "Remove", 63, 190 42 37 12, tab 3
+  button "Click here to enter #channels ...", 64, 10 27 153 23, tab 3
+  tab "Nick Settings", 26
+  text "List of nicks the script will NOT run for", 70, 48 50 101 6, tab 26
+  list 71, 8 56 220 116, tab 26 sort size extsel vsbar
+  button "Remove", 72, 190 42 37 12, tab 26
+  button "Add", 73, 190 25 37 12, tab 26
+  edit "", 69, 9 26 155 25, tab 26 multi autohs autovs
+  button "Click here to enter Nicks ...", 74, 10 27 153 23, tab 26
+  text "This script created by nick1", 18, 171 2 66 8
+}
+
+on *:dialog:youtube:init:0: {
+  FillChannelBox
+  FillNickBox
+  $iif(%_youtube.nocolor == true,did -c youtube 22,noop)
+  did -a youtube 58 $iif(%_youtube.limit == $null,1,%_youtube.limit)
+  $iif(%_youtube.noviews == true,did -c youtube 15,noop)
+  $iif(%_youtube.nolength == true,did -c youtube 16,noop)
+  $iif(%_youtube.nouser == true,did -c youtube 17,noop)
+  $iif(%_youtube.date == true,did -c youtube 57,noop)
+  $iif(%_youtube.likes == true,did -c youtube 27,noop)
+  $iif(%_youtube.dislikes == true,did -c youtube 28,noop)
+  $iif(%_youtube.description == true,did -c youtube 29,noop)
+  $iif(%_youtube.notices == true,did -c youtube 30,noop)
+  $iif($group(#search) != on,did -c youtube 11,noop)
+  $iif($group(#parse) != on,did -c youtube 14,noop)  
+}
+alias FillChannelBox {
+  did -r youtube 6
+  var %y 1
+  while (%y <= $numtok(%youtubefetch,44)) {
+    did -a youtube 6 $gettok(%youtubefetch,%y,44)
+    inc %y
+  }
+}
+alias FillNickBox {
+  did -r youtube 71
+  var %y 1
+  while (%y <= $numtok(%nolinks,44)) {
+    did -a youtube 71 $gettok(%nolinks,%y,44)
+    inc %y
+  }
+}
+on *:dialog:youtube:edit:58: {
+  if (($did(58).text < 1) || ($did(58).text !isnum) && ($did(58).text != $null)) {
+    did -r youtube 58
+    noop $input(Enter a number between 1 and 9, owd, Invalid input!)
+  }
+  elseif ($did(58).text != $null) { set %_youtube.limit $did(58).text }
+}
+on *:dialog:youtube:sclick:*: {
+  if (($did == 1) || ($did == 24)) { run http://hawkee.com/snippet/8577/ }
+  elseif ($did == 66) { server -m irc.rizon.net:6667 -jn #rsbot_help }
+  elseif ($did == 22) { set %_youtube.nocolor $iif($did(22).state,true,false) }
+  elseif ($did == 15) { set %_youtube.noviews $iif($did(15).state,true,false) }
+  elseif ($did == 16) { set %_youtube.nolength $iif($did(16).state,true,false) }
+  elseif ($did == 17) { set %_youtube.nouser $iif($did(17).state,true,false) }
+  elseif ($did == 57) { set %_youtube.date $iif($did(57).state,true,false) }
+  elseif ($did == 27) { set %_youtube.likes $iif($did(27).state,true,false) }
+  elseif ($did == 28) { set %_youtube.dislikes $iif($did(28).state,true,false) }
+  elseif ($did == 29) { set %_youtube.description $iif($did(29).state,true,false) }
+  elseif ($did == 30) { set %_youtube.notices $iif($did(30).state,true,false) }
+  elseif ($did == 11) { $iif($group(#search) == on,.disable,.enable) #search }
+  elseif ($did == 21) { yupdate }
+  elseif ($did == 14) { $iif($group(#parse) == on,.disable,.enable) #parse }
+  elseif ($did == 4) {
+    set %youtubefetch $addtok(%youtubefetch,$iif(($left($did(8),1) == $chr(35)),$did(8),$+($chr(35),$did(8))),44)
+    did -r youtube 8
+    FillChannelBox
+  }
+  elseif ($did == 73) {
+    set %nolinks $addtok(%nolinks,$did(69),44)
+    did -r youtube 69
+    FillNickBox
+  }
+  elseif ($did == 63) {
+    if ($did(8) != $null) {
+      set %youtubefetch $remtok(%youtubefetch,$iif(($left($did(8),1) == $chr(35)),$did(8),$+($chr(35),$did(8))),44)
+      did -r youtube 8
+    }
+    if ($did(6).seltext != $null) { set %youtubefetch $remtok(%youtubefetch,$did(6).seltext,44) }
+    FillChannelBox
+  }
+  elseif ($did == 3) { did -t youtube 4 }
+  elseif ($did == 26) { did -t youtube 73 }
+  elseif ($did == 72) {
+    if ($did(69) != $null) {
+      set %nolinks $remtok(%nolinks,$did(69),44)
+      did -r youtube 69
+    }
+    if ($did(71).seltext != $null) { set %nolinks $remtok(%nolinks,$did(71).seltext,44) }
+    FillNickBox
+  }
+}
+
+raw 408:*: msg $2 $remove($strip($13-),$chr(9),$chr(8))
+
+alias urlencode { return $replacex($regsubex($$1-,/([^\w\s])/Sg,$+(%,$base($asc(\t),10,16,2))),$chr(32),+,$chr(43),%2B) }
+
+on $*:text:/^[!@](disableyt|offyt|disableyoutube|offyoutube)(\s|$)/Si:?: {
+  if ($2) {
+    if ($me ison $2) {
+      if ($nick isop $2) {
+        msg $nick 4Youtube has been10 disabled on $+(,$2,)
+        set %youtubefetch $addtok(%youtubefetch,$2,44)
+      }
+      else { msg $nick 4Sorry, you must be an10 op of $+(,$2,) to disable youtube there }
+    }
+    else { msg $nick 4Sorry, I am not10 currently in $+(,$2,) }
+  }
+  elseif ($2 == $null) { msg $nick 4Incorrect Syntax - Use10 $1 <#channel> }
+}
+on $*:text:/^[!@](enableyt|onyt|enableyoutube|onyoutube)(\s|$)/Si:?: {
+  if ($2) {
+    if ($me ison $2) {
+      if ($nick isop $2) {
+        msg $nick 4Youtube has been10 enabled on $+(,$2,)
+        set %youtubefetch $remtok(%youtubefetch,$2,44)
+      }
+      else { msg $nick 4Sorry, you must be an10 op of $+(,$2,) to enable youtube there }
+    }
+    else { msg $nick 4Sorry, I am not10 currently in $+(,$2,) }
+  }
+  elseif ($2 == $null) { msg $nick 4Incorrect Syntax - Use10 $1 <#channel> }
+}
+
+#search on
+on $*:text:/^[!@]y(outube|t|tsearch|search|ousearch|outubesearch)(\s|$)/Si:*: {
+  $iif($istok(%youtubefetch,$chan,44),halt,noop)
+  $iif($istok(%nolinks,$nick,44),halt,noop)
+  if ($($+(%,botflood.,$nick),2)) {
+    if ($($+(%,botflood.,$nick),2) >= 50) { 
+      ignore -u60 $address($nick,2) 
+      msg $chan $+($nick,$chr(44)) You have been put on ignore for 60secs for abusing the bot.
+      halt 
+    }
+    elseif ($($+(%,botflood.,$nick),2) >= 40) { 
+      msg $chan $+($nick,$chr(44)) Please do not flood the bot. 
+      inc -z $+(%,botflood.,$nick) 20 
+      halt 
+    }
+    else { inc -z $+(%,botflood.,$nick) 25 }
+  }
+  else { inc -z $+(%,botflood.,$nick) 25 }
+  var %ticks $ticks
+  if ($2) {
+    if ($chan) {
+      if (($left($strip($1),1) == @) && (%_youtube.notices != true)) { set $+(%,youtube.,%ticks,.msgtype) msg $chan }
+      else { set $+(%,youtube.,%ticks,.msgtype) notice $nick }
+    }
+    else { set $+(%,youtube.,%ticks,.msgtype) msg $nick }
+    set $+(%,youtube.,%ticks,.search) $2-
+    set $+(%,youtube.,%ticks,.query) $urlencode($2-)
+    sockopen -e $+(youtube.,%ticks) www.googleapis.com 443
+  }
+  elseif ($2 == $null) { 
+    notice $nick 4Incorrect Syntax - Use10 $1 <search term> 
+  }
+}
+
+on *:input:*:{
+  $iif($istok(%nolinks,$active,44),return,noop)
+  $iif($istok(%youtubefetch,$active,44),return,noop)
+  var %ticks $ticks
+  if (($remove($1,$left($strip($1),1)) == ysearch) || ($remove($1,$left($strip($1),1)) == ytsearch) || ($remove($1,$left($strip($1),1)) == youtube) || ($remove($1,$left($strip($1),1)) == yt) || ($remove($1,$left($strip($1),1)) == youtubesearch)) {
+    if ($left($1,1) != /) {
+      if ($2 != $null) {
+        set $+(%,youtube.,%ticks,.msgtype) msg $active
+        set $+(%,youtube.,%ticks,.search) $2-
+        set $+(%,youtube.,%ticks,.query) $urlencode($2-)
+        sockopen -e $+(youtube.,%ticks) www.googleapis.com 443
+      }
+      elseif ($2 == $null) {
+        .timerYTInputSyntax -m 1 100 echo -at 4Incorrect Syntax - Use10 $1 <search term> 
+      }
+    }
+  }
+  elseif ((*youtube.com* iswm $1-) || (*youtu.be* iswm $1-)) {
+    if ($left($1,1) != /) {
+      var %i 1
+      while (%i <= $numtok($1-,32)) {
+        if ((*youtube.com* iswm $($+($,%i),2)) || (*youtu.be* iswm $($+($,%i),2))) {
+          if (*/playlist* iswm $($+($,%i),2)) { halt }
+          set $+(%,youtube.,%ticks,.url) $strip($($+($,%i),2))
+          var %tag $($+(%,youtube.,%ticks,.url),2)
+          var %tag $iif($numtok(%tag,46) > 1,$gettok(%tag,$calc($numtok(%tag,46)-1) - $numtok(%tag,46),46),%tag)
+          var %tag $iif($matchtok(%tag,v=,1,38),$v1,%tag)
+          var %tag $deltok($deltok(%tag,2,35),2,38)
+          if (*youtu.be* iswm %tag) { var %tag $gettok(%tag,1,63) }
+          set $+(%,youtube.,%ticks,.tag) $remove(%tag,com/watch?v=,youtube.,$chr(40),$chr(41),?,m.,v=,/watch?src_vid=,https://,http://,www.,/v/,youtube.com,youtu.be,youtu.be/,/watch?v=,/watch,?v=,$chr(31),#!,/)
+        }
+        inc %i
+      }
+      if (($($+(%,youtube.,%ticks,.tag),2) == %_youtube.last) || ($($+(%,youtube.,%ticks,.tag),2) == $null) || ($($+(%,youtube.,%ticks,.tag),2) == com) || (*/channel/* iswm $($+(%,youtube.,%ticks,.url),2)) || (*/user/* iswm $($+(%,youtube.,%ticks,.url),2))) {
+        unset $+(%,youtube.,%ticks,.*)
+      }
+      else {
+        set $+(%,youtube.,%ticks,.msgtype) $iif(%_youtube.notices == true,echo -a,msg $active)
+        set $+(%,youtube.,%ticks,.nick) $nick
+        set $+(%,youtube.,%ticks,.chan) $chan
+        set $+(%,youtube.,%ticks,.network) $network
+        sockopen -e $+(youtube.,%ticks) www.googleapis.com 443
+      }
+    }
+  }
+}
+
+#search end
+
+#parse off
+on $*:text:/youtu(.be|be.com)/Si:*: {
+  $iif($istok(%youtubefetch,$chan,44),halt,noop)
+  $iif($istok(%nolinks,$nick,44),halt,noop)
+  if ($($+(%,botflood.,$nick),2)) {
+    if ($($+(%,botflood.,$nick),2) >= 50) { 
+      ignore -u60 $address($nick,2) 
+      msg $chan $+($nick,$chr(44)) You have been put on ignore for 60secs for abusing the bot. 
+      halt 
+    }
+    elseif ($($+(%,botflood.,$nick),2) >= 40) {
+      msg $chan $+($nick,$chr(44)) Please do not flood the bot.  
+      inc -z $+(%,botflood.,$nick) 20 
+      halt 
+    }
+    else { 
+      inc -z $+(%,botflood.,$nick) 10 
+    }
+  }
+  else { inc -z $+(%,botflood.,$nick) 10 }
+  var %i 1
+  var %ticks $ticks
+  while (%i <= $numtok($1-,32)) {
+    if ((*youtube.com* iswm $($+($,%i),2)) || (*youtu.be* iswm $($+($,%i),2))) {
+      if (*/playlist* iswm $($+($,%i),2)) { halt }
+      set $+(%,youtube.,%ticks,.url) $strip($($+($,%i),2))
+      var %tag $($+(%,youtube.,%ticks,.url),2)
+      var %tag $iif($matchtok(%tag,v=,1,38),$v1,%tag)
+      var %tag $deltok($deltok(%tag,2,35),2,38)
+      if (*youtu.be* iswm %tag) { var %tag $gettok(%tag,1,63) }
+      set $+(%,youtube.,%ticks,.tag) $remove(%tag,com/watch?v=,youtube.,?,m.,v=,/watch?src_vid=,https://,http://,www.,/v/,youtube.com,youtu.be,youtu.be/,/watch?v=,/watch,?v=,$chr(31),#!,/)
+    }
+    inc %i
+  }
+  if ($chan) {
+    if (%_youtube.notices != true) { set $+(%,youtube.,%ticks,.msgtype) msg $chan }
+    else { set $+(%,youtube.,%ticks,.msgtype) notice $nick }
+  }
+  else { set $+(%,youtube.,%ticks,.msgtype) msg $nick }
+  if (($($+(%,youtube.,%ticks,.tag),2) == %_youtube.last) || ($($+(%,youtube.,%ticks,.tag),2) == $null) || ($($+(%,youtube.,%ticks,.tag),2) == com) || (*/channel/* iswm $($+(%,youtube.,%ticks,.url),2)) || (*/user/* iswm $($+(%,youtube.,%ticks,.url),2))) {
+    unset $+(%,youtube.,%ticks,.*)
+  }
+  else {
+    set $+(%,youtube.,%ticks,.nick) $nick
+    set $+(%,youtube.,%ticks,.chan) $chan
+    set $+(%,youtube.,%ticks,.network) $network
+    sockopen -e $+(youtube.,%ticks) www.googleapis.com 443
+  }
+}
+on $*:action:/youtu(.be|be.com)/Si:*: {
+  $iif($istok(%youtubefetch,$chan,44),halt,noop)
+  $iif($istok(%nolinks,$nick,44),halt,noop)
+  if ($($+(%,botflood.,$nick),2)) {
+    if ($($+(%,botflood.,$nick),2) >= 50) { 
+      ignore -u60 $address($nick,2) 
+      msg $chan $+($nick,$chr(44)) You have been put on ignore for 60secs for abusing the bot. 
+      halt 
+    }
+    elseif ($($+(%,botflood.,$nick),2) >= 40) {
+      msg $chan $+($nick,$chr(44)) Please do not flood the bot.  
+      inc -z $+(%,botflood.,$nick) 20 
+      halt 
+    }
+    else { 
+      inc -z $+(%,botflood.,$nick) 10 
+    }
+  }
+  else { inc -z $+(%,botflood.,$nick) 10 }
+  var %i 1
+  var %ticks $ticks
+  while (%i <= $numtok($1-,32)) {
+    if ((*youtube.com* iswm $($+($,%i),2)) || (*youtu.be* iswm $($+($,%i),2))) {
+      set $+(%,youtube.,%ticks,.url) $strip($($+($,%i),2))
+      var %tag $($+(%,youtube.,%ticks,.url),2)
+      var %tag $iif($numtok(%tag,46) > 1,$gettok(%tag,$calc($numtok(%tag,46)-1) - $numtok(%tag,46),46),%tag)
+      var %tag $iif($matchtok(%tag,v=,1,38),$v1,%tag)
+      var %tag $deltok($deltok(%tag,2,35),2,38)
+      if (*youtu.be* iswm %tag) { var %tag $gettok(%tag,1,63) }
+      set $+(%,youtube.,%ticks,.tag) $remove(%tag,$chr(40),$chr(41),?,m.,v=,/watch?src_vid=,https://,http://,www.,/v/,youtube.com,youtu.be,youtu.be/,/watch?v=,/watch,?v=,$chr(31),#!,/)
+    }
+    inc %i
+  }
+  set $+(%,youtube.,%ticks,.msgtype) msg $iif($chan,$v1,$nick)
+  if (($($+(%,youtube.,%ticks,.tag),2) == %_youtube.last) || ($($+(%,youtube.,%ticks,.tag),2) == $null) || ($($+(%,youtube.,%ticks,.tag),2) == com) || (*/channel/* iswm $($+(%,youtube.,%ticks,.url),2)) || (*/user/* iswm $($+(%,youtube.,%ticks,.url),2))) {
+    unset $+(%,youtube.,%ticks,.*)
+  }
+  else {
+    set $+(%,youtube.,%ticks,.nick) $nick
+    set $+(%,youtube.,%ticks,.chan) $chan
+    set $+(%,youtube.,%ticks,.network) $network
+    sockopen -e $+(youtube.,%ticks) www.googleapis.com 443
+  }
+}
+
+#parse end
+
+on *:sockopen:youtube*: { 
+  var %ticks $remove($sockname,youtube.)
+  var %x sockwrite -nt $sockname
+  if (($($+(%,youtube.,%ticks,.search),2) != $null) && ($($+(%,youtube.,%ticks,.round2),2) != true)) {
+    var %temp_search0 /youtube/v3/search?safeSearch=none&order=relevance&part=snippet&q=
+    %x GET $+(%temp_search0,$($+(%,youtube.,%ticks,.query),2),&maxResults=,$iif(%_youtube.limit == $null,1,%_youtube.limit),&key=,$yapi) HTTP/1.1
+  }
+  else {
+    var %temp_search1 $(/youtube/v3/videos?part=contentDetails%2Cstatistics%2Csnippet&id=,0)
+    var %temp_search2 &maxResults=1&fields=items $+ $chr(40) $+ $(contentDetails%2Csnippet%2Cstatistics,0) $+ $chr(41)
+    %x GET $+(%temp_search1,$($+(%,youtube.,%ticks,.tag),2),%temp_search2,&key=,$yapi) HTTP/1.1
+  }
+  %x Host: www.googleapis.com
+  %x $crlf
+}
+alias nohtml { return $regsubex($$1-,/^[^<]*>|<[^>]*>|<[^>]*$/g,) }
+alias yinfo {
+  var %step1 errRemoval $gettok($1-,2-,58) errRemoval
+  return $replace($gettok(%step1,$+(2-,$calc($numtok(%step1,34) - 1)),34),\r\n,$chr(32),\n,$chr(32),\",")
+}
+on *:SOCKREAD:youtube*: { 
+  if ($sockerr) { echo -a SOCKET ERROR: $sockerr | halt }
+  else {
+    var %ticks $gettok($sockname,2,46)
+    var %sockreader
+    sockread %sockreader
+    if ((*"title": * iswm %sockreader) && ($($+(%,youtube.,%ticks,.title),2) == $null)) {
+      set $+(%,youtube.,%ticks,.title) $yinfo(%sockreader)
+      if ($($+(%,youtube.,%ticks,.search),2) != $null) {
+        var %i 0
+        while (%i <= $numtok($($+(%,youtube.,%ticks,.search),2),32)) {
+          inc %i
+          set $+(%,youtube.,%ticks,.title) $regsubex($($+(%,youtube.,%ticks,.title),2), /\b( $gettok($($+(%,youtube.,%ticks,.search),2),%i,32) )\b/gix, $+($chr(2), \1, $chr(2)))
+        }
+      }
+      ;Badword replacement below--useful for bots that kick on badword list. Replace or add words to censor <word,replacement>
+      set $+(%,youtube.,%ticks,.title) $replace($($+(%,youtube.,%ticks,.title),2),faggot,f****t,nigger,n****r)
+    }
+    elseif (*"videoId": * iswm %sockreader) {
+      var %temp $ticks
+      set $+(%,youtube.,%temp,.round2) true
+      set $+(%,youtube.,%temp,.search) $($+(%,youtube.,%ticks,.search),2)
+      set $+(%,youtube.,%temp,.query) $($+(%,youtube.,%ticks,.query),2)
+      set $+(%,youtube.,%temp,.msgtype) $($+(%,youtube.,%ticks,.msgtype),2)
+      set $+(%,youtube.,%temp,.tag) $yinfo(%sockreader)
+      sockopen -e $+(youtube.,%temp) www.googleapis.com 443
+      inc $+(%,youtube.,%ticks,.number)
+      if (%_youtube.limit == $($+(%,youtube.,%ticks,.number),2)) {
+        unset $+(%,youtube.,$remove($sockname,youtube.),*)
+        sockclose $sockname
+      }
+    }
+    elseif (*channelTitle": * iswm %sockreader) { set $+(%,youtube.,%ticks,.user) $yinfo(%sockreader) }
+    elseif (*"duration": * iswm %sockreader) { 
+      set $+(%,youtube.,%ticks,.time) $regsubex($duration($calc($replace( $remove($yinfo(%sockreader), P, T), W, *604800+, D, *86400+, H, *3600+, M, *60+, S,*1)), 3), /^[0:]+, )
+    }
+    elseif (*"publishedAt": * iswm %sockreader) { set $+(%,youtube.,%ticks,.date) $gettok($yinfo(%sockreader),1,84) }
+    elseif ((*"description": * iswm %sockreader) && ($($+(%,youtube.,%ticks,.description),2) == $null)) {
+      var %wrong errRemoval ", errRemoval
+      var %desc $yinfo(%sockreader)
+      if (($gettok(%sockreader,4,34) == $null) || (%desc == %wrong)) { set $+(%,youtube.,%ticks,.description) N/A }
+      else { set $+(%,youtube.,%ticks,.description) $iif($numtok(%desc,32) > 10,$+($gettok(%desc,1-8,32),...),%desc) }
+    }
+    elseif (*"viewCount": * iswm %sockreader) { set $+(%,youtube.,%ticks,.viewcount) $bytes($yinfo(%sockreader),bd) }
+    elseif (*"likeCount": * iswm %sockreader) { set $+(%,youtube.,%ticks,.likes) $bytes($yinfo(%sockreader),bd) } 
+    elseif (*"dislikeCount": * iswm %sockreader) || (($($+(%,youtube.,%ticks,.viewcount),2) != $null) && (*}* iswm %sockreader)) { 
+      set $+(%,youtube.,%ticks,.dislikes) $bytes($yinfo(%sockreader),bd)
+      set %_youtube.last $($+(%,youtube.,%ticks,.tag),2)
+      $iif($($+(%,youtube.,%ticks,.viewcount),2) == 301,set $+(%,youtube.,%ticks,.viewcount) 301+,noop)
+      var %msg $xr2(YouTube)  $&
+        $iif($($+(%,youtube.,%ticks,.search),2) ==  $null,$null,http://youtu.be/ $+ $($+(%,youtube.,%ticks,.tag),2)) $&
+        $($+(%,youtube.,%ticks,.title),2) $&
+        $iif(%_youtube.noviews == true,$null,.12Views. →  $($+(%,youtube.,%ticks,.viewcount),2)) $&
+        $iif(%_youtube.nolength == true,$null,.12Length. →  $($+(%,youtube.,%ticks,.time),2)) $&
+        $iif(%_youtube.date == true,.12Uploaded. →  $($+(%,youtube.,%ticks,.date),2),$null) $&
+        $iif(%_youtube.nouser == true,$null,.12User. → $($+(%,youtube.,%ticks,.user),2)) $&
+        $iif(%_youtube.likes == true,09+ $+ $($+(%,youtube.,%ticks,.likes),2),$null) $&
+        $iif(%_youtube.dislikes == true,04- $+ $($+(%,youtube.,%ticks,.dislikes),2),$null) $&
+        $iif(%_youtube.description == true,.12Description. → $($+(%,youtube.,%ticks,.description),2),$null)
+      var %msg = $remove(%msg,$chr(9))
+      $($+(%,youtube.,%ticks,.msgtype),2) $iif(%_youtube.nocolor == true,$strip(%msg),%msg)
+      unset $+(%,youtube.,$remove($sockname,youtube.),*)
+      sockclose $sockname
+    }
+    elseif (*"totalResults": 0,* iswm %sockreader) {
+      var %msg Not found.
+      $($+(%,youtube.,%ticks,.msgtype),2) $iif(%_youtube.nocolor == true,$strip(%msg),%msg)
+
+      unset $+(%,youtube.,$remove($sockname,youtube.),*)
+      sockclose $sockname
+    }
+    elseif (*"items": []* iswm %sockreader) {
+      ; var %msg 
+      $($+(%,youtube.,%ticks,.msgtype),2) $iif(%_youtube.nocolor == true,$strip(%msg),%msg)
+      unset $+(%,youtube.,$remove($sockname,youtube.),*)
+      sockclose $sockname
+    }
+  }
+}
+on *:sockclose:youtube*: { unset $+(%,youtube.,$remove($sockname,youtube.),*) }
+on *:start: .timerYTUpdate 1 60 yupdate
+alias yupdate {
+  unset %youtube.* | unset %ysearch.*
+  ;echo -atc info 12[02YouTube12] Checking for updates and clearing variables...
+  sockopen yupdate hawkee.com 80
+}
+on *:sockopen:yupdate: {  
+  var %x sockwrite -nt $sockname
+  %x GET /snippet/8577/ HTTP/1.1
+  %x Host: hawkee.com
+  %x $crlf
+}
+on *:SOCKREAD:yupdate: { 
+  if ($sockerr) { echo -a SOCKET ERROR: $sockerr | halt }
+  sockread %sockreader
+  if (*<title>* iswm %sockreader) {
+    var %x $remove($gettok($nohtml(%sockreader),7-,32),- mIRC)
+    if ($yversion != %x) {
+    }
+    unset %sockreader
+    sockclose $sockname
+  }
+}

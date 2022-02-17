@@ -1,0 +1,44 @@
+on $*:text:/^[.!@](mtg|dix|dicklords)/Si:#: {
+  spamprotect
+  exprotect $1-
+  ;echo -at Opening socket to MTGox..
+  var %ticks = $ticks
+  ;sockopen mtg. $+ %ticks data.mtgox.com 80
+  sockopen -e mtg. $+ %ticks data.mtgox.com 443
+  sockmark mtg. $+ %ticks $+($chan,$chr(1),$iif($2,$2,0),$chr(1))
+}
+on *:sockopen:mtg.*: {
+  if ($sockerr) {
+    msg $gettok($sock($sockname).mark,1,1) MTGox Socket Error!
+    return
+  }
+  ;echo -at Requesting current data from MTGox..
+  sockwrite -nt $sockname GET /api/1/BTCUSD/ticker HTTP/1.0
+  sockwrite -nt $sockname Host: data.mtgox.com
+  sockwrite -nt $sockname User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0
+  sockwrite -nt $sockname Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  sockwrite -nt $sockname Accept-Language: en-US,en;q=0.5
+  sockwrite -nt $sockname Accept-Encoding: none
+  sockwrite -nt $sockname DNT: 1
+  sockwrite -nt $sockname Connection: close
+  sockwrite -n $sockname $crlf
+}
+
+on *:sockread:mtg.*: {
+  sockread -f %sock
+  sockmark $sockname $sock($sockname).mark $+ %sock
+}
+
+on *:sockclose:mtg.*: {
+  ;echo -at Closed socket $sockname to MTGox..
+  ;echo -at Data returned: $hget(MTGoxAvg, $sockname)
+  var %chan = $gettok($sock($sockname).mark,1,1)
+  var %multip = $gettok($sock($sockname).mark,2,1)
+  var %data = $gettok($sock($sockname).mark,3,1)
+  var %rgx = "last"\:\{[^\}]+"display"\:"([^"]+)"
+  if ($regex(%data, %rgx)) {
+    var %amt = $replace($regml(1),$chr(44),$chr($+))
+    if (%multip > 0) var %amt2 = $ $+ $round($calc(%multip * $remove(%amt,$)),2)
+    msg %chan 14(MTGox14) %amt   $+ $iif(%amt2, * %multip 07= %amt2) USD
+  }
+}

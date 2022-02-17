@@ -1,0 +1,2266 @@
+; ========================================
+; ========================================
+;
+; IrcOp Tools V 0.C.7
+; Lines: 2231
+; Coded By PuNkTuReD
+; Last updated: 28/12/2010
+;
+; ========================================
+; ========================================
+
+; ========================================
+; ========================================
+; REQUIRES:
+;   Anope Modules: 
+;     svsnick - URL (Should come with Anope)
+;     notinchan - URL (unsure if this is correct, my apolagies)
+;                 http://modules.anope.org/index.php?page=view&id=18
+;
+; NOTES:
+;   Forbiden/No-Expire lists will only list the 
+;     maximum /list amount which is defined in Anope.
+;   WallOps messages do not currently get logged.
+; ========================================
+; ========================================
+
+; ========================================
+; ========================================
+; INCLUDES:
+;
+; /ircoptools (ALIAS)
+;    This alias will provide you with limited help and commands.
+; Oper LogIn (DIALOG)
+;    This is a dialog which you can use to save and/or edit
+;    your oper login information.
+; HostServ Interface (DIALOG)
+;    This is a dialog which you can use to activate/reject 
+;    waiting vHosts, or delete existing ones.
+; BotServ Interface (DIALOG)
+;    With this dialog you can create or delete Botserv bots, 
+;    you can also assign or aunassign bots to channels.
+; Spamfilter Interface (DIALOG)
+;    This is a dialog which will allow you to add items to your
+;    spamfilter. You may also delete the items you have added.
+;    NOTE: You may not delete spamfilter entry(s) which are in
+;    your unrealircd conf file with this dialog.
+; Defcon Interface (DIALOG) 
+;    This is a dialog which you can use to control Defcon settings.
+; News Interface (DIALOG)
+;    This is a dialog which will allow you to view,del,add to operserv's
+;    logon, oper and random news lists.
+; Global Interface (DIALOG)
+;    This is a dialog which will allow you to save Global Messages 
+;    Which you send frequently, so that you will not have to type them 
+;    over and over each time.
+; IrcOp Chat Interface (DIALOG)
+;    This dialog will store Global, LocOps, ChatOps, AdminChat, NetAdmin.Chat messages.
+;    and reply accordingly.
+; OperServ Access List (DIALOG)
+;    This is a dialog which will allow you to manipulate the operserv
+;    Admin and Oper lists.
+; OperServ Exception (DIALOG)
+;    This will enable you to Add and Delete users from the OperServ
+;    Session Limit Exception list.
+; OperServ Modules List (DIALOG)
+;    This is a dialog which will allow you to Load and UnLoad 
+;    OperServ modules.
+; Servers List (DIALOG)
+;    This is a dialog which will allow you to 
+;    view/kill and restart connected servers.
+; Forbidden List (DIALOG)
+;    This is a dialog which will allow you to easily add/del
+;    Channels and Nicks from their respective Forbidden list.
+;    Note: This will only list the amount you have set via Anope.
+; NoExpire List (DIALOG)
+;    This is a dialog which will allow you to easily add/del
+;    Channels and Nicks from their respective NoExpire list.
+; Lines list (DIALOG)
+;    This is a dialog which you can use to view existing:
+;    SGLINE SQLINE SZLINE AKILL GLINE KLINE GZLINE lists.
+;    Also Add or Del accordingly.
+; List Users (DIALOG)
+;    Not In Chan List
+;      This dialog NEEDS the Anope module os_notinchanlist.
+;      It will list all users who are not in a channel,
+;      With the options to SaJoin/SaPart/Kill/Shun/G:Line.
+;    +B Users
+;      This is a dialog which will list all +B (BOT) Users on the network.
+;      With the options to SaJoin/SaPart/Kill/Shun/G:Line.
+;    Global Users
+;      This is a dialog which will list all Users on the network.
+;      With the options to SaJoin/SaPart/Kill/Shun/G:Line.
+; Change User Data (DIALOG)
+;    This is a dialog which will allow you to change a users:
+;    Nick/Ident/Host/Name
+; Server Admin Command (MENU)
+;    This menu has almost everything you will need for being an IrcOp.
+; Services Commands (MENU)
+;    This menu is apart of the above menu and has all the 
+;    commands for OperServ/ChanServ/NickServ/BotServ/HostServ.
+; Services Commands Help (MENU)
+;    This menu will allow you to easily display a command 
+;    syntax to a channel or user.
+;
+; ========================================
+; ========================================
+
+; ========================================
+; ========================================
+;
+; NOTE: 
+; This was made for unreal and anope...
+; I have not done work on this for over 6 months,
+; so it may have some bugs with newer version than what
+; this was tested on.
+;
+; Some features may need certain settings to be set,
+; before they function correctly...
+;
+; Oh, I have also included a menu system which i did post here ages ago, 
+; which i made when i first started scripting, 
+; with help from the one and only PnPlus... lmao...
+;
+; Any comments/suggestions/bugs are welcome...
+; but it should be noted that i may not be able to fix all
+; bugs as i do not use mirc or admin any servers anymore...
+;
+; If ya rip, please leave some credits... thanks...
+;
+; THANKS: 
+; To cheiron for being my test guinea pig...
+; would not have gotten this far without ya mate...
+;
+; Hammy for the radio wars...
+; *Wheres that damn ham-sandwich*
+;
+; GrimReaper for the hyper monster filled nights...
+; *MONSTERRRRR*
+;
+; ========================================
+; ========================================
+
+; ========================================
+; ON LOAD
+; ========================================
+on *:load: { 
+  write ircopchat.txt
+  write tempvhost.txt
+}
+; ========================================
+; ON LOAD
+; ========================================
+
+; ========================================
+; MENU SYSTEM
+; ========================================
+menu status,menubar,channel,nicklist,query {
+  IrcOpTools
+  . Oper Login: dialog $iif($dialog(operlogin),-v,-dm operlogin) operlogin
+  .-
+  . Interfaces
+  .. HostServ Interface: dialog $iif($dialog(hostserv),-v,-dm hostserv) hostserv
+  .. BotServ Interface: dialog $iif($dialog(BotServ),-v,-dm botserv) botserv
+  .. Spamfilter Interface: dialog $iif($dialog(spamfilter),-v,-dm spamfilter) spamfilter
+  .. Defcon Interface: dialog $iif($dialog(defcon),-v,-dm defcon) defcon
+  .. News Interface: dialog $iif($dialog(news),-v,-dm news) news
+  .. Global Interface: dialog $iif($dialog(global),-v,-dm global) global
+  .. IrcOp Chat Interface: dialog $iif($dialog(ircopchat),-v,-dm ircopchat) ircopchat
+  . Lists
+  .. OperServ Access List: dialog $iif($dialog(osaccess),-v,-dm osaccess) osaccess
+  .. OperServ Exception List: dialog $iif($dialog(os_except),-v,-dm os_except) os_except
+  .. OperServ Modules List: dialog $iif($dialog(modules),-v,-dm modules) modules
+  .. Servers List: dialog $iif($dialog(servers),-v,-dm servers) servers
+  .. Forbidden List: dialog $iif($dialog(forbidden_list),-v,-dm forbidden_list) forbidden_list
+  .. NoExpire List: dialog $iif($dialog(noexpire_list),-v,-dm noexpire_list) noexpire_list
+  .. Lines List: dialog $iif($dialog(lines),-v,-dm lines) lines
+  .. Users List: dialog $iif($dialog(listuserdata),-v,-dm listuserdata) listuserdata
+  . Others
+  .. Change User Data: dialog $iif($dialog(chguserdata),-v,-dm chguserdata) chguserdata
+}
+; ========================================
+; END MENU SYSTEM
+; ========================================
+
+; ========================================
+; IRCOPTOOLS ALIAS
+; ========================================
+alias ircoptools {
+  if ($1 == reset) {  
+    echo -a * Checking and resetting necessary Groups now...
+    var %groups_effected = 0
+    var %groups = #hostserv #botserv #spamfilter #defconcheck #news #osaccess #os_exception #modules #serversmap #forbid #lines #listglobal #listidle #listbots #chguser
+    var %groups_tot = $numtok(%groups,32)
+    while (%groups_tot) {
+      if ($group($gettok(%groups,%groups_tot,32)) == on) { inc %groups_effected | echo -a * Disabling group $gettok(%groups,%groups_tot,32) | .disable $gettok(%groups,%groups_tot,32) | echo -a * Please report this Group to the scripts creator. }
+      dec %groups_tot
+    }
+    echo -a * %groups_effected Groups were effected.
+    unset %osviewing %kg_viewing %listuserview
+  }
+  elseif ($1 == help) {
+    if (!$2) { 
+      echo -a * RESET - Resets all IrcOpTools groups to the Disabled position. (This command should never be needed)
+      echo -a You may request additional info on a command by typing /ircoptools help <command>
+    }
+    elseif ($2 == reset) { 
+      echo -a * RESET - This command was added for debugging purposes, $&
+        all groups should disable automatically but if they don't you may use this command to disable all groups. $&
+        If you do happen to need this command please report it to the script creator with $&
+        info about what group needed Disabling.
+    }
+    else { 
+      echo -a * /ircoptools: insufficient parameters 
+      echo -a * Available parameters are: help, reset 
+    }
+  }
+  else { 
+    echo -a * /ircoptools: insufficient parameters 
+    echo -a * Available parameters are: help, reset
+  }
+}
+; ========================================
+; END IRCOPTOOLS ALIAS
+; ========================================
+
+; ========================================
+; ON CONNECT
+; ========================================
+on *:connect: {
+  if ($readini(operlogin.ini,$network,autologin) == 1) {
+    oper $readini(operlogin.ini,$network,username) $readini(operlogin.ini,$network,password)
+  }
+}
+; ========================================
+; END ON CONNECT
+; ========================================
+
+; ========================================
+; OPER LOGIN DIALOG
+; ========================================
+dialog operlogin {
+  title Oper Login
+  size -1 -1 130 80
+  option dbu
+  box "", 1, 5 5 120 70
+  text "Saved Networks", 2, 10 10 50 10
+  combo 3, 10 20 50 10, drop, sort
+  text "Network:", 4, 70 10 50 10
+  edit "", 5, 70 20 50 10, autohs
+  text "Username:", 6, 10 35 50 10
+  edit "", 7, 10 45 50 10, autohs
+  text "Password:", 8, 70 35 50 10
+  edit "", 9, 70 45 50 10, autohs, pass
+  check "AutoLogIn", 10, 10 60 50 10
+  button "Save", 11, 70 60 50 10
+}
+on *:dialog:operlogin:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { ol_loadnetworks }
+  elseif (%b == sclick) {
+    if (%c == 3) {
+      did -ra %a 5 $did(3)
+      did -ra %a 7 $readini(operlogin.ini,$did(3),username)
+      did -ra %a 9 $readini(operlogin.ini,$did(3),password)
+      if ($readini(operlogin.ini,$did(3),autologin) == 1) { did -c %a 10 }
+    }
+    elseif (%c == 11) {
+      if ($did(5)) && ($did(7)) && ($did(9)) {
+        writeini operlogin.ini $did(5) autologin $iif($did(10).state == 1,1,0)
+        writeini operlogin.ini $did(5) username $did(7)
+        writeini operlogin.ini $did(5) password $did(9)
+        did -r %a 3,7,9
+        ol_loadnetworks
+      }
+      else { noop $input(Please enter a Network, Username and Password.,uowd,ERROR,ERROR) }
+    }
+  }
+}
+alias ol_loadnetworks {
+  var %ol_tot = $ini(operlogin.ini,0)
+  while (%ol_tot) {
+    did -a operlogin 3 $ini(operlogin.ini,%ol_tot)
+    dec %ol_tot
+  }
+}
+; ========================================
+; END OPER LOGIN DIALOG
+; ========================================
+
+; ========================================
+; HOSTSERV INTERFACE DIALOG
+; ========================================
+dialog hostserv {
+  title HostServ Interface
+  size -1 -1 200 125
+  option dbu
+  box "Listing 0 vHost Entry(s)", 1, 5 5 190 115
+  list 2, 10 15 180 90, hsbar, vsbar, sort
+  button "Activate", 3, 10 100 40 10
+  button "Reject", 4, 55 100 40 10
+  button "Delete", 5, 10 100 40 10
+  menu "Listing Option", 6
+  item "Waiting", 7, 6
+  item "Approved", 8, 6
+  item "Search", 9, 6
+  text "Enter Nick", 10, 10 95 80 10
+  edit "", 11, 10 105 80 10
+  button "Set", 12, 55 100 40 10
+}
+on *:dialog:hostserv:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { set %hs_tot 0 | did -h %a 3,4,5,10-12 }
+  elseif (%b == menu) { 
+    if (%c == 7) { hostservmenu 5,10-12 3,4 waiting }
+    elseif (%c == 8) { hostservmenu 3,4,10,11 5,12 list }
+    elseif (%c == 9) { hostservmenu 3,4,5,12 10,11 }
+  }
+  elseif (%b == sclick) {
+    if ($istok(3 4 5,%c,32)) {
+      $iif($did(2).seltext,hostservact $gettok($did(2).seltext,1,32) $did(%c) $iif($did(%c) == Delete,list,waiting),noop $input(Please select a vHost to $did(%c) $+ .,uowd,ERROR,ERROR)) 
+    }
+    elseif (%c == 12) { 
+      .msg hostserv set $$?"Nick" $$?"Host" 
+      did -a hostserv 1 Listing 0 vHost Entry(s)
+      set %hs_tot 0 | .enable #hostserv | .msg hostserv $$3
+    }
+  }
+  elseif (%b == edit) {
+    if (%c == 11) { _get.host.match $did(11) }
+  }
+}
+alias _get.host.match {
+  did -r hostserv 2
+  write -c tempnicks.txt
+  var %a = $1, %b = $lines(tempvhost.txt)
+  while (%b) {
+    if (%a isin $read(tempvhost.txt,%b)) { write tempnicks.txt $v2 }
+    dec %b
+  }
+  _fill.list
+}
+alias _fill.list {
+  var %a = $lines(tempnicks.txt)
+  while (%a) { did -a hostserv 2 $read(tempnicks.txt,%a) | dec %a }
+}
+alias hostservact {
+  var %hostservact = $iif($$2 == Delete,del,$$2)
+  .msg hostserv %hostservact $$1 | did -r hostserv 1,2 
+  did -a hostserv 1 Listing 0 vHost Entry(s)
+  set %hs_tot 0 | .enable #hostserv | .msg hostserv $$3
+}
+alias hostservmenu {
+  did -r hostserv 2 | did -a hostserv 1 Listing 0 vHost Entry(s) 
+  set %hs_tot 0 | did -h hostserv $$1 | did -v hostserv $$2 
+  if ($3) { 
+    write -c tempvhost.txt
+    .enable #hostserv
+    .msg hostserv $$3
+  }
+  else { 
+    if ($lines(tempvhost.txt) == 0) { noop $input(Please select "Approved" from the list before trying to search.,uowd,ERROR,ERROR) }
+    else { write -c tempnicks.txt }
+  }
+}
+alias hostservnone { noop $input(There are no vHost requests pending.,uowd,ERROR,ERROR) }
+alias hostserverror { noop $input($strip($1-),uowd,ERROR,ERROR) }
+#hostserv off
+on ^*:notice:*:*: {
+  if ($nick == HostServ) && ($dialog(hostserv)) {
+    if (not found in the nickserv db. isin $1-) { .timer 1 2 hostserverror $1- }
+    if (Displayed all records isin $1-) { 
+      if (%hs_tot == 0) { .timer 1 2 hostservnone }
+      unset %hs_* | .disable #hostserv
+    }
+    elseif ($left($1,1) == $chr(35)) { 
+      inc %hs_tot | did -ra hostserv 1 Listing %hs_tot vHost Entry(s) 
+      did -a hostserv 2 $remove($strip($2-3),Nick:,vhost:,$chr(44)) 
+      write tempvhost.txt $remove($strip($2-3),Nick:,vhost:,$chr(44))
+      did -z hostserv 2
+    }
+    haltdef
+  }
+  else { .disable #hostserv | unset %hs_* }
+}
+#hostserv end
+; ========================================
+; END HOSTSERV INTERFACE DIALOG
+; ========================================
+
+; ========================================
+; BOTSERV INTERFACE DIALOG
+; ========================================
+dialog botserv {
+  title BotServ Interface
+  size -1 -1 290 135
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 90 125
+  list 2, 10 15 80 90, hsbar, vsbar, sort
+  box "", 3, 100 5 90 125
+  text "Nick", 4, 105 15 50 10
+  edit "", 5, 105 25 80 10, autohs
+  text "User", 6, 105 35 50 10
+  edit "", 7, 105 45 80 10, autohs
+  text "Host", 8, 105 55 50 10
+  edit "", 9, 105 65 80 10, autohs
+  text "Real", 10, 105 75 50 10
+  edit "", 11, 105 85 80 10, autohs
+  button "Create", 12, 105 110 80 10
+  button "Delete", 13, 10 110 80 10
+  box "Listing 0 Entry(s)", 14, 195 5 90 125
+  list 15, 200 15 80 90, hsbar, vsbar, sort
+  button "Assign", 16, 200 110 40 10
+  button  "Unassign", 17, 240 110 40 10 
+}
+on *:dialog:botserv:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { set %bs_tot 0 | .enable #botserv | .botserv botlist }
+  if (%b == sclick) { 
+    if (%c == 12) {
+      $iif($did(5),set %bs_nick $did(5),noop $input(Please enter a Nick.,uowd,ERROR,ERROR))
+      $iif($did(7),set %bs_user $did(7),noop $input(Please enter a User.,uowd,ERROR,ERROR))
+      $iif($did(9),set %bs_host $did(9),noop $input(Please enter a Host.,uowd,ERROR,ERROR))
+      $iif($did(11),set %bs_real $did(11),noop $input(Please enter a Real.,uowd,ERROR,ERROR))
+      if (%bs_nick && %bs_user && %bs_host && %bs_real) { 
+        msg botserv bot add %bs_nick %bs_user %bs_host %bs_real 
+        unset %bs_* | did -r %a 2,5,7,9,11 | set %bs_tot 0 | .enable #botserv | .botserv botlist
+      }
+    }  
+    elseif (%c == 13) {
+      if ($did(2).seltext) { 
+        msg botserv bot del $gettok($did(2).seltext,1,32) 
+        did -r %a 2 | set %bs_tot 0 | .enable #botserv | .botserv botlist
+      }
+      else { noop $input(Please select a Bot to delete.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 16) {
+      if ($did(15).seltext) && ($did(2).seltext) { .enable #botassign | .botserv $did(%c) $did(15).seltext $did(2).seltext }
+      else { noop $input(Please select a Bot and a Channel to Assign.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 17) {
+      if ($did(15).seltext) { .enable #botassign | .botserv $did(%c) $did(15).seltext  }
+      else { noop $input(Please select a Channel to Unassign.,uowd,ERROR,ERROR) }
+    }
+  }
+}
+alias botserverror { noop $input($1-.,uowd,ERROR,ERROR) }
+#botserv off
+on ^*:notice:*:*: {
+  if ($nick == BotServ) && ($dialog(botserv)) {
+    if (Bot list: == $1-) || (Bots reserved to IRC operators: == $1-) || ($chr(33) isin $1) {  }
+    elseif (bots available. isin $1-) { .disable #botserv | unset %bs_tot | set %botchanlist_tot 0 | .enable #botchanlist | .list }
+    elseif (may only contain isin $1-) { .timer 1 2 botserverror $1- }
+    else { inc %bs_tot | did -ra botserv 1 Listing %bs_tot Entry(s) | did -a botserv 2 $1- | did -z botserv 2 }
+    haltdef
+  }
+  else { unset %bs_tot | .disable #botserv }
+}
+#botserv end
+#botchanlist off
+raw *:*: {
+  if ($dialog(botserv)) {
+    if ($numeric == 321) {  }
+    elseif ($numeric == 322) { inc %botchanlist_tot | did -a botserv 15 $2 | did -z botserv 15 }
+    elseif ($numeric == 323) { 
+      window -c "Channels List" | dialog -v botserv 
+      did -ra botserv 14 Listing %botchanlist_tot Entry(s) 
+      unset %botchanlist_tot | .disable #botchanlist
+    }
+    haltdef
+  }
+  else { unset %botchanlist_tot | .disable #botchanlist }
+}
+#botchanlist end
+#botassign off
+on ^*:notice:*:*: {
+  if ($nick == BotServ) && ($dialog(botserv)) {
+    if (may not be registered or used. isin $1-) { .timer 1 2 botserverror $strip($1-) | .disable #botassign }
+    haltdef
+  }
+  else { .disable #botassign }
+}
+#botassign end
+; ========================================
+; END BOTSERV INTERFACE DIALOG
+; ========================================
+
+; ========================================
+; SPAMFILTER INTERFACE DIALOG
+; ========================================
+dialog spamfilterhelp {
+  title Spamfilter Type Help
+  size -1 -1 80 125
+  option dbu
+  box "", 1, 5 5 70 115
+  text "c = Channel Message", 2, 10 15 80 10
+  text "p = Private Message", 3, 10 25 80 10
+  text "n = Private Notice", 4, 10 35 80 10
+  text "N = Channel Notice", 5, 10 45 80 10
+  text "P = Part Message", 6, 10 55 80 10
+  text "q = Quit Message", 7, 10 65 80 10
+  text "d = DCC", 8, 10 75 80 10
+  text "a = Away Message", 9, 10 85 80 10
+  text "t = Channel Topic", 10, 10 95 80 10
+  text "u = User", 11, 10 105 80 10
+}
+
+dialog spamfilter {
+  title Spamfilter For $network
+  size -1 -1 200 285
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 190 105
+  list 2, 10 15 180 90, hsbar, vsbar, sort
+  box "Type", 3, 5 110 190 35
+  check "c", 4, 10 120 20 10
+  check "p", 5, 30 120 20 10
+  check "n", 6, 50 120 20 10
+  check "N", 7, 70 120 20 10
+  check "P", 8, 90 120 20 10
+  check "q", 9, 10 130 20 10
+  check "d", 10, 30 130 20 10
+  check "a", 11, 50 130 20 10
+  check "t", 12, 70 130 20 10
+  check "u", 13, 90 130 20 10
+  button "Help", 14, 160 125 30 10
+  box "Action", 15, 5 145 190 45
+  radio "Kill", 16, 10 155 30 10
+  radio "Tempshun", 17, 50 155 35 10
+  radio "Shun", 18, 90 155 30 10
+  radio "KLine", 19, 130 155 30 10
+  radio "GLine", 20, 10 165 30 10
+  radio "ZLine", 21, 50 165 30 10
+  radio "GZLine", 22, 90 165 30 10
+  radio "Block", 23, 130 165 30 10
+  radio "DCCBlock", 24, 10 175 30 10
+  radio "Viruschan", 25, 50 175 30 10
+  radio "Warn", 26, 90 175 30 10
+  box "Regex", 27, 5 190 190 25
+  edit "", 28, 10 200 180 10, autohs
+  box "TKL Time", 29, 5 215 190 25
+  edit "", 30, 10 225 30 10
+  check "Minutes", 31, 50 225 30 10
+  check "Days", 32, 80 225 30 10
+  check "Weeks", 33, 110 225 30 10
+  check "Perm", 34, 140 225 30 10
+  box "Reason", 35, 5 240 190 25
+  edit "", 36, 10 250 180 10, autohs
+  button "Add", 37, 10 270 80 10
+  button "Del", 38, 110 270 80 10
+}
+on *:dialog:spamfilter:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { .enable #spamfilter | spamfilter }
+  elseif (%b == sclick) {
+    if (%c == 14) { dialog $iif($dialog(spamfilterhelp),-v,-dm spamfilterhelp) spamfilterhelp }
+    if (%c == 37) {
+      ; set type
+      if ($did(4).state == 1) { var %type = $did(4) }
+      if ($did(5).state == 1) { var %type = $iif(%type,$+(%type,$did(5)),$did(5)) }
+      if ($did(6).state == 1) { var %type = $iif(%type,$+(%type,$did(6)),$did(6)) }
+      if ($did(7).state == 1) { var %type = $iif(%type,$+(%type,$did(7)),$did(7)) }
+      if ($did(8).state == 1) { var %type = $iif(%type,$+(%type,$did(8)),$did(8)) }
+      if ($did(9).state == 1) { var %type = $iif(%type,$+(%type,$did(9)),$did(9)) }
+      if ($did(10).state == 1) { var %type = $iif(%type,$+(%type,$did(10)),$did(10)) }
+      if ($did(11).state == 1) { var %type = $iif(%type,$+(%type,$did(11)),$did(11)) }
+      if ($did(12).state == 1) { var %type = $iif(%type,$+(%type,$did(12)),$did(12)) }
+      if ($did(13).state == 1) { var %type = $iif(%type,$+(%type,$did(13)),$did(13)) }
+      if (!%type) { noop $input(Please select a Type.,uowd,ERROR,ERROR) | halt }
+      ; set action
+      if ($did(16).state == 1) { var %action = $did(16) }
+      if ($did(17).state == 1) { var %action = $did(17) }
+      if ($did(18).state == 1) { var %action = $did(18) }
+      if ($did(19).state == 1) { var %action = $did(19) }
+      if ($did(20).state == 1) { var %action = $did(20) }
+      if ($did(21).state == 1) { var %action = $did(21) }
+      if ($did(22).state == 1) { var %action = $did(22) }
+      if ($did(23).state == 1) { var %action = $did(23) }
+      if ($did(24).state == 1) { var %action = $did(24) }
+      if ($did(25).state == 1) { var %action = $did(25) }
+      if ($did(26).state == 1) { var %action = $did(26) }
+      if (!%action) { noop $input(Please select a Action.,uowd,ERROR,ERROR) | halt }
+      ; set regex
+      if ($did(28)) { var %regex = $did(28) }
+      if (!%regex) { noop $input(Please input your Regex.,uowd,ERROR,ERROR) | halt }
+      ; set tkltime
+      if ($istok(Kill Viruschan Warn Block DCC,%action,32)) { var %tkl = - | goto tklskip }
+      if ($did(30)) { var %tkl = $did(30) }
+      if (%tkl !isnum) { noop $input(TKLTime must only contain numbers.,uowd,ERROR,ERROR) | halt }
+      if ($did(31).state == 1) { var %tkl = $iif(%tkl,$+(%tkl,$did(31)),$did(31)) }
+      elseif ($did(32).state == 1) { var %tkl = $iif(%tkl,$+(%tkl,$did(32)),$did(32)) }
+      elseif ($did(33).state == 1) { var %tkl = $iif(%tkl,$+(%tkl,$did(33)),$did(33)) }
+      elseif ($did(34).state == 1) { var %tkl = $iif(%tkl,$+(%tkl,$did(34)),$did(34)) }
+      elseif (!%tkl) { noop $input(Please select a TKLTime.,uowd,ERROR,ERROR) | halt }
+      :tklskip
+      ; set regex
+      if ($did(36)) { var %reason = $replace($did(36),$chr(32),$chr(95)) }
+      if (!%reason) { noop $input(Please input your Reason.,uowd,ERROR,ERROR) | halt }
+      ; take action
+      spamfilter add %type %action %tkl %reason %regex
+      did -r spamfilter 2 | .enable #spamfilter | spamfilter
+    }
+    if (%c == 38) {
+      if ($did(2).seltext) { 
+        if ($gettok($did(2).seltext,5,32) == $server) { noop $input(You may not delete this Spamfilter via command line. $crlf Please remove it directly from your IRCd conf file and rehash.,uowd,ERROR,ERROR) | halt }
+        else { spamfilter del $gettok($did(2).seltext,1-4,32) $gettok($did(2).seltext,6,32) | did -r spamfilter 2 | .enable #spamfilter | spamfilter }
+      }
+      else { noop $input(Please select a Spamfilter entry to remove.,uowd,ERROR,ERROR) }
+    }
+  }
+}
+#spamfilter off
+raw *:*: {
+  if ($dialog(spamfilter)) {
+    if ($numeric == 229) { 
+      inc %spam_tot
+      did -ra spamfilter 1 Listing %spam_tot Entry(s) 
+      did -a spamfilter 2 $3 $4 $7 $8 $9 $10- | did -z spamfilter 2
+    }
+    elseif ($numeric == 219) { unset %spam_tot | .disable #spamfilter }
+    haltdef
+  }
+  else { unset %spam_tot | .disable #spamfilter }
+}
+on ^*:snotice:*:*: {
+  ;echo 4 -s $1-
+  if (Use: == $1) { echo -a Debug: ERROR $1- }
+}
+#spamfilter end
+; ========================================
+; END SPAMFILTER INTERFACE DIALOG
+; ========================================
+
+; ========================================
+; DEFCON INTERFACE DIALOG
+; ========================================
+dialog defcon {
+  title Defcon
+  size -1 -1 120 80
+  option dbu
+  box "Security level:", 6, 5 5 110 70
+  check "1. Maximum", 1, 10 15 50 10
+  check "2.", 2, 10 25 50 10
+  check "3. Medium", 3, 10 35 50 10
+  check "4.", 4, 10 45 50 10
+  check "5. Minimum", 5, 10 55 50 10
+  button "Apply Changes", 7, 60 35 50 10
+}
+on *:dialog:defcon:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { .enable #defconcheck | .msg operserv defcon }
+  elseif (%b == sclick) { 
+    if (%c == 7) { 
+      var %aa = 5
+      while (%aa) {
+        if ($did(%aa).state == 1) { .msg operserv defcon %aa }
+        dec %aa
+      }    
+    }  
+    elseif ($istok(1 2 3 4 5,%c,32)) {  
+      var %aa = 5
+      while (%aa) {
+        if (%aa !== %c) && ($did(%aa).state == 1) { did -u %a %aa }
+        dec %aa
+      }
+    }
+  }
+}
+#defconcheck off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(defcon)) { did -c defcon $strip($6) | .disable #defconcheck }
+  else { .disable #defconcheck }
+  haltdef
+}
+#defconcheck end
+; ========================================
+; END DEFCON INTERFACE DIALOG
+; ========================================
+
+; ========================================
+; NEWS INTERFACE DIALOG
+; ========================================
+dialog news {
+  title News Interface
+  size -1 -1 195 125
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 185 75
+  list 2, 10 15 175 50, hsbar, vsbar
+  box "", 3, 5 80 185 40
+  button "Remove", 4, 10 65 80 10
+  edit "", 6, 10 90 175 10, autohs
+  button "Create", 7, 10 105 80 10
+  menu "Listing Option", 8
+  item "Logon News", 9, 8
+  item "Oper News", 10, 8
+  item "Random News", 11, 8
+  button "Global", 12, 105 65 80 10
+}
+on *:dialog:news:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == sclick) { 
+    if (%c == 4) { 
+      if ($did(2).seltext) { 
+        .msg operserv %news_viewing del $did(2).sel 
+        .enable #news | did -r news 2 | did -ra news 1 Listing 0 Entry(s) | .msg operserv %news_viewing list 
+      }
+      else { noop $input(Please input some news to be deleted.,uowd,ERROR,ERROR) }
+    }  
+    elseif (%c == 7) { 
+      if (%news_viewing) {
+        if ($did(6)) { 
+          .msg operserv %news_viewing add $did(6)
+          .enable #news | did -r news 2,6 | did -ra news 1 Listing 0 Entry(s) | .msg operserv %news_viewing list 
+        }
+        else { noop $input(Please input some news to be added.,uowd,ERROR,ERROR) }
+      }
+      else { noop $input(Please select a News Type from the Listing Options first.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 12) {
+      if ($did(2).seltext) { .msg operserv global $gettok($did(2).seltext,2-,41) }
+      else { noop $input(Please select a News item to Global.,uowd,ERROR,ERROR) }
+    }
+  }
+  elseif (%b == menu) {
+    .enable #news | did -r news 2 | did -ra news 1 Listing 0 Entry(s) | did -ra news 3 $+($did(%c),:)
+    set %news_viewing $remove($did(%c),$chr(32)) | .msg operserv %news_viewing list
+  }
+  elseif (%b == close) { unset %news_viewing }
+}
+alias newserror { noop $input($1-,uowd,ERROR,ERROR) }
+#news off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(news)) {
+    if ($1- == Random news items:) || (new isin $1-) && (news item isin $1-) {  }
+    elseif ($1- == End of News list.) { .disable #news }
+    elseif ($1-3 == There is no) { .timer 1 2 newserror $1- }
+    elseif ($1 isnum) { set -u2 %news_tot $1 | set -u2 %news_added $2- }
+    else { did -ra news 1 Listing %news_tot Entry(s) | did -a news 2 %news_added $1- | did -z news 2 }
+    haltdef
+  }
+  else { .disable #news }
+}
+#news end
+; ========================================
+; END NEWS INTERFACE DIALOG
+; ========================================
+
+; ========================================
+; GLOBAL INTERFACE DIALOG
+; ========================================
+dialog global {
+  title Global Interface
+  size -1 -1 255 165
+  option dbu
+  box Listing $lines(saveglobal.txt) Entry(s), 1, 5 5 140 155
+  list 2, 10 15 130 90, hsbar, vsbar, sort
+  text "Global Message", 3, 10 105 130 10
+  edit "", 4, 10 115 130 10, autohs
+  button "Save", 5, 10 130 65 10
+  button "Delete", 6, 75 130 65 10
+  button "Send Global", 7, 10 145 130 10
+  box "Timed Globals", 8, 150 5 100 155
+  radio "15", 9, 160 25 20 10
+  radio "30", 10, 190 25 20 10
+  radio "45", 11, 160 40 20 10
+  radio "60", 12, 190 40 20 10
+  text "This will send the global 10 times, once every X minutes." 14, 155 60 90 20
+  button "Send Timed Global", 13, 155 145 90 10
+}
+on *:dialog:global:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { 
+    if ($isfile(saveglobal.txt)) { loadbuf -o %a 2 saveglobal.txt | did -z %a 2 } 
+  }
+  elseif (%b == sclick) {
+    if (%c == 5) {
+      if ($did(4)) { 
+        write saveglobal.txt $did(4) 
+        did -ra %a 1 Listing $lines(saveglobal.txt) Entry(s)
+        did -r %a 2,4 | loadbuf -o %a 2 saveglobal.txt | did -z %a 2 
+      }
+      else { noop $input(Please enter a Global Message to Save.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 6) {
+      if ($did(2).seltext) { 
+        write $+(-ds,",$did(2).seltext,") saveglobal.txt 
+        did -ra %a 1 Listing $lines(saveglobal.txt) Entry(s)
+        did -r %a 2 | loadbuf -o %a 2 saveglobal.txt | did -z %a 2 
+      }
+      else { noop $input(Please select a Global Message to Delete.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 7) {
+      $iif($did(2).seltext,.msg operserv global $did(2).seltext,noop $input(Please select a Global Message to Send Global.,uowd,ERROR,ERROR))
+    }
+    elseif (%c == 13) {
+      if ($did(9).state == 1) { var %t.global = 900 }
+      elseif ($did(10).state == 1) { var %t.global = 1800 }
+      elseif ($did(11).state == 1) { var %t.global = 2700 }
+      elseif ($did(12).state == 1) { var %t.global = 3600 }
+      if ($did(2).seltext) { 
+        $iif(%t.global,.timer 10 %t.global .msg operserv global $did(2).seltext,noop $input(Please select a Time.,uowd,ERROR,ERROR))
+      }
+      else { noop $input(Please select a Global Message to Send Global.,uowd,ERROR,ERROR) }
+    }
+  }
+}
+; ========================================
+; END GLOBAL INTERFACE DIALOG
+; ========================================
+
+; ========================================
+; IRCOP CHAT INTERFACE DIALOG
+; ========================================
+dialog ircopchat {
+  title IrcOp Chat
+  size -1 -1 300 175
+  option dbu
+  box "Received Messages", 1, 5 5 290 115
+  list 2, 10 15 280 90, hsbar, vsbar, sort
+  button "Delete", 3, 10 100 50 10
+  button "Delete All", 4, 65 100 50 10
+  box "Sending Interface", 5, 5 125 290 40
+  edit "", 6, 10 135 280 10, autohs
+  button "WallOps", 7, 10 150 40 10
+  button "GlobOps", 8, 55 150 40 10
+  button "LocOps", 9, 100 150 40 10
+  button "ChatOps", 10, 145 150 40 10
+  button "AdminChat", 11, 190 150 40 10
+  button "NetAdmin.Chat", 12, 235 150 40 10
+  menu "Config..", 13
+  item "Settings", 14, 13
+}
+on *:dialog:ircopchat:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { loadbuf -o %a 2 ircopchat.txt | did -z %a 2 }
+  elseif (%b == sclick) {
+    if (%c == 3) { 
+      if ($did(2).seltext) { write $+(-ds,",$did(2).seltext,") ircopchat.txt | did -r %a 2 | loadbuf -o %a 2 ircopchat.txt | did -z %a 2 }
+      else { noop $input(Please select a Message to Delete.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 4) { write -c ircopchat.txt | did -r %a 2 }
+    elseif ($istok(7 8 9 10 11 12,%c,32)) {
+      if ($did(6)) { 
+        if ($istok(7 8 9,%c,32)) { $did(%c) $did(6) }
+        else {
+          if (%c == 10) { chatops $did(6) }
+          elseif (%c == 11) { adchat $did(6) }
+          elseif (%c == 12) { nachat $did(6) }
+        } 
+      }
+      else { noop $input(Please enter a Message to send.,uowd,ERROR,ERROR) }
+    }
+  }
+  elseif (%b == menu) && (%c == 14) { dialog $iif($dialog(ircopchatsettings),-v,-dm ircopchatsettings) ircopchatsettings }
+}
+on $*:snotice:$(/( $+ %ircopchatsettings $+ )\b/iS): { 
+  write ircopchat.txt $network $date $timestamp $1-
+  if ($dialog(ircopchat)) { did -a ircopchat 2 $network $date $timestamp $1- | did -z ircopchat 2 }
+} 
+dialog ircopchatsettings {
+  title ircopchatsettings
+  size -1 -1 70 85
+  option dbu
+  box "Catch", 1, 5 5 60 75
+  check "GlobOps", 2, 10 15 50 10
+  check "LocOps", 3, 10 25 50 10
+  check "ChatOps", 4, 10 35 50 10
+  check "AdminChat", 5, 10 45 50 10
+  check "NetAdmin.Chat", 6, 10 55 50 10
+  button "Save", 7, 10 65 50 10
+}
+on *:dialog:ircopchatsettings:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) {
+    if ($istok(%ircopchatsettings,Global,124)) { did -c %a 2 }
+    if ($istok(%ircopchatsettings,LocOps,124)) { did -c %a 3 }
+    if ($istok(%ircopchatsettings,ChatOps,124)) { did -c %a 4 }
+    if ($istok(%ircopchatsettings,AdminChat,124)) { did -c %a 5 }
+    if ($istok(%ircopchatsettings,NetAdmin.Chat,124)) { did -c %a 6 }
+  }
+  elseif (%b == sclick) { 
+    if (%c == 7) {
+      unset %ircopchatsettings
+      if ($did(2).state = 1) { set %ircopchatsettings $addtok(Global,%ircopchatsettings,124) }
+      if ($did(3).state = 1) { set %ircopchatsettings $addtok(LocOps,%ircopchatsettings,124) }
+      if ($did(4).state = 1) { set %ircopchatsettings $addtok(ChatOps,%ircopchatsettings,124) }
+      if ($did(5).state = 1) { set %ircopchatsettings $addtok(AdminChat,%ircopchatsettings,124) }
+      if ($did(6).state = 1) { set %ircopchatsettings $addtok(NetAdmin.Chat,%ircopchatsettings,124) }
+    }
+  }
+}
+; ========================================
+; END IRCOP CHAT INTERFACE DIALOG
+; ========================================
+
+; ========================================
+; OPERSERV ACCESS LIST DIALOG
+; ========================================
+dialog osaccess {
+  title OperServ Access List
+  size -1 -1 195 135
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 90 125
+  list 2, 10 15 80 90, hsbar, vsbar, sort
+  box "", 3, 100 5 90 125
+  text "Nick", 4, 105 15 50 10
+  edit "", 5, 105 25 80 10, autohs
+  button "Add", 6, 105 110 80 10
+  button "Del", 7, 10 110 80 10
+  menu "Listing Option", 8
+  item "Admin List", 9, 8
+  item "Oper List", 10, 8
+  item "Staff List", 11, 8
+}
+on *:dialog:osaccess:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { set %osa_tot 0 }
+  elseif (%b == dclick) && (%c == 2) { whois $did(2).seltext $did(2).seltext }
+  elseif (%b == sclick) { 
+    if ($istok(6 7,%c,32)) { 
+      $iif($iif($did(%c) == del,$did(2).seltext,$did(5)),.msg operserv %osviewing $did(%c) $iif(%time,%time) $iif($did(%c) == del,$did(2).seltext,$did(5)),noop $input(Please $iif($did(%c) == del,select,input) a Nick to $did(%c) $+ .,uowd,ERROR,ERROR)) 
+      if ($did(%c) == add) { did -r osaccess 5 }
+      set %osa_tot 0 | did -r osaccess 2 | .enable #osaccess | .msg operserv %osviewing list
+    }
+  }
+  elseif (%b == menu) { 
+    set %osviewing $gettok($did(%c),1,32) | did -ra osaccess 1 Listing 0 %osviewing Entry(s) 
+    did $iif(%osviewing == Staff,-b,-e) %a 5-7 | set %osa_tot 0 | did -r osaccess 2 
+    .enable #osaccess | .msg operserv $did(%c) 
+  }
+  elseif (%b == close) { unset %os_viewing }
+}
+alias osaccesserror { noop $input($$1-,uowd,ERROR,ERROR) }
+#osaccess off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(osaccess)) {
+    if (has been isin $1-) || (list: isin $1-) || (nick == $2) {  }
+    elseif (list is empty. isin $1-) { unset %osa_tot | .disable #osaccess }
+    elseif (already exists on isin $1-) { .timer 1 2 osaccesserror $strip($1-) }
+    elseif ($1 isnum) { inc %osa_tot | did -ra osaccess 1 Listing %osa_tot %osviewing Entry(s) | did -a osaccess 2 $2 | did -z osaccess 2 }
+    elseif (End of isin $1-) { unset %osa_tot | .disable #osaccess }
+    else { 
+      if (!$istok(Level List,$2,32)) { inc %osa_tot | did -ra osaccess 1 Listing %osa_tot %osviewing Entry(s) | did -a osaccess 2 $2- | did -z osaccess 2 } 
+    }
+    haltdef
+  }
+  else { unset %osa_tot | .disable #osaccess }
+}
+#osaccess end
+; ========================================
+; END OPERSERV ACCESS LIST DIALOG
+; ========================================
+
+; ========================================
+; OPERSERV EXCEPTION DIALOG
+; ========================================
+dialog os_except {
+  title Exeption List For $network
+  size -1 -1 200 165
+  option dbu
+  box "", 1, 5 5 120 115
+  text "Limit", 2, 10 15 30 10
+  list 3, 10 25 30 90, hsbar, vsbar
+  text "Host", 4, 40 15 80 90
+  list 5, 40 25 80 90, hsbar, vsbar
+  box "", 6, 130 5 65 115
+  text "Time", 7, 140 15 40 10
+  check "1h", 8, 140 25 20 10
+  check "1d", 9, 160 25 20 10
+  check "7d", 10, 140 40 20 10
+  check "Perm", 11, 160 40 20 10
+  text "Limit", 12, 140 55 40 10
+  check "5", 13, 140 65 20 10
+  check "10", 14, 160 65 20 10
+  check "20", 15, 140 80 20 10
+  check "50", 16, 160 80 20 10
+  text "Host To Add", 17, 10 120 50 10
+  edit "", 18, 10 130 180 10, autohs
+  button "Add", 19, 10 145 80 10
+  button "Del", 20, 110 145 80 10
+}
+on *:dialog:os_except:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { os_get-e }
+  elseif (%b == sclick) {
+    if (%c == 19) {
+      if ($did(8).state == 1) { var %os_expiry = $+(+,$did(8)) }
+      elseif ($did(9).state == 1) { var %os_expiry = $+(+,$did(9)) }
+      elseif ($did(10).state == 1) { var %os_expiry = $+(+,$did(10)) }
+      elseif ($did(11).state == 1) { var %os_expiry = +0 }
+      elseif (!%os_expiry) { var %os_expiry = $os_def-time }
+      if ($did(13).state == 1) { var %os_limit = $did(13) }
+      elseif ($did(14).state == 1) { var %os_limit = $did(14) }
+      elseif ($did(15).state == 1) { var %os_limit = $did(15) }
+      elseif ($did(16).state == 1) { var %os_limit = $did(16) }
+      elseif (!%os_limit) { var %os_limit = $os_def-limit }
+      if ($did(18)) { operserv exception add %os_expiry $did(18) %os_limit $os_def-reason | did -r os_except 3,5 | os_get-e }
+      else { noop $input(Please enter a Host to Add.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 20) {
+      if ($did(5).seltext) { operserv exception del $did(5).seltext | did -r os_except 3,5 | os_get-e }
+      else { noop $input(Please select a Host to Delete.,uowd,ERROR,ERROR) }
+    }
+  }
+}
+alias os_get-e { 
+  set %os_tot 0 | .enable #os_exception 
+  .timer 1 5 unset %os_tot | .timer 1 5 .disable #os_exception | .msg operserv exception list 
+}
+alias os_def-limit return 5
+alias os_def-time return 7d
+alias os_def-reason return Default Exception Reason
+#os_exception off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(os_except)) {
+    if ($1- == Current Session Limit Exception list:) || (set to isin $1-) || (Deleted isin $1-) || ($1- == Num Limit Host) { haltdef }
+    else { 
+      inc %os_tot
+      did -ra os_except 1 Listing %os_tot Exception Entry(s)
+      did -a os_except 3 $2 | did -z os_except 3
+      did -a os_except 5 $3- | did -z os_except 5
+      haltdef 
+    }
+  }
+  else { .disable #os_exception }
+}
+#os_exception end
+; ========================================
+; END OPERSERV EXCEPTION DIALOG
+; ========================================
+
+; ========================================
+; OPERSERV MODULES LIST DIALOG
+; ========================================
+dialog modules {
+  title Modules List For $network
+  size -1 -1 195 135
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 90 125
+  list 2, 10 15 80 90, hsbar, vsbar, sort
+  box "", 3, 100 5 90 125
+  text "Module:", 4, 105 15 80 10
+  edit "", 5, 105 25 80 10, autohs
+  button "Load", 6, 105 110 80 10
+  button "UnLoad", 7, 10 110 80 10
+  text "Note: Do not include the file extension.", 8, 105 35 80 20
+}
+on *:dialog:modules:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { .enable #modules | .msg operserv modlist }
+  elseif (%b == sclick) { 
+    if (%c == 6) { 
+      if ($did(5)) { .msg operserv modload $did(5) | did -r modules 2,5 | .enable #modules | .msg operserv modlist }
+      else { noop $input(Please input a module to Load.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 7) { 
+      if ($did(2).seltext) { .msg operserv modunload $gettok($did(2).seltext,1,32) | did -r modules 2 | .enable #modules | .msg operserv modlist }
+      else { noop $input(Please select a module to UnLoad.,uowd,ERROR,ERROR) }
+    }
+  }
+}
+alias moduleerror { noop $input($$1- $+ .,uowd,ERROR,ERROR) }
+#modules off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(modules)) {
+    if (Unable to load module isin $1-) { .timer 1 2 moduleerror $strip($1-) | haltdef }
+    if (Module: == $1) { did -a modules 2 $strip($2-) | did -z modules 2 }
+    if (Modules Loaded. isin $1-) { did -ra modules 1 Listing $1 Entry(s) | .disable #modules }
+    haltdef
+  }
+  else { .disable #modules }
+}
+#modules end
+; ========================================
+; END OPERSERV MODULES LIST DIALOG
+; ========================================
+
+; ========================================
+; SERVERS LIST DIALOG
+; ========================================
+dialog servers {
+  title Connected Servers
+  size -1 -1 100 135
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 90 125
+  list 2, 10 15 80 90, hsbar, vsbar
+  button "Kill", 3, 10 105 80 10
+  button "Restart", 4, 10 115 80 10
+}
+on *:dialog:servers:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { .enable #serversmap | .map }
+  elseif (%b == sclick) {
+    if (%c == 3) { $iif($did(2).seltext,die $gettok($did(2).seltext,1,32) $$?"Password",noop $input(Please select a server to apply the DIE command to.,uowd,ERROR,ERROR)) }
+    elseif (%c == 4) { $iif($did(2).seltext,restart $gettok($did(2).seltext,1,32) $$?"Password" $$?"Optional reason",noop $input(Please select a server to apply the RESTART command to.,uowd,ERROR,ERROR)) }
+  }
+}
+#serversmap off
+raw *:*: {
+  if ($dialog(servers)) {
+    if ($numeric == 006) { inc %map_tot | did -a servers 2 $remove($2-,|,`,-) | did -z servers 2 }
+    elseif ($numeric == 007) { did -ra servers 1 Listing %map_tot Entry(s) | unset %map_tot | .disable #serversmap }
+    haltdef
+  }
+  else { unset %map_tot | .disable #serversmap }
+}
+#serversmap end
+; ========================================
+; END SERVERS LIST DIALOG
+; ========================================
+
+; ========================================
+; FORBIDDEN LIST DIALOG
+; ========================================
+dialog forbidden_list {
+  title Forbidden List For $network
+  size -1 -1 110 180
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 100 170
+  list 2, 10 15 90 90, hsbar, vsbar, sort
+  text "... To Forbid", 3, 10 110 90 10
+  edit "", 4, 10 120 90 10, autohs
+  text "Reason", 5, 10 130 90 10
+  edit "", 6, 10 140 90 10, autohs
+  button "Add", 7, 10 155 40 10
+  button "Del", 8, 60 155 40 10
+  menu "Listing Options", 9
+  item "List Channels", 10, 9
+  item "List Nicks", 11, 9
+}
+on *:dialog:forbidden_list:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == menu) {
+    set %forbidview $iif(%c == 10,ChanServ,NickServ)
+    did -ra %a 3 $iif(%c == 10,Channel,Nick) to Forbid
+    forbidrefresh
+  }
+  elseif (%b == dclick) {
+    if (%c == 2) { .msg %forbidview info $did(2).seltext }
+  }
+  elseif (%b == sclick) {
+    if (%c == 7) { 
+      if ($did(4)) && ($did(6)) { 
+        var %forbid = $iif(%forbidview == ChanServ,$iif($left($did(4),1) == $chr(35),$did(4),$+($chr(35),$did(4))),$did(4))
+        .msg %forbidview forbid %forbid $did(6) | did -r %a 4,6 | forbidrefresh 
+      }
+      else { noop $input(Please input a $iif(%forbidview == ChanServ,Channel,Nick) and a reason.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 8) { 
+      if ($did(2).seltext) { .msg %forbidview drop $did(2).seltext | forbidrefresh }
+      else { noop $input(Please select a $iif(%forbidview == ChanServ,Channel,Nick) to delete.,uowd,ERROR,ERROR) } 
+    }
+  }
+  elseif (%b == close) { unset %forbidview }
+}
+alias forbidrefresh { did -r forbidden_list 2 | .enable #forbid | .msg %forbidview list * forbidden }
+#forbid off
+on ^*:notice:*:*: {
+  if ($nick == ChanServ) || ($nick == NickServ) {
+    echo -a $1-
+    if (Channel == $1) || (Nick == $1) || (Nickname == $1) {  }
+    elseif (is now forbidden. isin $1-) || (List of entries matching isin $1-) {  }
+    elseif (End of list isin $1-) { .timer 1 5 did -ra forbidden_list 1 Listing %forbid_tot Entry(s) | unset %forbid_tot | .disable #forbid }
+    elseif (%forbidview == ChanServ) && ($left($1,1) == $chr(35)) { inc %forbid_tot | did -a forbidden_list 2 $1 | did -z forbidden_list 2 }
+    elseif (%forbidview == NickServ) { inc %forbid_tot | did -a forbidden_list 2 $1 | did -z forbidden_list 2 }
+    haltdef
+  }
+}
+#forbid end
+; ========================================
+; END FORBIDDEN LIST DIALOG
+; ========================================
+
+; ========================================
+; NOEXPIRE LIST DIALOG
+; ========================================
+dialog noexpire_list {
+  title NoExpire List For $network
+  size -1 -1 110 160
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 100 150
+  list 2, 10 15 90 90, hsbar, vsbar, sort
+  text "... To NoExpire", 3, 10 110 90 10
+  edit "", 4, 10 120 90 10, autohs
+  button "Add", 7, 10 135 40 10
+  button "Del", 8, 60 135 40 10
+  menu "Listing Options", 9
+  item "List Channels", 10, 9
+  item "List Nicks", 11, 9
+}
+on *:dialog:noexpire_list:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == menu) {
+    set %noexpireview $iif(%c == 10,ChanServ,NickServ)
+    did -ra %a 3 $iif(%c == 10,Channel,Nick) to NoExpire
+    noexpirerefresh
+  }
+  elseif (%b == dclick) {
+    if (%c == 2) { .msg %noexpireview info $did(2).seltext }
+  }
+  elseif (%b == sclick) {
+    if (%c == 7) { 
+      if ($did(4)) { 
+        var %noexpire = $iif(%noexpireview == ChanServ,$iif($left($did(4),1) == $chr(35),$did(4),$+($chr(35),$did(4))),$did(4))
+        .msg %noexpireview $iif(%noexpireview == ChanServ,set,saset) %noexpire noexpire on | did -r %a 4 | noexpirerefresh 
+      }
+      else { noop $input(Please input a $iif(%noexpireview == ChanServ,Channel.,Nick.),uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 8) { 
+      if ($did(2).seltext) { .msg %noexpireview $iif(%noexpireview == ChanServ,set,saset) $did(2).seltext noexpire off | noexpirerefresh }
+      else { noop $input(Please select a $iif(%noexpireview == ChanServ,Channel.,Nick.),uowd,ERROR,ERROR) } 
+    }
+  }
+  elseif (%b == close) { unset %noexpireview }
+}
+alias noexpirerefresh { did -r noexpire_list 2 | .enable #noexpire | .msg %noexpireview list * noexpire }
+#noexpire off
+on ^*:notice:*:*: {
+  if ($nick == ChanServ) || ($nick == NickServ) {
+    if (Channel == $1) || (Nick == $1) || (Nickname == $1) {  }
+    elseif (will not expire. isin $strip($1-)) || (List of entries matching isin $1-) {  }
+    elseif (End of list == $1-3) { did -ra noexpire_list 1 Listing %noexpire_tot Entry(s) | unset %noexpire_tot | .disable #noexpire }
+    elseif (%noexpireview == ChanServ) && ($left($1,1) == $chr(33)) { inc %noexpire_tot | did -a noexpire_list 2 $right($1,$calc($len($1) - 1)) | did -z noexpire_list 2 }
+    elseif (%noexpireview == NickServ) && ($1 !== End) { inc %noexpire_tot | did -a noexpire_list 2 $right($1,$calc($len($1) - 1)) | did -z noexpire_list 2 }
+    haltdef
+  }
+}
+#noexpire end
+; ========================================
+; END NOEXPIRE LIST DIALOG
+; ========================================
+
+; ========================================
+; LINES DIALOG
+; ========================================
+dialog lines {
+  title Lines For $network
+  size -1 -1 200 185
+  option dbu
+  box "Listing 0 Entry(s)", 1, 5 5 120 115
+  text "Host:Reason", 2, 10 15 110 90
+  list 3, 10 25 110 90, hsbar, vsbar
+  box "", 4, 130 5 65 115
+  text "Time", 5, 140 15 40 10
+  check "1h", 6, 140 25 20 10
+  check "1d", 7, 160 25 20 10
+  check "7d", 8, 140 40 20 10
+  check "Perm", 9, 160 40 20 10
+  text "Host/IP To Add", 10, 10 120 50 10
+  edit "", 11, 10 130 180 10, autohs
+  text "Reason", 12, 10 140 50 10
+  edit "", 13, 10 150 180 10, autohs 
+  button "Add", 14, 10 165 80 10
+  button "Del", 15, 110 165 80 10
+  menu "Listing Options", 16
+
+  item "SGLINE", 17, 16
+  item "SQLINE", 18, 16
+  item "SZLINE", 19, 16
+  item "AKILL", 20, 16
+  item "GLINE", 21, 16
+  item "KLINE", 22, 16
+  item "GZLINE", 23, 16
+}
+on *:dialog:lines:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == sclick) { 
+    if (%c == 14) {
+      if ($did(6).state == 1) { var %kg_expiry = $+(+,$did(6)) }
+      elseif ($did(7).state == 1) { var %kg_expiry = $+(+,$did(7)) }
+      elseif ($did(8).state == 1) { var %kg_expiry = $+(+,$did(8)) }
+      elseif ($did(9).state == 1) { var %kg_expiry = $+(+,0) }
+      else { var %kg_expiry = $+(+,0) }
+      if ($did(11)) && ($did(13)) { 
+
+        if ($istok(sgline sqline szline akill,%lines_viewing,32)) { .msg operserv %lines_viewing add %kg_expiry $did(11) $+(:,$did(13)) }
+        if ($istok(gline kline gzline,%lines_viewing,32)) { %lines_viewing $did(11) $iif(%kg_expiry,%kg_expiry) $did(13) }
+
+
+        did -ra lines 1 Listing 0 %lines_viewing Entry(s)
+        did -r %a 3,11,13 | .enable #lines 
+        if ($istok(sgline sqline szline akill,%lines_viewing,32)) { .msg operserv %lines_viewing list }
+        if ($istok(gzline,%lines_viewing,32)) { %lines_viewing }
+        if ($istok(gline kline,%lines_viewing,32)) { stats $left(%lines_viewing,1) }
+
+      }
+      else { noop $input(Please enter a Host/IP and a Reason to Add.,uowd,ERROR,ERROR) }
+    }
+    elseif (%c == 15) {
+      if ($did(3).seltext) { 
+        if ($istok(sgline sqline szline akill,%lines_viewing,32)) { .msg operserv %lines_viewing del $gettok($did(3).seltext,1,32) }
+        if ($istok(gline kline gzline,%lines_viewing,32)) { %lines_viewing $+(-,$gettok($did(3).seltext,1,32)) }
+
+        did -ra lines 1 Listing 0 %lines_viewing Entry(s)
+        did -r %a 3 | .enable #lines 
+
+        if ($istok(sgline sqline szline akill,%lines_viewing,32)) { .msg operserv %lines_viewing list }
+        if ($istok(gzline,%lines_viewing,32)) { %lines_viewing }
+        if ($istok(gline kline,%lines_viewing,32)) { stats $left(%lines_viewing,1) }
+
+      }
+      else { noop $input(Please select a Host/IP to Del.,uowd,ERROR,ERROR) }
+    }
+  }
+  elseif (%b == menu) { 
+    did -r %a 3 | set %lines_viewing $did(%c)
+    did -ra lines 1 Listing 0 %lines_viewing Entry(s)
+    .enable #lines 
+    if (%lines_viewing == szline) { noop $input(Reminder: you can only add IP masks to the SZLINE list.,uowd,ERROR,ERROR) }
+    if ($istok(sgline sqline szline akill,%lines_viewing,32)) { .msg operserv %lines_viewing list }
+    if ($istok(gzline,%lines_viewing,32)) { %lines_viewing }
+    if ($istok(gline kline,%lines_viewing,32)) { stats $left(%lines_viewing,1) }
+  }
+  elseif (%b == close) { unset %lines_viewing }
+}
+#lines off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(lines)) { 
+    if ($istok(Num Current,$1,32)) {  }
+    if ($1 isnum) { 
+      did -ra lines 1 Listing $1 %lines_viewing Entry(s) 
+      did -a lines 3 $2- 
+      did -z lines 3 
+    }
+    if (End of %lines_viewing list. == $1-) { .disable #lines }
+    haltdef
+  }
+  else { .disable #lines }
+}
+raw *:*: {
+  if ($numeric == 223) { inc %kg_linetot | did -a lines 3 $3 : $7- }
+  elseif ($numeric == 219) { 
+    did -z lines 3 
+    did -ra lines 1 Listing $iif(%kg_linetot,%kg_linetot,0) %lines_viewing Entry(s) 
+    .disable #lines | unset %kg_linetot 
+  }
+  haltdef
+}
+#lines end
+; ========================================
+; END LINES DIALOG
+; ========================================
+
+; ========================================
+; LIST USERS DIALOG
+; ========================================
+dialog listuserdata {
+  title List Users
+  size -1 -1 200 175
+  option dbu
+  box "", 1, 5 5 90 105
+  list 2, 10 15 80 90, hsbar, vsbar, sort
+  box "Actions", 3, 100 5 95 55
+  button "SAJoin", 4, 105 15 30 10
+  button "SAPart", 5, 150 15 30 10
+  button "Kill", 6, 105 30 30 10
+  button "Shun", 7, 150 30 30 10
+  button "G:Line", 8, 105 45 30 10
+  box "Reason", 9, 5 110 190 30
+  edit "", 10, 10 120 180 10, autohs
+  box "Channel", 11, 5 140 190 30
+  edit "", 12, 10 150 180 10, autohs
+  box "Period", 15, 100 60 95 50
+  radio "10m", 16, 105 70 30 10
+  radio "15m", 17, 135 70 30 10
+  radio "30m", 18, 165 70 30 10
+  radio "1h", 19, 105 90 30 10
+  radio "1d", 20, 135 90 30 10
+  radio "Perm", 21, 165 90 30 10
+  menu "Listing Options", 22
+  item "List Global Users", 23, 22
+  item "List Not In Chan Users", 24, 22
+  item "List +B (BOT) Users", 25, 22
+  button "Join", 26, 105 15 30 10
+  button "Kill", 27, 150 15 30 10
+  button "Shun", 28, 105 30 30 10
+}
+on *:dialog:listuserdata:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { did -h %a 4-8,26-28 }
+  elseif (%b == menu) {
+    if (%c == 23) { did -e %a 10,12 | did -h %a 26-28 | did -v %a 4-8 |  set %listuserview 1 | listuserlist }
+    elseif (%c == 24) {  did -b %a 10,12 | did -h %a 4-8 | did -v %a 26-28 | set %listuserview 2 | listuserlist }
+    elseif (%c == 25) { did -e %a 10,12 | did -h %a 26-28 | did -v %a 4-8 | set %listuserview 3 | listuserlist }
+  }
+  elseif (%b == dclick) && (%c == 2) { whois $did(2).seltext $did(2).seltext }
+  elseif (%b == sclick) {
+    if ($istok(4 5 6 7 8,%c,32)) {
+      if ($did(listuserdata,2).seltext) { 
+        if ($did(listuserdata,16).state == 1) { var %period = $did(listuserdata,16) }
+        elseif ($did(listuserdata,17).state == 1) { var %period = $did(listuserdata,17) }
+        elseif ($did(listuserdata,18).state == 1) { var %period = $did(listuserdata,18) }
+        elseif ($did(listuserdata,19).state == 1) { var %period = $did(listuserdata,19) }
+        elseif ($did(listuserdata,20).state == 1) { var %period = $did(listuserdata,20) }
+        elseif ($did(listuserdata,21).state == 1) { var %period = 0 }
+        else { var %period = 0 }
+        var %listuserdatachan = $iif($did(listuserdata,12),$iif($left($did(listuserdata,12),1) == $chr(35),$did(listuserdata,12),$+($chr(35),$did(listuserdata,12))),noop $input(Please enter a channel.,uowd,ERROR,ERROR))
+        if (%c == 4) { listuserdataaction $did(listuserdata,2).seltext sajoin %listuserdatachan }
+        elseif (%c == 5) { listuserdataaction $did(listuserdata,2).seltext sapart %listuserdatachan | listuserlist }
+        elseif (%c == 6) { listuserdataaction $did(listuserdata,2).seltext kill $iif($did(listuserdata,10),$did(listuserdata,10),$listuserautokillreason) | listuserlist }
+        elseif (%c == 7) { listuserdataaction $did(listuserdata,2).seltext shun %period $iif($did(listuserdata,10),$did(listuserdata,10),$listuserautoshunreason) | listuserlist }
+        elseif (%c == 8) { listuserdataaction $did(listuserdata,2).seltext gline %period $iif($did(listuserdata,10),$did(listuserdata,10),$listuserautoglinereason) | listuserlist }
+      }
+      else { noop $input(Please select a Nick to take action against.,uowd,ERROR,ERROR) }
+    }
+    elseif ($istok(26 27 28,%c,32)) { .msg operserv notinchanlist $did(%c) | listuserlist }
+  }
+  elseif (%b == close) { unset %listuserview }
+}
+alias listuserlist {
+  if (%listuserview == 1) { set %glob_tot 0 | did -r listuserdata 2 | .enable #listglobal | os userlist }
+  elseif (%listuserview == 2) { set %idle_tot 0 | did -r listuserdata 2 | .enable #listidle | os notinchanlist }
+  elseif (%listuserview == 3) { set %bot_tot 0 | did -r listuserdata 2 | .enable #listbots | who +m B }
+}
+alias listuserdataaction {
+  tokenize 32 $1-
+  $iif($istok(sajoin sapart kill shun,$2,32),$2 $1 $3-,$2 $3 $1 $4-)
+}
+alias listuserautokillreason return Auto-reason For Server /kill
+alias listuserautoshunreason return Auto-reason For Server /shun
+alias listuserautoglinereason return Auto-reason For Server /gline
+#listglobal off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(listuserdata)) {
+    if ($1- == Nick  Mask) || ($1- == Users list:) {  }
+    elseif (End of users list. isin $1-) { unset %glob_tot | .disable #listglobal }
+    else { inc %glob_tot | did -ra listuserdata 1 Listing %glob_tot Entry(s) | did -a listuserdata 2 $1 | did -z listuserdata 2 }
+    haltdef
+  }
+  else { unset %glob_tot | .disable #listglobal }
+}
+#listglobal end
+#listidle off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(listuserdata)) {
+    if (Out of isin $1-) && (possible malicious clients were detected. isin $1-) { did -ra listuserdata 1 Listing %idle_tot Entry(s) | unset %idle_tot | .disable #listidle }
+    elseif ($1 == Match:) { inc %idle_tot | did -ra listuserdata 1 Listing %idle_tot Entry(s) | did -a listuserdata 2 $2 }
+    haltdef
+  }
+  else { unset %idle_tot | .disable #listidle }
+}
+#listidle end
+#listbots off
+raw *:*: {
+  if ($dialog(listuserdata)) { 
+    if ($numeric == 352) { 
+      tokenize 32 $1-
+      inc %bot_tot | did -ra listuserdata 1 Listing %bot_tot Bot Entry(s) | did -a listuserdata 2 $6 
+    }
+    elseif (End of /WHO list. isin $1-) { unset %bot_tot | .disable #listbots  }
+    haltdef
+  }
+  else { unset %bot_tot | .disable #listbots }
+}
+#listbots end
+; ========================================
+; END LIST USERS DIALOG
+; ========================================
+
+; ========================================
+; CHANGE USER DATA DIALOG
+; ========================================
+dialog chguserdata {
+  title Change User Data
+  size -1 -1 195 170
+  option dbu
+  box "", 1, 5 5 90 105
+  list 2, 10 15 80 95, hsbar, vsbar, sort
+  box "", 3, 100 5 90 105
+  text "Change:", 4, 110 15 50 10
+  check "Nick", 5, 110 25 30 10
+  check "Ident", 6, 150 25 30 10
+  check "Host", 7, 110 40 30 10
+  check "Name", 8, 150 40 30 10
+  edit "", 9, 110 50 70 10
+  button "Change", 10, 110 65 70 10
+  text "NOTE: Nick requires superadmin.", 11, 110 75 70 20
+  box "", 12, 5 110 185 55
+  text "Nick", 13, 10 120 170 10
+  text "Ident", 14, 10 130 170 10
+  text "Host", 15, 10 140 170 10
+  text "Name", 16, 10 150 170 10
+}
+on *:dialog:chguserdata:*:*: {
+  var %a = $dname, %b = $devent, %c = $did
+  if (%b == init) { .enable #chguser | .msg operserv userlist }
+  elseif (%b == sclick) {
+    if (%c == 2) { .enable #nsinfo | did -ra chguserdata 13 Nick: $did(%c).seltext | .msg nickserv info $did(%c).seltext all }
+    if (%c == 10) {
+      if ($did(5).state == 1) { var %chg = .msg operserv svsnick }
+      elseif ($did(6).state == 1) { var %chg = .chgident }
+      elseif ($did(7).state == 1) { var %chg = .chghost }
+      elseif ($did(8).state == 1) { var %chg = .chgname }
+      else { noop $input(Please select something to change.,uowd,ERROR,ERROR) }
+      if ($did(2).seltext) && ($did(9)) && (%chg) { 
+        %chg $did(2).seltext $did(9) 
+        .enable #nsinfo | did -ra chguserdata 13 Nick: $did(%c).seltext | .msg nickserv info $did(%c).seltext all
+      }
+      else { noop $input(Please select a Nick and enter something to change.,uowd,ERROR,ERROR) }
+    }
+  }
+  elseif (%b == dclick) && (%c == 2) { whois $did(2).seltext $did(2).seltext }
+}
+#nsinfo off
+on ^*:notice:*:*: {
+  if ($nick == NickServ) && ($dialog(chguserdata)) {
+    haltdef
+    if (is == $2) && (!$istok(a online,$3,32)) { did -ra chguserdata 16 Name: $3 }
+    if (Is online from: isin $1-)  { 
+      did -ra chguserdata 14 Ident: $gettok($4,1,64) 
+      did -ra chguserdata 15 Host: $gettok($4,2,64) 
+    }
+    elseif ($istok(Time Last E-mail vhost: Options:,$1,32)) { haltdef }
+    elseif (Expires == $1) { .disable #nsinfo }
+    if (isn't registered. isin $1-) { did -r chguserdata 14,15,16 | did -ra chguserdata 13 This nick is not registered. | .disable #nsinfo }
+  }
+  else { .disable #nsinfo }
+}
+#nsinfo end
+#chguser off
+on ^*:notice:*:*: {
+  if ($nick == OperServ) && ($dialog(chguserdata)) {
+    if ($1- == Nick  Mask) || (Users list: isin $1-) { haltdef }
+    elseif (End of users list. isin $1-) { .disable #chguser }
+    else { did -a chguserdata 2 $1 }
+    haltdef
+  }
+  else { .disable #chguser }
+}
+#chguser end
+; ========================================
+; END CHANGE USER DATA DIALOG
+; ========================================
+
+; ========================================
+; SERVER ADMIN COMMANDS MENU
+; ========================================
+menu status,menubar,channel,nicklist,query {
+  --( Server Admin Commands )--
+  .--( Show Info )--
+  ..--( Show Motd File )--:motd $server
+  ..--( Add to the end of MOTD File )--:addmotd $$?"Text to add"
+  ..--( Show Server Rules )--:rules $server
+  ..--( List Users On Server )--:lusers $server
+  ..--( Stats )--:msg operserv stats
+  .--( Log Ins )--
+  ..--( Oper )--:oper $me $$?"Password"
+  ..--( Vhost )--:vhost $$?"LogIn" $$?"Password"
+  .--( Silence List )--
+  ..--( Add )--:silence + $+ $$?"Nick"
+  ..--( Remove )--:silence - $+ $$?"Nick"
+  ..--( List )--:silence
+  .--( Mass Message )--
+  ..--( Wallops )--:wallops $$?"Message To Send"
+  ..--( Globops )--:globops $$?"Message To Send"
+  ..--( Locops )--:locops $$?"Message To Send"
+  ..--( Online Ircops )--:chatops $$?"Message To Send"
+  ..--( Online Admins )--:adchat $$?"Message To Send"
+  ..--( Online NetAdmins )--:nachat $$?"Message To Send"
+  .--( sa commands )--
+  ..--( Force join )--:sajoin $$?"Nick" $$?"channel to make user join"
+  ..--( Force part )--:sapart $$1 $$?"channel to make user part"
+  ..--( Change channel modes )--:samode $$?"channel to change modes on" $$?"Mode"
+  .--( Set commands )--
+  ..--( Change your vhost )--:sethost $$?"new host name ( no spaces )"
+  ..--( Change your ident )--:setident $$?"new ident"
+  .--( Change User Info )--
+  ..--( Change users host )--:chghost $$1 $$?"Host"
+  ..--( Change users name )--:chgname $$1  $$?"Name"
+  ..--( Change users ident )--:chgident $$1 $$?"Ident"
+  .--( kill / kills user from the server )--:kill $$1 $$?"Reason"
+  .--( kgz lines )--
+  ..--( k lines )--
+  ...--( Add a 1 day kline )--:kline $$1 1d $$?"reason for kline"
+  ...--( Del a kline )--:kline - $+ $$?"hostmask of user to remove"
+  ...--( List klines )--:stats K
+  ..--( g lines )--
+  ...--( Add a 1 day gline )--:gline $$1 1d $$?"reason for kline"
+  ...--( Del a gline )--:gline - $+ $$?"hostmask of user to remove"
+  ...--( List glines )--:stats G
+  ..--( zlines )--
+  ...--( Add a permanent zline )--:zline $$?"*@ipmask" $$?"reason for zline"
+  ...--( Del a zline )--:zline - $+ $$?"*@ipmask"
+  ...--( List zlines )--:stats Z
+  .--( Shun )--
+  ..--( 5 min )--:shun $$1 300 $$?"reason for shun"
+  ..--( 10 min )--:shun $$1 300 $$?"reason for shun"
+  ..--( 15 min )--:shun $$1 300 $$?"reason for shun"
+  .--( Tempshun )--
+  ..--( Add Tempshun )--:tempshun $$1 $$?"Reason for tempshun"
+  ..--( Del Tempshun )--:tempshun - $+ $$1
+  .--( Rehash config files )--:rehash $server
+  .--( Restart server )--:restart $$?"Password"
+  .--( Kill server )--:die $$?"Password"
+}
+; ========================================
+; END SERVER ADMIN COMMANDS MENU
+; ========================================
+
+; ========================================
+; SERVICES COMMANDS MENU
+; ========================================
+menu status,menubar,channel,nicklist,query {
+  --( Services Commands )--
+  .--( OperServ )--
+  ..--( DefCon )--:msg operserv defcon $$?"1 , 2 , 3 , 4 , 5"
+  ..--( Message All Server Users )--:msg operserv global $$?"Message"
+  ..--( ForceID )--:os forceid $$?"Nick"
+  ..--( Kills )--
+  ...--( Kill All Channel Users )--:msg operserv chankill $$?"Channel to kill"
+  ...--( Kill Clones )--:msgoperserv killclones $$?"Nick"
+  ..--( Channel Settings )--
+  ...--( Kick User )--:msg operserv kick $$?"Channel" $$?"User" $$?"Reason"
+  ...--( Change Channel Modes )--:msg operserv mode $$?"Channel" $$?"Modes"
+  ...--( Clear All Channel Modes )--:msg operserv clearmodes $$?"Channel" all
+  ...--( Clear Channel Modes )--:msg operserv clearmodes $$?"Channel" $$?"Modes"
+  ..--( Display )--
+  ...--( Services and Network Stats )--:msg operserv stats
+  ...--( Staff and Online Status )--:msg operserv staff
+  ...--( Host Sessions )--:msg operserv session list $$?"Number of sessions"
+  ...--( Channel Records )--:msg operserv chanlist
+  ...--( User Records )--:msg operserv userlist
+  ..--( Modify )--
+  ...--( Services Admin List )--
+  ....--( Add )--:msg operserv admin add $$?"Nick"
+  ....--( Del )--:msg operserv admin del $$?"Nick , Entry-Number , List"
+  ....--( List )--:msg operserv admin list 
+  ....--( Clear )--:msg operserv admin clear
+  ...--( Services Oper List )--
+  ....--( Add )--:msg operserv oper add $$?"Nick"
+  ....--( Del )--:msg operserv oper del $$?"Nick , Entry-Number , List"
+  ....--( List )--:msg operserv oper list 
+  ....--( Clear )--:msg operserv oper clear
+  ...--( Services Ignore List )--
+  ....--( Add )--:msg operserv ignore add $$?"Nick"
+  ....--( Del )--:msg operserv ignore del $$?"Nick , Entry-Number , List"
+  ....--( List )--:msg operserv ignore list 
+  ....--( Clear )--:msg operserv ignore clear
+  ...--( Session-Limit Exception List )--
+  ....--( Add )--:msg operserv exception add $$?"Nick"
+  ....--( Del )--:msg operserv exception del $$?"Nick , Entry-Number , List"
+  ....--( List )--:msg operserv exception list 
+  ....--( Clear )--:msg operserv exception clear
+  ..--( News Related )--
+  ...--( Logon News )--
+  ....--( Add )--:msg operserv logonnews add $$?"Text to add"
+  ....--( Del )--:msg operserv logonnews del $$?"Number , All"
+  ....--( List )--:msg operserv logonnews list
+  ...--( OperNews )--
+  ....--( Add )--:msg operserv opernews add $$?"Text to add"
+  ....--( Del )--:msg operserv opernews del $$?"Number , All"
+  ....--( List )--:msg operserv opernews list
+  ...--( Random News )--
+  ....--( Add )--:msg operserv randomnews add $$?"Text to add"
+  ....--( Del )--:msg operserv randomnews del $$?"Number , All"
+  ....--( List )--:msg operserv randomnews list
+  ..--( Modules )--
+  ...--( Info)--:msg operserv modinfo $$?"Filename"
+  ...--( List )--:msg operserv modlist
+  ...--( List Specific )--:msg operserv modlist $$?"Core , 3rd , Protocol , Encryption , Supported , Qatested"
+  ...--( Load )--:msg operserv modload $$?"Filename"
+  ...--( Unload )--:msg operserv modunload $$?"Filename"
+  ..--( aKill List )--
+  ...--( Add )--:msg operserv akill add $$?"Mask and Reason"
+  ...--( Del )--:msg operserv akill del $$?"Mask , Entry-Number , List"
+  ...--( List )--:msg operserv akill list $$?"Mask , List"
+  ...--( View )--:msg operserv akill view $$?"Mask , List"
+  ...--( Clear )--:msg operserv akill clear
+  ..--( sGline List )--
+  ...--( Add )--:msg operserv sgline add $$?"Mask and Reason"
+  ...--( Del )--:msg operserv sgline del $$?"Mask , Entry-Number , List"
+  ...--( List )--:msg operserv sgline list $$?"Mask , List"
+  ...--( View )--:msg operserv sgline view $$?"Mask , List"
+  ...--( Clear )--:msg operserv sgline clear
+  ..--( sQline List )--
+  ...--( Add )--:msg operserv sqline add $$?"Mask and Reason"
+  ...--( Del )--:msg operserv sqline del $$?"Mask , Entry-Number , List"
+  ...--( List )--:msg operserv sqline list $$?"Mask , List"
+  ...--( View )--:msg operserv sqline view $$?"Mask , List"
+  ...--( Clear )--:msg operserv sqline clear
+  ..--( sZline List )--
+  ...--( Add )--:msg operserv szline add $$?"Mask and Reason"
+  ...--( Del )--:msg operserv szline del $$?"Mask , Entry-Number , List"
+  ...--( List )--:msg operserv szline list $$?"Mask , List"
+  ...--( View )--:msg operserv szline view $$?"Mask , List"
+  ...--( Clear )--:msg operserv szline clear
+  ..--( Server  )--
+  ...--( Set )--
+  ....--( Read Only )--:msg operserv set readonly $$?"On , Off"
+  ....--( Log Chan )--:msg operserv set logchan $$?"On , Off"
+  ....--( Debug )--:msg operserv set debug $$?"On , Off"
+  ....--( No Expire )--:msg operserv set noexpire $$?"On , Off"
+  ....--( Super Admin )--:msg operserv set superadmin $$?"On , Off"
+  ....--( Sql )--:msg operserv set sql $$?"On , Off"
+  ....--( Ignore )--:msg operserv set ignore $$?"On , Off"
+  ....--( List )--:msg operserv set list 
+  ...--( No Op )--
+  ....--( Add Server )--:msg operserv noop set $$?"Server"
+  ....--( Del Server )--:msg operserv noop revoke $$?"Server"
+  ...--( Jupe the Server )--:msg operserv jupe $$?"Server and Reason"
+  ...--( Reload Services Config )--:msg operserv reload
+  ...--( Update Databases )--:msg operserv update
+  ...--( Restart Services )--:msg operserv restart
+  ...--( Kill No Save )--:msg operserv quit
+  ...--( Kill With Save )--:msg operserv shutdown
+  .--( ChanServ )--
+  ..--( Channel SetUp )--
+  ...--( Register Channel )--:msg ChanServ REGISTER $chan $$?"Set Your Channel Password" $$?"Set Your Channel Description"
+  ...--( Set )--
+  ....--( Description )--:msg ChanServ SET $chan DESCRIPTION $$?"Description"
+  ....--( Email )--:msg ChanServ SET $chan EMAIL $$?"Email Address"
+  ....--( EnForce )--:msg ChanServ SET $chan ENFORCE $$?"ON , OFF"
+  ....--( Entry Message )--:msg ChanServ SET $chan ENTRYMSG $$?"Channel Entry Message"
+  ....--( Founder )--:msg ChanServ SET $chan FOUNDER $$?"Founders Nick"
+  ....--( Keep Topic )--:msg ChanServ SET $chan KEEPTOPIC $$?"ON , OFF"
+  ....--( Leave Ops )--:msg ChanServ SET $chan LEAVEOPS $$?"ON , OFF"
+  ....--( Mode Lock )--:msg ChanServ SET $chan MLOCK $$?"Modes"
+  ....--( Op Notice )--:msg ChanServ SET $chan OPNOTICE $$?"ON , OFF"
+  ....--( Password )--:msg ChanServ SET $chan PASSWORD $$?"Channel Password"
+  ....--( Private )--:msg ChanServ SET $chan PRIVATE $$?"ON , OFF"
+  ....--( Restricted )--:msg ChanServ SET $chan RESTRICTED $$?"ON , OFF"
+  ....--( Secure )--:msg ChanServ SET $chan SECURE $$?"ON , OFF"
+  ....--( Secure Ops )--:msg ChanServ SET $chan SECUREOPS $$?"ON , OFF"
+  ....--( Successor )--:msg ChanServ SET $chan SUCCESSOR $$?"Successor's Nick"
+  ....--( Topic )--:msg chanserv topic $chan $$?"Topic"
+  ....--( Topic Lock )--:msg ChanServ SET $chan TOPICLOCK $$?"ON , OFF"
+  ....--( Url:msg ChanServ SET $chan URL $$?"Url Address"
+  ...--( UnSet )--
+  ....--( Email )--:msg ChanServ UNSET $chan EMAIL
+  ....--( Entry Message )--:msg ChanServ UNSET $chan ENTRYMSG
+  ....--( Successor )--:msg ChanServ UNSET $chan SUCCESSOR
+  ....--( Url )--:msg ChanServ UNSET $chan URL
+  ..--( Channel Modes )--
+  ...--( Administrator Only Channel +A )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +A
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -A
+  ...--( Block ANSII Color +c )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +c
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -c
+  ...--( No CTCP'S Allowed +C )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +C
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -C  
+  ...--( Flood Protection +f )--
+  ....--( On )--:MODE $chan +f $$?"Lines:Seconds-Example 6:3"
+  ....--( Off )--:MODE $chan -f
+  ...--( Swear Word Protection +G )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +G
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -G
+  ...--( No +I User May Join +H )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +H
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -H
+  ...--( Invite Only +i )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +i
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -i
+  ...--( Users Need Channel Key To Join +k )--
+  ....--( On )--:MODE $chan +k $$?"Channel Key"
+  ....--( Off )--:MODE $chan -k $$?"Channel Key"
+  ...--( /Knock is not allowed +K )--
+  ....--( On )--:MODE $chan +K
+  ....--( Off )--:MODE $chan -K
+  ...--( Most Users Allowed In Channel +l )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +l $$?"Number Of Users"
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -l
+  ...--( If Channel Is Full Users Go To 2nd Channel +L )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +L $$?"Channel 2 Name"
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -L
+  ...--( Users Need +v To Speak +m )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +m
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -m
+  ...--( Registered Nicks Only Allowed +M )--
+  ....--( On )--:MODE $chan +M
+  ....--( Off )--:MODE SET $chan -M
+  ...--( No OutSide Messages +n )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +n
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -n
+  ...--( No NickName Changes In Channel +N )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +N
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -N
+  ...--( IrCOP Only Channel +O )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +O
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -O
+  ...--( Private Channel +p )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +p
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -p
+  ...--( No Kicks Allowed In Channel +Q )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +Q
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -Q
+  ...--( Only Registered Nicks May Join +R )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +R
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -R
+  ...--( Secret Channel +s )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +s
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -s
+  ...--( No Color +S )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +S
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -S
+  ...--( Only Op's May Set The Topic +t )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +t
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -t
+  ...--( No Channel Notices Allowed +T )--
+  ....--( On )--:MODE $chan +T
+  ....--( Off )--:MODE $chan -T
+  ...--( Auditorium +u )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +u
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -u
+  ...--( /Invite Is Not Allowed +V )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +V
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -V
+  ...--( Only SSL Clients May Join +z )--
+  ....--( On )--:msg ChanServ SET $chan MLOCK +z
+  ....--( Off )--:msg ChanServ SET $chan MLOCK -z
+  ..--( Channel Access Lists )--
+  ...--( Sop )--
+  ....--( Add )--:msg ChanServ SOP $chan ADD $$1
+  ....--( Count )--:msg ChanServ SOP $chan COUNT
+  ....--( Del )--:msg ChanServ SOP $chan DEL $$?"Nick"
+  ....--( List )--:msg ChanServ SOP $chan LIST
+  ...--( Aop )--
+  ....--( Add )--:msg ChanServ AOP $chan ADD $$?"Nick"
+  ....--( Count )--:msg ChanServ AOP $chan COUNT
+  ....--( Del )--:msg ChanServ AOP $chan DEL $$?"Nick"
+  ....--( List )--:msg ChanServ AOP $chan LIST
+  ...--( Hop )--
+  ....--( Add Nick )--:msg ChanServ HOP $chan ADD $$?"Nick"
+  ....--( Count Entries )--:msg ChanServ HOP $chan COUNT
+  ....--( Delete Nick )--:msg ChanServ HOP $chan DEL $$?"Nick"
+  ....--( List Entries )--:msg ChanServ HOP $chan LIST
+  ...--( Vop )--
+  ....--( Add Nick )--:msg ChanServ VOP $chan ADD $$?"Nick"
+  ....--( Count Entries )--:msg ChanServ VOP $chan COUNT
+  ....--( Delete Nick )--:msg ChanServ VOP $chan DEL $$?"Nick"
+  ....--( List Entries )--:msg ChanServ VOP $chan LIST
+  .--( NickServ )--
+  ..--( Status )--:msg nickserv status $$?"Nick"
+  ..--( Alist )--:msg nickserv alist $$?"Nick , Level"
+  ..--( List Pattern )--:msg nickserv list $$?"Pattern"
+  ..--( List Other )--:msg nickserv list $$?"Forbidden , Suspended , NoExpire , Unconfirmed"
+  ..--( Info )--:msg nickserv info $$?"Nick"
+  ..--( Info All )--:msg nickserv info $$?"Nick" all
+  ..--( Register Nick )--:msg nickserv register $$?"Password" $$?"Email"
+  ..--( Update )--:msg nickserv update
+  ..--( Drop Nick )--:msg nickserv drop $$?"Nick"
+  ..--( Identify )--:msg nickserv identify $$?"Password"
+  ..--( Re-Identify )--:msg nickserv logout $$?"Nick" validate
+  ..--( Ghost )--:msg nickserv ghost $$?"Nick" $$?"Password"
+  ..--( Recover )--:msg nickserv recover $$?"Nick" $$?"Password"
+  ..--( Release )--:msg nickserv release $$?"Nick" $$?"Password"
+  ..--( Logout )--:msg nickserv logout $$?"Nick"
+  ..--( Set )--
+  ...--( Display )--:msg nickserv set display $$?"New-Display"
+  ...--( Password )--:msg nickserv set password $$?"New-Password"
+  ...--( Language )--:msg nickserv set language $$?"1-13"
+  ...--( Language Help )--:msg nickserv help set language
+  ...--( Url )--:msg nickserv set url $$?"Url"
+  ...--( Email )--:msg nickserv set email $$?"New-Email"
+  ...--( ICQ )--:msg nickserv set icq $$?"ICQ-Number"
+  ...--( Greet )--:msg nickserv set greet $$?"Message"
+  ...--( Kill )--:msg nickserv set kill $$?"On , Quick , Immed , Off"
+  ...--( Secure )--:msg nickserv set secure $$?"On , Off"
+  ...--( Private )--:msg nickserv set private $$?"On , Off"
+  ...--( Hide )--:msg nickserv set hide $$?"Email , Status , Usermask , Quit" $$?""On , Off"
+  ...--( Services Msg )--:msg nickserv set msg $$?"On , Off"
+  ...--( Auto Op )--:msg nickserv set autoop $$?"On , Off"
+  ..--( Sa-Set )--
+  ...--( Display )--:msg nickserv saset display $$?"New-Display"
+  ...--( Password )--:msg nickserv saset password $$?"New-Password"
+  ...--( Language )--:msg nickserv saset language $$?"1-13"
+  ...--( Language Help )--:msg nickserv help set language
+  ...--( Url )--:msg nickserv saset url $$?"Url"
+  ...--( Email )--:msg nickserv saset email $$?"New-Email"
+  ...--( ICQ )--:msg nickserv saset icq $$?"ICQ-Number"
+  ...--( Greet )--:msg nickserv saset greet $$?"Message"
+  ...--( Kill )--:msg nickserv saset kill $$?"On , Quick , Immed , Off"
+  ...--( Secure )--:msg nickserv saset secure $$?"On , Off"
+  ...--( Private )--:msg nickserv saset private $$?"On , Off"
+  ...--( Hide )--:msg nickserv saset hide $$?"Email , Status , Usermask , Quit" $$?""On , Off"
+  ...--( Services Msg )--:msg nickserv saset msg $$?"On , Off"
+  ...--( Auto Op )--:msg nickserv saset autoop $$?"On , Off"
+  ..--( Get )--
+  ...--( Email )--:msg nickserv getemail $$?"user@emailhost"
+  ...--( Password )--:msg nickserv getpass $$?"Nick"
+  ..--( Forbid )--:msg nickserv forbid $$?"Nick" $$?"Reason"
+  ..--( Suspend )--:msg nickserv suspend $$?"Nick" $$?"Reason"
+  ..--( Unsuspend )--:msg nickserv unsuspend $$?"Nick"
+  ..--( oInfo )--:msg nickserv oinfo $$?"Add , Del" $$?"Nick" $$?"Info to add"
+  ..--( Access )--
+  ...--( Add )--:msg nickserv add $$?"Mask"
+  ...--( Del )--:msg nickserv del $$?"Mask"
+  ...--( List )--:msg nickserv list
+  ..--( Groups )--
+  ...--( Join )--:msg nickserv group $$?"Target" $$?"Password"
+  ...--( List )--:msg nickserv glist $$?"Nick"
+  .--( BotServ )--
+  ..--( add a bot )--:msg botserv bot add $$?"nick" $$?"user" $$?"host" $$?"real"
+  ..--( del a bot )--:msg botserv bot del $$?"nick"
+  ..-
+  ..--( assign a bot )--:msg botserv assign $$?"channel" $$?"nick"
+  ..--( unassign a bot )--:msg botserv unassign $$?"channel"
+  ..-
+  ..--( set )--
+  ...--( dont kick ops )--:msg botserv set $$?"channel" dontkickops $$?"on  off"
+  ...--( dont kick voices )--:msg botserv set $$?"channel" dontkickvoices $$?"on  off"
+  ...--( greet )--:msg botserv set $$?"channel" greet $$?"on  off"
+  ...--( fantasy )--:msg botserv set $$?"channel" fantasy $$?"on  off"
+  ...--( symbiosis )--:msg botserv set $$?"channel" symbiosis $$?"on  off"
+  ...-
+  ...--( no bot )--:msg botserv set $$?"channel" nobot $$?"on  off"
+  ...--( private )--:msg botserv set $$?"channel" private $$?"on  off"
+  ..-
+  ..--( bot talk )--
+  ...--( act )--:msg botserv act $$?"channel" $$?"text"
+  ...--( say )--:msg botserv say $$?"channel" $$?"text"
+  ..-
+  ..--( info )--:msg botserv info $$?"channel  nick"
+  ..--( list bots )--:msg botserv botlist
+  .--( HostServ )--
+  ..--( On )--:msg hostserv on
+  ..--( Off )--:msg hostserv off
+  ..--( Group )--:msg hostserv group
+  ..--( List By Key )--:msg hostserv list $$?"key"
+  ..--( List By Range )--:msg hostserv list $$?"range eg. #1-3"
+  ..--( Set )--:msg hostserv set $$?"nick" $$?"hostmask"
+  ..--( SetAll )--:msg hostserv setall $$?"nick" $$?"hostmask"
+  ..--( Del )--:msg hostserv del $$?"nick"
+  ..--( DelAll )--:msg hostserv delall $$?"nick"
+  ..--( Request )--:msg hostserv request $$?"vhost"
+  ..--( Activate )--:msg hostserv activate $$?"nick"
+  ..--( Reject )--:msg hostserv reject $$?"nick"
+  ..--( Waiting )--:msg hostserv waiting
+}
+; ========================================
+; END SERVICES COMMANDS MENU
+; ========================================
+
+; ========================================
+; SERVICES COMMANDS HELP MENU
+; ========================================
+menu status,menubar,channel,nicklist,query {
+  --( Services Commands Help )--
+  .--( OperServ )--
+  ..--( DefCon )--:say /msg operserv defcon 1|2|3|4|5
+  ..--( Message All Server Users )--:say /msg operserv global MESSAGE
+  ..--( Kills )--
+  ...--( Kill All Channel Users )--:say /msg operserv chankill CHANNEL-TO-KILL
+  ...--( Kill Clones )--:say /msg operserv killclones NICK
+  ..--( Channel Settings )--
+  ...--( Kick User )--:say /msg operserv kick #CHANNEL USER REASON
+  ...--( Change Channel Modes )--:say /msg operserv mode #CHANNEL MODES
+  ...--( Clear All Channel Modes )--:say /msg operserv clearmodes #CHANNEL all
+  ...--( Clear Channel Modes )--:say /msg operserv clearmodes #CHANNEL MODES
+  ..--( Display )--
+  ...--( Services and Network Stats )--:say /msg operserv stats
+  ...--( Staff and Online Status )--:say /msg operserv staff
+  ...--( Host Sessions )--:say /msg operserv session list NUMBER-OF-SESSIONS
+  ...--( Channel Records )--:say /msg operserv chanlist
+  ...--( User Records )--:say /msg operserv userlist
+  ..--( Modify )--
+  ...--( Services Admin List )--
+  ....--( Add )--:say /msg operserv admin add NICK
+  ....--( Del )--:say /msg operserv admin del NICK|ENTRY-NUMBER|LIST
+  ....--( List )--:say /msg operserv admin list 
+  ....--( Clear )--:say /msg operserv admin clear
+  ...--( Services Oper List )--
+  ....--( Add )--:say /msg operserv oper add NICK
+  ....--( Del )--:say /msg operserv oper del NICK|ENTRY-NUMBER|LIST
+  ....--( List )--:say /msg operserv oper list 
+  ....--( Clear )--:say /msg operserv oper clear
+  ...--( Services Ignore List )--
+  ....--( Add )--:say /msg operserv ignore add NICK
+  ....--( Del )--:say /msg operserv ignore del NICK|ENTRY-NUMBER|LIST
+  ....--( List )--:say /msg operserv ignore list 
+  ....--( Clear )--:say /msg operserv ignore clear
+  ...--( Session-Limit Exception List )--
+  ....--( Add )--:say /msg operserv exception add NICK
+  ....--( Del )--:say /msg operserv exception del NICK|ENTRY-NUMBER|LIST
+  ....--( List )--:say /msg operserv exception list 
+  ....--( Clear )--:say /msg operserv exception clear
+  ..--( News Related )--
+  ...--( Logon News )--
+  ....--( Add )--:say /msg operserv logonnews add TEXT-TO-ADD
+  ....--( Del )--:say /msg operserv logonnews del NUMBER|ALL
+  ....--( List )--:say /msg operserv logonnews list
+  ...--( OperNews )--
+  ....--( Add )--:say /msg operserv opernews add TEXT-TO-ADD
+  ....--( Del )--:say /msg operserv opernews del NUMBER|ALL
+  ....--( List )--:say /msg operserv opernews list
+  ...--( Random News )--
+  ....--( Add )--:say /msg operserv randomnews add TEXT-TO-ADD
+  ....--( Del )--:say /msg operserv randomnews del NUMBER|ALL
+  ....--( List )--:say /msg operserv randomnews list
+  ..--( Modules )--
+  ...--( Info)--:say /msg operserv modinfo FILENAME
+  ...--( List )--:say /msg operserv modlist
+  ...--( List Specific )--:say /msg operserv modlist CORE|3RD|PROTOCOL|ENCRYPTION|SUPPORTED|QATESTED
+  ...--( Load )--:say /msg operserv modload FILENAME
+  ...--( Unload )--:say /msg operserv modunload FILENAME
+  ..--( aKill List )--
+  ...--( Add )--:say /msg operserv akill add MASK REASON
+  ...--( Del )--:say /msg operserv akill del MASK|ENTRY-NUMBER|LIST
+  ...--( List )--:say /msg operserv akill list MASK|LIST
+  ...--( View )--:say /msg operserv akill view MASK|LIST
+  ...--( Clear )--:say /msg operserv akill clear
+  ..--( sGline List )--
+  ...--( Add )--:say /msg operserv sgline add MASK REASON
+  ...--( Del )--:say /msg operserv sgline del MASK|ENTRY-NUMBER|LIST
+  ...--( List )--:say /msg operserv sgline list MASK|LIST
+  ...--( View )--:say /msg operserv sgline view MASK|LIST
+  ...--( Clear )--:say /msg operserv sgline clear
+  ..--( sQline List )--
+  ...--( Add )--:say /msg operserv sqline add MASK REASON
+  ...--( Del )--:say /msg operserv sqline del MASK|ENTRY-NUMBER|LIST
+  ...--( List )--:say /msg operserv sqline list MASK|LIST
+  ...--( View )--:say /msg operserv sqline view MASK|LIST
+  ...--( Clear )--:say /msg operserv sqline clear
+  ..--( sZline List )--
+  ...--( Add )--:say /msg operserv szline add MASK REASON
+  ...--( Del )--:say /msg operserv szline del MASK|ENTRY-NUMBER|LIST
+  ...--( List )--:say /msg operserv szline list MASK|LIST
+  ...--( View )--:say /msg operserv szline view MASK|LIST
+  ...--( Clear )--:say /msg operserv szline clear
+  ..--( Server  )--
+  ...--( Set )--
+  ....--( Read Only )--:say /msg operserv set readonly ON|OFF
+  ....--( Log Chan )--:say /msg operserv set logchan ON|OFF
+  ....--( Debug )--:say /msg operserv set debug ON|OFF
+  ....--( No Expire )--:say /msg operserv set noexpire ON|OFF
+  ....--( Super Admin )--:say /msg operserv set superadmin ON|OFF
+  ....--( Sql )--:say /msg operserv set sql ON|OFF
+  ....--( Ignore )--:say /msg operserv set ignore ON|OFF
+  ....--( List )--:say /msg operserv set list 
+  ...--( No Op )--
+  ....--( Add Server )--:say /msg operserv noop set SERVER
+  ....--( Del Server )--:say /msg operserv noop revoke SERVER
+  ...--( Jupe the Server )--:say /msg operserv jupe SERVER REASON
+  ...--( Reload Services Config )--:say /msg operserv reload
+  ...--( Update Databases )--:say /msg operserv update
+  ...--( Restart Services )--:say /msg operserv restart
+  ...--( Kill No Save )--:say /msg operserv quit
+  ...--( Kill With Save )--:say /msg operserv shutdown
+  .--( ChanServ )--
+  ..--( Channel SetUp )--
+  ...--( Register Channel )--:say /msg ChanServ register #CHANNEL PASSWORD DESCRIPTION
+  ...--( Set )--
+  ....--( Description )--:say /msg ChanServ set #CHANNEL description DESCRIPTION
+  ....--( Email )--:say /msg ChanServ set #CHANNEL email EMAIL
+  ....--( EnForce )--:say /msg ChanServ set #CHANNEL enforce ON|OFF
+  ....--( Entry Message )--:say /msg ChanServ set #CHANNEL entrymsg ENTRYMSG
+  ....--( Founder )--:say /msg ChanServ set #CHANNEL founder FOUNDER
+  ....--( Keep Topic )--:say /msg ChanServ set #CHANNEL KEEPTOPIC ON|OFF
+  ....--( Leave Ops )--:say /msg ChanServ set #CHANNEL LEAVEOPS ON|OFF
+  ....--( Mode Lock )--:say /msg ChanServ set #CHANNEL mlock MODES
+  ....--( Op Notice )--:say /msg ChanServ set #CHANNEL opnotice ON|OFF
+  ....--( Password )--:say /msg ChanServ set #CHANNEL password PASSWORD
+  ....--( Private )--:say /msg ChanServ set #CHANNEL private ON|OFF
+  ....--( Restricted )--:say /msg ChanServ set #CHANNEL restricted ON|OFF
+  ....--( Secure )--:say /msg ChanServ set #CHANNEL secure ON|OFF
+  ....--( Secure Ops )--:say /msg ChanServ set #CHANNEL secureops ON|OFF
+  ....--( Successor )--:say /msg ChanServ set #CHANNEL successor SUCCESSOR
+  ....--( Topic )--:say /msg chanserv topic #CHANNEL TOPIC
+  ....--( Topic Lock )--:say /msg ChanServ set #CHANNEL topiclock ON|OFF
+  ....--( Url:say /msg ChanServ set #CHANNEL url URL
+  ...--( UnSet )--
+  ....--( Email )--:say /msg ChanServ unset #CHANNEL EMAIL
+  ....--( Entry Message )--:say /msg ChanServ unset #CHANNEL ENTRY-MSG
+  ....--( Successor )--:say /msg ChanServ unset #CHANNEL SUCCESSOR
+  ....--( Url )--:say /msg ChanServ unset #CHANNEL URL
+  ..--( Channel Modes )--
+  ...--( Administrator Only Channel +A )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +A
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -A
+  ...--( Block ANSII Color +c )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +c
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -c
+  ...--( No CTCP'S Allowed +C )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +C
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -C  
+  ...--( Flood Protection +f )--
+  ....--( On )--:say /mode #CHANNEL +f LINES:SECONDS
+  ....--( Off )--:say /mode #CHANNEL -f
+  ...--( Swear Word Protection +G )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +G
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -G
+  ...--( No +I User May Join +H )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +H
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -H
+  ...--( Invite Only +i )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +i
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -i
+  ...--( Users Need Channel Key To Join +k )--
+  ....--( On )--:say /mode #CHANNEL +k CHANNEL-KEY
+  ....--( Off )--:say /mode #CHANNEL -k CHANNEL-KEY
+  ...--( /Knock is not allowed +K )--
+  ....--( On )--:say /mode #CHANNEL +K
+  ....--( Off )--:say /mode #CHANNEL -K
+  ...--( Most Users Allowed In Channel +l )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +l NUMBER-OF-USERS
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -l
+  ...--( If Channel Is Full Users Go To 2nd Channel +L )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +L CHANNEL-2-NAME
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -L
+  ...--( Users Need +v To Speak +m )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +m
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -m
+  ...--( Registered Nicks Only Allowed +M )--
+  ....--( On )--:say /mode #CHANNEL +M
+  ....--( Off )--:say /mode set #CHANNEL -M
+  ...--( No OutSide Messages +n )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +n
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -n
+  ...--( No NickName Changes In Channel +N )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +N
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -N
+  ...--( IrCOP Only Channel +O )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +O
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -O
+  ...--( Private Channel +p )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +p
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -p
+  ...--( No Kicks Allowed In Channel +Q )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +Q
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -Q
+  ...--( Only Registered Nicks May Join +R )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +R
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -R
+  ...--( Secret Channel +s )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +s
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -s
+  ...--( No Color +S )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +S
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -S
+  ...--( Only Op's May set The Topic +t )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +t
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -t
+  ...--( No Channel Notices Allowed +T )--
+  ....--( On )--:say /mode #CHANNEL +T
+  ....--( Off )--:say /mode #CHANNEL -T
+  ...--( Auditorium +u )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +u
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -u
+  ...--( /Invite Is Not Allowed +V )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +V
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -V
+  ...--( Only SSL Clients May Join +z )--
+  ....--( On )--:say /msg ChanServ set #CHANNEL mlock +z
+  ....--( Off )--:say /msg ChanServ set #CHANNEL mlock -z
+  ..--( Channel Access Lists )--
+  ...--( Sop )--
+  ....--( Add )--:say /msg ChanServ sop #CHANNEL add $$1
+  ....--( Count )--:say /msg ChanServ sop #CHANNEL count
+  ....--( Del )--:say /msg ChanServ sop #CHANNEL del NICK
+  ....--( List )--:say /msg ChanServ sop #CHANNEL list
+  ...--( Aop )--
+  ....--( Add )--:say /msg ChanServ aop #CHANNEL add NICK
+  ....--( Count )--:say /msg ChanServ aop #CHANNEL count
+  ....--( Del )--:say /msg ChanServ aop #CHANNEL del NICK
+  ....--( List )--:say /msg ChanServ aop #CHANNEL list
+  ...--( Hop )--
+  ....--( Add Nick )--:say /msg ChanServ hop #CHANNEL add NICK
+  ....--( Count Entries )--:say /msg ChanServ hop #CHANNEL count
+  ....--( Delete Nick )--:say /msg ChanServ hop #CHANNEL del NICK
+  ....--( List Entries )--:say /msg ChanServ hop #CHANNEL list
+  ...--( Vop )--
+  ....--( Add Nick )--:say /msg ChanServ vop #CHANNEL add NICK
+  ....--( Count Entries )--:say /msg ChanServ vop #CHANNEL count
+  ....--( Delete Nick )--:say /msg ChanServ vop #CHANNEL del NICK
+  ....--( List Entries )--:say /msg ChanServ vop #CHANNEL list
+  .--( NickServ )--
+  ..--( Status )--:say /msg nickserv status NICK
+  ..--( Alist )--:say /msg nickserv alist NICK|LEVEL
+  ..--( List Pattern )--:say /msg nickserv list PATTERN
+  ..--( List Other )--:say /msg nickserv list FORBIDDEN|SUSPENDED|NOEXPIRE|UNCONFIRMED
+  ..--( Info )--:say /msg nickserv info NICK
+  ..--( Info All )--:say /msg nickserv info NICK all
+  ..--( Register Nick )--:say /msg nickserv register PASSWORD EMAIL
+  ..--( Update )--:say /msg nickserv update
+  ..--( Drop Nick )--:say /msg nickserv drop NICK
+  ..--( Identify )--:say /msg nickserv identify PASSWORD
+  ..--( Re-Identify )--:say /msg nickserv logout NICK validate
+  ..--( Ghost )--:say /msg nickserv ghost NICK PASSWORD
+  ..--( Recover )--:say /msg nickserv recover NICK PASSWORD
+  ..--( Release )--:say /msg nickserv release NICK PASSWORD
+  ..--( Logout )--:say /msg nickserv logout NICK
+  ..--( Set )--
+  ...--( Display )--:say /msg nickserv set display NEW-DISPLAY
+  ...--( Password )--:say /msg nickserv set password NEW-PASSWORD
+  ...--( Language )--:say /msg nickserv set language 1-13
+  ...--( Language Help )--:say /msg nickserv help set language
+  ...--( Url )--:say /msg nickserv set url URL
+  ...--( Email )--:say /msg nickserv set email NEW-EMAIL
+  ...--( ICQ )--:say /msg nickserv set icq ICQ-NUMBER
+  ...--( Greet )--:say /msg nickserv set greet MESSAGE
+  ...--( Kill )--:say /msg nickserv set kill                                              
+  ...--( Secure )--:say /msg nickserv set secure ON|OFF
+  ...--( Private )--:say /msg nickserv set private ON|OFF
+  ...--( Hide )--:say /msg nickserv set hide EMAIL|STATUS|USERMASK|QUIT ON|OFF
+  ...--( Services say /msg )--:say /msg nickserv set msg ON|OFF
+  ...--( Auto Op )--:say /msg nickserv set autoop ON|OFF
+  ..--( Sa-Set )--
+  ...--( Display )--:say /msg nickserv saset display NEW-DISPLAY
+  ...--( Password )--:say /msg nickserv saset password NEW-PASSWORD
+  ...--( Language )--:say /msg nickserv saset language 1-13
+  ...--( Language Help )--:say /msg nickserv help set language
+  ...--( Url )--:say /msg nickserv saset url URL
+  ...--( Email )--:say /msg nickserv saset email NEW-EMAIL
+  ...--( ICQ )--:say /msg nickserv saset icq ICQ-NUMBER
+  ...--( Greet )--:say /msg nickserv saset greet MESSAGE
+  ...--( Kill )--:say /msg nickserv saset kill ON|QUICK|IMMED|OFF
+  ...--( Secure )--:say /msg nickserv saset secure ON|OFF
+  ...--( Private )--:say /msg nickserv saset private ON|OFF
+  ...--( Hide )--:say /msg nickserv saset hide EMAIL|STATUS|USERMASK|QUIT ON|OFF
+  ...--( Services say /msg )--:say /msg nickserv saset msg ON|OFF
+  ...--( Auto Op )--:say /msg nickserv saset autoop ON|OFF
+  ..--( Get )--
+  ...--( Email )--:say /msg nickserv getemail USER@EMAILHOST
+  ...--( Password )--:say /msg nickserv getpass NICK
+  ..--( Forbid )--:say /msg nickserv forbid NICK REASON
+  ..--( Suspend )--:say /msg nickserv suspend NICK REASON
+  ..--( Unsuspend )--:say /msg nickserv unsuspend NICK
+  ..--( oInfo )--:say /msg nickserv oinfo ADD|DEL NICK INFO-TO-ADD
+  ..--( Access )--
+  ...--( Add )--:say /msg nickserv add MASK
+  ...--( Del )--:say /msg nickserv del MASK
+  ...--( List )--:say /msg nickserv list
+  ..--( Groups )--
+  ...--( Join )--:say /msg nickserv group TARGET PASSWORD
+  ...--( List )--:say /msg nickserv glist NICK
+  .--( BotServ )--
+  ..--( add a bot )--:say /msg botserv bot add NICK USER HOST REAL
+  ..--( del a bot )--:say /msg botserv bot del NICK
+  ..-
+  ..--( assign a bot )--:say /msg botserv assign #CHANNEL NICK
+  ..--( unassign a bot )--:say /msg botserv unassign #CHANNEL
+  ..-
+  ..--( set )--
+  ...--( dont kick ops )--:say /msg botserv set #CHANNEL dontkickops ON|OFF
+  ...--( dont kick voices )--:say /msg botserv set #CHANNEL dontkickvoices ON|OFF
+  ...--( greet )--:say /msg botserv set #CHANNEL greet ON|OFF
+  ...--( fantasy )--:say /msg botserv set #CHANNEL fantasy ON|OFF
+  ...--( symbiosis )--:say /msg botserv set #CHANNEL symbiosis ON|OFF
+  ...-
+  ...--( no bot )--:say /msg botserv set #CHANNEL nobot ON|OFF
+  ...--( private )--:say /msg botserv set #CHANNEL private ON|OFF
+  ..-
+  ..--( bot talk )--
+  ...--( act )--:say /msg botserv act #CHANNEL TEXT
+  ...--( say )--:say /msg botserv say #CHANNEL TEXT
+  ..-
+  ..--( info )--:say /msg botserv info #CHANNEL|NICK
+  ..--( list bots )--:say /msg botserv botlist
+  .--( HostServ )--
+  ..--( On )--:say /msg hostserv on
+  ..--( Off )--:say /msg hostserv off
+  ..--( Group )--:say /msg hostserv group
+  ..--( List By Key )--:say /msg hostserv list KEY
+  ..--( List By Range )--:say /msg hostserv list RANGE
+  ..--( Set )--:say /msg hostserv set NICK HOSTMASK
+  ..--( SetAll )--:say /msg hostserv setall NICK HOSTMASK
+  ..--( Del )--:say /msg hostserv del NICK
+  ..--( DelAll )--:say /msg hostserv delall NICK
+  ..--( Request )--:say /msg hostserv request VHOST
+  ..--( Activate )--:say /msg hostserv activate NICK
+  ..--( Reject )--:say /msg hostserv reject NICK
+  ..--( Waiting )--:say /msg hostserv waiting
+  -
+}
+; ========================================
+; END SERVICES COMMANDS HELP MENU
+; ========================================

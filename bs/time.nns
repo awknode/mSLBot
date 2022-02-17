@@ -1,0 +1,49 @@
+menu Channel,Status {
+  .$iif($group(#Time) == On,$style(1)) !Time Trigger
+  ..$iif($group(#Time) == On,$style(2)) On: .enable #Time
+  ..$iif($group(#Time) == Off,$style(2)) Off: .disable #Time
+}
+#Time on
+On $*:Text:/^(!|@)Time.*/Si:#: {
+  if (!$timer($+(Time,$network,$nick))) {
+    .timer $+ $+(Time,$network,$nick) 1 6 noop
+    var %method $iif($regml(1) == !,.msg $chan,$iif($regex($nick($chan,$nick).pnick,/(~|&|@|%|+)/),.msg $chan,.msg $chan))
+    TimeCheck %method $2-
+  }
+}
+#Time end
+alias Time { TimeCheck echo -a $1- }
+alias -l TimeCheck {
+  $1-2 00[07 Time 00] loading...
+  var %sockname $+(Time,$network,$2,$ticks)
+  sockopen %sockname www.wunderground.com 80
+  sockmark %sockname $1-2 $+(/cgi-bin/findweather/getForecast?query=,$fixurl($3-),&wuSelect=WEATHER) $replace($rfixurl($($fixurl($3-),1)),$chr(32),+)
+}
+On *:sockopen:Time*: {
+  if (!$sockerr) {
+    sockwrite -nt $sockname GET $gettok($sock($sockname).mark,3,32) HTTP/1.0
+    sockwrite -n $sockname Host: www.wunderground.com
+    sockwrite -n $sockname $crlf
+  }
+  else { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+}
+On *:sockread:Time*: {
+  if ($sockerr) { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+  else {
+    var %Time | sockread %Time
+    if (There has been an error isin %Time) { $gettok($sock($sockname).mark,1-2,32) Time Not Found | sockclose $sockname }
+    elseif ($regex(%Time,/Weather Forecast for (?:.*)">(.*?)</i)) { sockmark $sockname $addtok($sock($sockname).mark,$+($remove($regml(1),$chr(32)),$chr(7)),32) }
+    elseif ($regex(%Time,/Left5">(.*?)<\/h1>/gi)) { sockmark $sockname $addtok($sock($sockname).mark,$+($regml(1),$chr(7)),32) }    
+    elseif ($regex(%Time,<div id="infoTime"><span>(.*:.*)<\/span>)) {
+      $gettok($sock($sockname).mark,1-2,32) 00[07 Time 00] $remove($gettok($sock($sockname).mark,5-,32),$chr(7))  $regml(1)
+      sockclose $sockname
+      return
+    }
+  }
+}
+On *:sockclose:Time*: { 
+  tokenize 7 $gettok($sock($sockname).mark,4-,32)
+  $gettok($sock($sockname).mark,1-2,32) 00[07 Time 00] not acquired. Other suggestions: $+($replace($1,+,$chr(32)), :) $replace($2-,$chr(32),|-|)
+}
+alias -l fixurl { return $regsubex($1-,/([^a-z0-9])/iSg,% $+ $base($asc(\t),10,16,2)) }
+alias -l rfixurl { return $regsubex($1-,/\%([a-f0-9]{1,2})/ig,$chr($base(\t,16,10))) }

@@ -1,0 +1,83 @@
+alias btc {
+  echo nonce: btc. $+ $nonce
+  var %sockname = btc. $+ $nonce
+  sockopen -e %sockname btc-e.com 443
+}
+;on *:sockread:*:{
+;  sockread %test
+;  echo %test
+;}
+on *:sockread:btc.*:{
+  var %header, %read
+  if ($sock($sockname).mark != header.finished) {
+    sockread %header
+    while (%header != $null) {
+      echo -ag %header
+      sockread %header
+    }
+    if ($sockbr) sockmark $sockname header.finished
+  }
+  if ($sock($sockname).mark == header.finished) {
+    sockread -f %read
+    while ($sockbr) {
+      if (%read != $null) echo -ag %read
+      sockread -f %read
+    }
+  }
+}
+on *:sockopen:btc.*:{
+  var %api_key = 0Q6G7X6A-D7FHB1JC-22LC8X81-N92X56ZI-RCBLD2BR
+  var %secret = a33091aa8a2ef6154a5fe47e5f1106ec98ea874ccc2f2c017e62bd9cc2cedf7c
+
+  var %nonce = $nonce
+  var %data = method=getInfo&nonce= $+ %nonce
+  var %sign = $hmac(sha512,%secret,%data,512)
+
+  var %a = sockwrite -n $sockname
+
+  %a POST /tapi HTTP/1.0
+  %a Host: btc-e.com
+  %a Connection: close
+  %a Key: %api_key
+  %a Sign: %sign
+  %a Content-Type: application/x-www-form-urlencoded
+  %a Content-Length: $len(%data)
+  %a $+($crlf,%data)
+}
+alias nonce {
+  if (!%nonce) set -u1 %nonce $ctime $+ $calc($ticks % 10000)
+  else inc %nonce
+  return %nonce
+}
+
+;alias nonce {
+;if (!%nonce) set -u1 %nonce $ticks
+;else inc -u1 %nonce
+; set -u1 %nb $ctime $+ $time(ss)
+; return %nb
+;}
+
+alias sha512 return $dll(sha2.dll,sha512,$calc($2) $1)
+
+alias hmac {
+  if (!$1) || ($2 == $null) || ($3 == $null) { return }
+  var %size = $iif($4,$calc($4 / 4),64)
+  bunset &key &h1 &h1_hash &h2
+
+  if ($len($2) > %size) { bset &key 1 $regsubex($($+($,$1,$chr(40),$2,$chr(41)),2),/(..)/g,$base(\1,16,10) $+ $chr(32)) }
+  else { bset -t &key 1 $2 }
+
+  var %x = 1
+  while (%x <= %size) {
+    var %c = $iif($bvar(&key,%x),$v1,0)
+    bset &h1 %x $xor(54,%c)
+    bset &h2 %x $xor(92,%c)
+    inc %x
+  }
+  bset -t &h1 $calc($bvar(&h1,0)+1) $3
+  bset &h1_hash 1 $regsubex($($+($,$1,$chr(40),&h1,$chr(44),1,$chr(41)),2),/(..)/g,$base(\1,16,10) $+ $chr(32))
+  bset &h2 $calc($bvar(&h2,0)+1) $bvar(&h1_hash,1-)
+  return $($+($,$1,$chr(40),&h2,$chr(44),1,$chr(41)),2)
+  echo $($+($,$1,$chr(40),&h2,$chr(44),1,$chr(41)),2)
+
+}

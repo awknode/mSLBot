@@ -1,0 +1,10 @@
+company
+contact
+credential
+domain
+host
+location
+port
+vulnerability
+url
+users

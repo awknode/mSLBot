@@ -1,0 +1,147 @@
+
+alias -l wikiVersion { return v1.0 }
+
+on $*:text:/^[$](wiki|wikipedia)(\s|$)/Si:*: {
+  ;$iif($istok(%youtubefetch,$chan,44),halt,noop)
+  ;$iif($istok(%nolinks,$nick,44),halt,noop)
+  if ($($+(%,botflood.,$nick),2)) {
+    if ($($+(%,botflood.,$nick),2) >= 50) { 
+      ignore -u60 $address($nick,2) 
+      notice $nick $+($nick,$chr(44)) 60 second ignore for bot abuse. 
+      halt 
+    }
+    elseif ($($+(%,botflood.,$nick),2) >= 40) {
+      msg $chan $+($nick,$chr(44)) 12Slow down douche.  
+      inc -z $+(%,botflood.,$nick) 20 
+      halt 
+    }
+    else { 
+      inc -z $+(%,botflood.,$nick) 10 
+    }
+  }
+  else { inc -z $+(%,botflood.,$nick) 10 }
+  var %ticks $ticks
+  set $+(%,wiki.,%ticks,.topic) $replace($strip($2-),$chr(32),_)
+  if ($chan) { set $+(%,wiki.,%ticks,.msgtype) $iif($left($strip($1),1) == @,msg $chan,msg $chan) }
+  else { set $+(%,wiki.,%ticks,.msgtype) msg $nick }
+  if ($($+(%,wiki.,%ticks,.topic),2) != $null) {
+    sockopen -e $+(wiki.,%ticks) en.wikipedia.org 443
+  }
+  else { 
+    $($+(%,wiki.,%ticks,.msgtype),2) 12Choose a second input cracker.
+    .timerWikiVarDelete 1 1 unset $+(%,wiki.,%ticks,.*) 
+  }
+}
+
+on *:input:*:{
+  if (($left($strip($1),1) == @) || ($left($strip($1),1) == !)) {
+    if (($remove($1,$left($strip($1),1)) == wiki) || ($remove($1,$left($strip($1),1)) == wikipedia)) {
+      if ($2) {
+        var %ticks $ticks
+        set $+(%,wiki.,%ticks,.topic) $replace($strip($2-),$chr(32),_)
+        set $+(%,.,%ticks,.msgtype) $iif($chan,$iif($left($1,1) == @,msg $active,echo -a),msg $active)
+        if ($($+(%,wiki.,%ticks,.topic),2) != $null) {
+          sockopen -e $+(wiki.,%ticks) en.wikipedia.org 443
+        }
+      }
+      elseif ($2 == $null) { 
+        echo -a 4Incorrect Syntax - Use10 $1 <search text> 
+      }
+    }
+  }
+}
+
+alias wiki {
+  var %ticks $ticks
+  set $+(%,wiki.,%ticks,.topic) $replace($strip($1-),$chr(32),_)
+  set $+(%,wiki.,%ticks,.msgtype) echo -a 
+  if ($($+(%,wiki.,%ticks,.topic),2) != $null) {
+    sockopen -e $+(wiki.,%ticks) en.wikipedia.org 443
+  }
+  else { 
+    $($+(%,wiki.,%ticks,.msgtype),2) Please specify a topic to search wikipedia for.
+    .timerWikiVarDelete 1 1 unset $+(%,wiki.,%ticks,.*) 
+  }
+
+}
+
+on *:sockopen:wiki*: { 
+  ;$iif(!$window(@Wiki- $+ $network),window -evn @Wiki- $+ $network,noop)
+  var %ticks $remove($sockname,wiki.)
+  var %x sockwrite -nt $sockname
+  %x GET $+(/w/api.php?format=xml&action=query&generator=search&gsrnamespace=0&gsrsearch=,$($+(%,wiki.,%ticks,.topic),2),&gsrlimit=1&prop=extracts&exintro&explaintext&exsentences=2&exlimit=max) HTTP/1.1
+  %x Host: en.wikipedia.org
+  %x $crlf
+}
+
+alias nohtml { return $regsubex($$1-,/^[^<]*>|<[^>]*>|<[^>]*$/g,) }
+
+on *:SOCKREAD:wiki*: { 
+  if ($sockerr) { echo -a SOCKET ERROR: $sockerr | halt }
+  else {
+    var %ticks $remove($sockname,wiki.)
+    sockread &t
+    bwrite temp $+ %ticks -1 -1 &t
+    bread temp $+ %ticks 0 $file(temp $+ %ticks).size &binvar2
+    var %pos1 $bfind(&binvar2,1,<extract xml:space="preserve">)
+    var %pos2 $bfind(&binvar2,%pos1,</extract>)
+    if (%pos1 != 0) && (%pos2 != 0) {
+      var %out $bvar(&binvar2,$+($calc(%pos1 +30),-,$calc(%pos2 - 1))).text
+      var %out $replace(%out,&quot;,$chr(34))
+      if ($numtok(%out,32) < 30) {
+        var %out $gettok(%out,1-,32)
+      }
+      else {
+        var %out $gettok(%out,1-27,32) $+ ...
+      }
+      var %pos1 $bfind(&binvar2,1,title=")
+      var %pos2 $bfind(&binvar2,%pos1," index)
+      var %link $bvar(&binvar2,$+(%pos1,-,%pos2)).text
+      var %link $replace($noqt($remove(%link,title=)),$chr(32),_)
+      var %link https://en.wikipedia.org/wiki/ $+ %link
+      $($+(%,wiki.,%ticks,.msgtype),2) $+(,%out,12,$chr(32) $+ %link)
+      wikicleanup %ticks
+      .timerUnsetWiki 1 1 unset $+(%,wiki.,%ticks,*)
+    }
+    elseif (*<?xml version="1.0"?><api batchcomplete=""><limits extracts="20" /></api>* iswm $bvar(&binvar2,1-).text) {
+      ;echo @Wiki- $+ $network 4NO FOUND
+      $($+(%,wiki.,%ticks,.msgtype),2) 12No results. View search page:12 https://en.wikipedia.org/wiki/Special:Search?search= $+ $($+(%,wiki.,%ticks,.topic),2)
+      wikicleanup %ticks
+      .timerUnsetWiki 1 1 unset $+(%,wiki.,%ticks,*)
+      halt
+    }
+  }
+}
+alias wikicleanup { 
+  ;echo @Wiki- $+ $network Cleaning up
+  .remove temp $+ $1
+  bunset &t
+  bunset &binvar2
+  sockclose wiki. $+ $1
+}
+
+on *:start: .timerWUpdate 1 60 WUpdate
+
+alias WUpdate {
+  ;echo -atc info 14(Wiki14) Checking for updates...
+  sockopen wUpdate hawkee.com 80
+}
+
+on *:sockopen:wupdate: {  
+  sockwrite -nt $sockname GET /snippet/17017/ HTTP/1.1
+  sockwrite -nt $sockname Host: hawkee.com
+  sockwrite -nt $sockname $crlf
+}
+
+on *:SOCKREAD:WUpdate: { 
+  if ($sockerr) { echo -a SOCKET ERROR: $sockerr $sockname $asctime | halt }
+  sockread %sockreader
+  if (*<title>* iswm %sockreader) {
+    tokenize 32 %sockreader
+    if ($WikiVersion != $5) {
+      echo -atc info 14(Wiki14) Current: $WikiVersion Latest: $5 Status: Please update at http://hawkee.com/snippet/17017/
+    }
+    unset %sockreader
+    sockclose $sockname
+  }
+}

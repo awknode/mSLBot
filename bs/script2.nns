@@ -1,0 +1,174 @@
+
+menu nicklist {
+  -
+  Mass
+  .Voice: mmode chan +v $1-
+  .Devoice: mmode chan -v $1-
+  .Halfop: mmode chan +h $1-
+  .Dehalfop: mmode chan -h $1-
+  .Op: mmode chan +o $1-
+  .Deop: mmode chan -o $1-
+  .Protect: mmode chan +a $1-
+  .Deprotect: mmode chan -a $1-
+  .Owner: mmode chan +q $1-
+  .Deowner: mmode chan -q $1-
+  .-
+  .Mass Kick: mkick $1-
+  .-
+  .Mass Invite: minv $1-
+  .-
+  .Mass Version: mver $1-
+  .-
+  .Mass MSG: mmsg $1-
+  .Mass Notice: mnot $1-
+  .-
+  .Mass SAJOIN: sjoin $1-
+  .Mass SAPART: spart $1-
+  .-
+  .Mute NICKs: qban +nick $1-
+  .Unmute NICKs: qban -nick $1-
+  .-
+  .Mute IPs: qban +ip $1-
+  .Unmute IPs: qban -ip $1-
+  .-
+  .Chanserv
+  ..Voice: mmode bot +v $1-
+  ..Devoice: mmode bot -v $1-
+  ..Halfop: mmode bot +h $1-
+  ..Dehalfop: mmode bot -h $1-
+  ..Op: mmode bot +o $1-
+  ..Deop: mmode bot -o $1-
+  ..Protect: mmode bot +a $1-
+  ..Deprotect: mmode bot -a $1-
+  ..Owner: mmode bot +q $1-
+  ..Deowner: mmode bot -q $1-
+  Black-List System
+  .Add: { set %global 1 | writeini shitlist $address($1,0) $address($1,0) $1 | writeini shitlist nicks $1 $address($1,0) | writeini shitlist $address($1,0) reason $?="why shitlist this guy/girl? (this is mandatory)" | while (%global <= $chan(0)) { if ($1 ison $chan(%global)) { mode $chan(%global) +b-e $address($1,0) $address($1,0) | kick $chan(%global) $1 [BlackList Active: $readini(shitlist,$address($1,0),reason) ] } | inc %global 1 } | echo -a Shitlist Entry Added. | .enable #shit }
+  .Del: { set %global2 1 | remini shitlist $address($1,0) $address($1,0) $1 | remini shitlist nicks $1 | remini shitlist $address($1,0) reason | echo -a Shitlist Entry Removed On $+($1,.) | while (%global2 <= $chan(0)) { mode $chan(%global2) -b $address($1,0) | inc %global2 1 } }
+  Temp Ban: {
+    if (($me isop $chan) || ($me ishop $chan)) {
+      var %length = $input(Input length in seconds.,eo)    
+      if ($regex(%length,/[1-9]|[1-9][0-9]*/Si)) {
+        var %reason = $input(Reason for temp ban,eo)
+        /ban -u $+ %length $1 2
+        if (%reason) /kick $chan $1 6User has been temp banned for 12 $+ %length 6seconds. Reason: 12 $+ %reason
+        else /kick $chan $1 6User has been temp banned for 12 $+ %length 6seconds.
+      }
+    }
+    else echo 4Need to be op/hop to use this command.
+  }
+}
+
+alias shit { set %global 1 | writeini shitlist $address($1,2) $nick | writeini shitlist nicks $nick $address($1,2) | writeini shitlist $address($2\1,0) reason $?="why shitlist this guy/girl? (this is mandatory)" | while (%global <= $chan(0)) { if ($1 ison $chan(%global)) { mode $chan(%global) +b-e $address($1,0) $address($1,0) | kick $chan(%global) $1 [BlackList Active: $readini(shitlist,reason,$address($1,0)) ] } | inc %global 1 } | echo -a Shitlist Entry Added. | .enable #shit }
+alias unshit { set %global 1 | if ($readini(shitlist,nicks,$1)) { remini shitlist $readini(shitlist,nicks,$1) | remini shitlist nicks $1 } | echo -a  $1 removed from shitlist }
+#shit on
+on *:join:#: if ($ini(shitlist,$address($nick,0),0) >= 1) || ($readini(shitlist,nicks,$nick)) { kick $chan $nick [BlackList Active] $+([,$readini(shitlist,$address($nick,0),reason),]) | mode $chan +b-e $address($nick,0) $address($nick,0) }                                
+on *:RAWMODE:*: if ($regex($1,/\+[aqoh]/g) >= 1) && ($me == $2) { var %shitscan 1 | while (%shitscan <= $nick($chan,0)) { if ($ini(shitlist,$address($nick($chan,%shitscan),0),0) > 0) || ($readini(shitlist,nicks,$nick)) { mode $chan +b-e $address($nick($chan,%shitscan),2) $address($nick($chan,%shitscan),0) | kick $chan $nick($chan,%shitscan) [BlackList entry on this nick/mask exists] } | inc %shitscan 1 } } | elseif ($nick != $me) { if ($1 == -e) || ($1 == -ee) { if ($address($2,0) == $address($me,0)) || ($2 == $me) { mode $chan +e $address($me,0) | kick $chan $nick That shit outta here } } }
+on *:KICK:*: if ($knick == $me) && ($nick != $me) { cs invite $chan | join $chan | mode $chan +b-e+e $address($nick,0) $address($nick,0) $address($me,0) | kick $chan $nick That shit outta here. }
+on *:nick: if ($ini(shitlist,$address($nick,0),0) > 0) || ($readini(shitlist,nicks,$nick)) { set %global2 1 | while (%global2 <= $chan(0)) { if ($newnick ison $chan(%global2)) { mode $chan(%global2) +b-e $address($newnick,0) $address($newnick,0) | kick $chan(%global2) $newnick [Shitlist Active on this nick] } | inc %global2 1 } }
+#shit end
+
+alias mmsg {
+  if ($1) {
+    var %msg $$?="Please enter a message:"
+    while ($0) {
+      msg $1 %msg
+      tokenize 32 $2-
+    }
+  }
+}
+alias mnot {
+  if ($1) {
+    var %msg $$?="Please enter a message:"
+    while ($0) {
+      notice $1 %msg
+      tokenize 32 $2-
+    }
+  }
+}
+alias qban {
+  if ($regex(qban1,$1-,[-+](nick|ip) \S+)) {
+    while ($2) {
+      if ($regex(qban2,$1,[-+]nick)) var %mute %mute $2 $+ !*@*
+      elseif ($regex(qban2,$1,[-+]ip)) {
+        if ($ial($2)) var %mute %mute $address($2,2)
+        else echo 4 -a ERROR: No address for $2 $+ . Please type //who $ $+ chan and try again if you wish to mute this user.
+      }
+      tokenize 32 $1 $3-
+    }
+    var %a $left($1,1)
+    tokenize 32 $regsubex(qban3,%mute,/(\s|^)/g,\1~q:)
+    while ($0) {
+      mode $chan %a $+ $str(b,$modespl) $1- [ $+ [ $modespl ] ]
+      tokenize 32 $ [ $+ [ $calc($modespl + 1) ] $+ ] -
+    }
+  }
+  else echo 14 -a  * /qban: insufficient parameters. /qban <nick/ip> <nick1> <nick2> ... <nickN>
+}
+alias mmode {
+  if ($regex(mmode,$1-,(chan|bot) [-+][vhoaq] \S+)) {
+    tokenize 32 $1-
+    while ($3) {
+      if ($1 == chan) {
+        mode $chan $left($2,1) $+ $str($right($2,1),$modespl) $3- [ $+ [ $calc($modespl + 3) ] ]
+        tokenize 32 $1-2 $ [ $+ [ $calc($modespl + 4) ] $+ ] -
+      }
+      if ($1 == bot) {
+        raw -q privmsg chanserv $replacex($2,+,,-,de,v,voice,h,halfop,o,op,a,protect,q,owner) $chan $3
+        tokenize 32 $1-2 $4-
+      }
+    }
+  }
+  else echo 14 -a  * /mmode: insufficient parameters. /mmodeb <chan/bot> <+/-><v/h/o/a/q> <nick1> <nick2> ... <nickN>
+}
+alias mkick {
+  if ($1) {
+    var %msg $$?="Please enter a kick message:"
+    while ($0) {
+      kick $chan $1 %msg
+      tokenize 32 $2-
+    }
+  }
+  else echo 14 -a  * /mkick: insufficient parameters. /mkick <nick1> <nick2> ... <nickN>
+}
+alias sjoin {
+  if ($1) {
+    var %chan $$?="Please enter a Channel:"
+    while ($0) {
+      sajoin $1 %chan
+      tokenize 32 $2-
+    }
+  }
+}
+alias spart {
+  if ($1) {
+    var %chan $$?="Please enter a Channel:"
+    while ($0) {
+      sapart $1 %chan
+      tokenize 32 $2-
+    }
+  }
+}
+alias minv {
+  if ($1) {
+    var %chan $$?="Please enter a Channel:"
+    while ($0) {
+      invite $1 %chan
+      tokenize 32 $2-
+    }
+  }
+}
+alias mbkick {
+  if ($2) && ($istok(nick ip,$1,32)) {
+    var %msg $$?="Please enter a kick message:"
+    while ($0) {
+      kick $chan $1 %msg
+      tokenize 32 $2-
+    }
+  }
+  else echo 14 -a  * /mbkick: insufficient parameters. /mbkick <nick/ip> <nick1> <nick2> ... <nickN>
+}
+alias mver {
+  var %x = 1
+  while %x <= $snick($chan,0) { ctcp $snick($chan,%x) version | inc %x }
+}

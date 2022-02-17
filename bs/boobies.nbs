@@ -1,0 +1,82 @@
+
+
+;*****************************************************************************************************************************************************************************
+alias isurl { return $iif($regex($1-,/\b(?:(?:htt|ft)ps?://(?:www|ftp\.)?|www|ftp\.).*(?:\.[a-z]{2,4})(?::\d+)?(?:/\w+(?:/\w*/*)*|(?:\.[a-z]{2,4})|\?\S*)*\b/gi),$iif($prop,$regml($v1),URL)) }
+alias linkcheck { return $iif($read(%IsThisAlreadyAdded,nw,$+(*,$1-,*)) != $null,ADDED,NEW) }
+;*****************************************************************************************************************************************************************************
+;*** Aliases
+; -------- Configure
+alias xWR2 { return $+(14x7X14x,$chr(91),,$1-,15,$chr(93),) }
+alias xNUM { return $+(09,$1-,) }
+alias NSFW.TextDB.ActiveChannels { return #bottalk #myg0t #evolutionupgrade #420 #lobby #code #testzz #Z #RedArmy }
+alias NSFW.TextDB.Types { return Boobs Ass Pussy Gifs Lesbians }
+alias NSFW.TextDB.DBFilePath { return C:\ircbot\scripts\bs }
+;*****************************************************************************************************************************************************************************
+on *:TEXT:*:#: {
+  if ($timer($+(SPAM,$network,$chan))) { halt }
+  elseif (!$istok($NSFW.TextDB.ActiveChannels,#,32)) { halt }
+  ;***************************************************************************************************************************************************************************
+  ;*** !Count / !Countall / !CountBoobs and so on
+  elseif ($istok(!Count !Countall $+(!Count,$replace($NSFW.TextDB.Types,$chr(32),$+($chr(32),!Count))),$replace($1,@,!,.,!),32)) {
+    if ($1 == !Countall) || ($2 == all) {
+      spamprotect
+      exprotect $1-
+      .msg # $xNUM($iif($lines($NSFW.TextDB.DBFile(boobs,$false)),$v1,zero)) B( . Y . )bs •• $&
+        $xNUM($iif($lines($NSFW.TextDB.DBFile(ass,$false)),$v1,zero)) Ass •• $&
+        $xNUM($iif($lines($NSFW.TextDB.DBFile(pussy,$false)),$v1,zero)) Pussy •• $&
+        $xNUM($iif($lines($NSFW.TextDB.DBFile(gifs,$false)),$v1,zero)) Gifs •• $&
+        $xNUM($iif($lines($NSFW.TextDB.DBFile(lesbians,$false)),$v1,zero)) Lesbians •• $&
+        $iif($calc($lines($NSFW.TextDB.DBFile(boobs,$false)) +$lines($NSFW.TextDB.DBFile(ass,$false)) +$lines($NSFW.TextDB.DBFile(pussy,$false)) +$lines($NSFW.TextDB.DBFile(gifs,$false)) +$lines($NSFW.TextDB.DBFile(lesbians,$false))) > 2,$xWR2(Roughly $xNUM($v1) in total))
+    }
+    elseif ($istok($NSFW.TextDB.Types,$2,32)) { .msg # $lines($NSFW.TextDB.DBFile($2,$false)) }
+    else { .msg # $+([07,$upper($right($1,-6)),]) $lines($NSFW.TextDB.DBFile($right($1,-6),$false)) }
+  }
+  ;***************************************************************************************************************************************************************************
+  ;*** !Boobs / !Ass / !Pussy / !Gifs / !Lesbians
+  elseif ($istok($+(!,$replace($NSFW.TextDB.Types,$chr(32),$+($chr(32),!))),$replace($1,@,!,.,!),32)) { var %num $iif($2 isnum 1 - $lines($NSFW.TextDB.DBFile($right($1,-1),$false)),$v1,$r(1,$lines($NSFW.TextDB.DBFile($right($1,-1),$false)))), %max $lines($NSFW.TextDB.DBFile($right($1,-1),$false))
+    tokenize 32 $read($NSFW.TextDB.DBFile($right($1,-1),$false),%num)
+    spamprotect  
+    exprotect $1-
+    .msg # $+([15,%num,7/15,%max,]) $+(12,$1,) 9NSFW $iif($3,Added by: $3)
+  }
+  ;***************************************************************************************************************************************************************************
+  ;*** !nBoobs / !nAss / !nPussy / !nGifs / !nLesbians and/or !lBoobs / !lAss / !lPussy / !lGifs / !lLesbians
+  elseif ($istok($+(!n,$replace($NSFW.TextDB.Types,$chr(32),$+($chr(32),!n))) $+(!L,$replace($NSFW.TextDB.Types,$chr(32),$+($chr(32),!L))),$replace($1,@,!,.,!),32)) {
+    if ($lines($NSFW.TextDB.DBFile($right($1,-2),$false)) == 0) { spamprotect | exprotect $1- | msg # No links have been added, my apologies. | halt }
+    elseif ($lines($NSFW.TextDB.DBFile($right($1,-2),$false)) <= 5) { .PLAY $+(-f,1) # $NSFW.TextDB.DBFile($right($1,-2),$true) }
+    else { var %X $calc($lines($NSFW.TextDB.DBFile($right($1,-2),$false)) - $iif($lines($lines($NSFW.TextDB.DBFile($right($1,-2),$false)) <= $2,5,$iif($2 <= 10,$calc($v1 -1),5))) | .PLAY $+(-f,%X) # $lines($NSFW.TextDB.DBFile($right($1,-2),$true) }
+  }
+  ;***************************************************************************************************************************************************************************
+  ;*** Add section
+  elseif ($istok($+(!Add,$replace($NSFW.TextDB.Types,$chr(32),$+($chr(32),!Add))),$replace($1,@,!,.,!),32)) { set -u7 %IsThisAlreadyAdded $NSFW.TextDB.DBFile($right($1,-4),$true))
+    if ($isurl($1-) != URL) { spamprotect | exprotect $1- | .notice $nick Invalid URL. Example of valid URL: http://imgur.com/boobies/s89kd3.jpg }
+    elseif ($linkcheck($wildtok($1-,*http://*.*,1,32)) == ADDED) { .notice $nick I appreciate you trying and all, but $wildtok($1-,*http://*.*,1,32) is in the list already fool. }
+    else { write $NSFW.TextDB.DBFile($right($1,-4),$true)) $wildtok($1-,*http://*.*,1,32) [9NSFW] $nick $date | tokenize 32 $read($NSFW.TextDB.DBFile($right($1,-4),$false))) | .msg # Nice addition: $+($nick,.) I've now added $+($chr(91),2 ,$1,,$chr(93)) to the database. }
+    unset %IsThisAlreadyAdded
+  }
+  ;***************************************************************************************************************************************************************************
+  else { halt }
+  ;***************************************************************************************************************************************************************************
+  ;*** Flood protection ******************************************************************************************************************************************************
+  $iif(!$regex($nick($chan,$nick).pnick,/(!|~|&|@|%)/) && $nick != rebel,$+(.timer,SPAM,$network,$chan) 1 4 noop)
+  ;***************************************************************************************************************************************************************************
+}
+;*****************************************************************************************************************************************************************************
+; -------- Do not touch unless you know what your doing
+;*** NSFW.TextDB.FindType
+alias NSFW.TextDB.FindType { var %testtype $1
+  if (!%testtype) { return $null }
+  var %dbtype $null, %dbtypes $NSFW.TextDB.Types
+  if ($istok(%dbtypes,%testtype,32)) { %dbtype = %testtype }
+  if (!%dbtype) { %dbtype = $wildtok(%dbtypes,%testtype $+ *,1,32) }
+  ;*** Return result
+  $iif(!%dbtype,$null,%dbtype)
+}
+;*** NSFW.TextDB.DBFile
+alias NSFW.TextDB.DBFile { var %filetype $1
+  var %filepath $qt($+($NSFW.TextDB.DBFilePath,%filetype,.txt))
+  if ($2 == $true) { return %filepath }
+  ;*** Return result
+  return $iif(!$read(%filepath),$null,%filepath)
+}
+;*****************************************************************************************************************************************************************************

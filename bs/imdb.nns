@@ -1,0 +1,288 @@
+;!IMDB Movie Search Script by Ford_Lawnmower irc.Geekshed.net #Script-Help
+alias -l IMDB {
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Start Setup;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;; Change %tagcolor to the color you want for tags:
+  var %tagcolor $+($chr(15),$chr(2),06)
+  ;;;; Change %textcolor to the color you want for normal text
+  var %textcolor $+($chr(15),$chr(3))
+  ;;;; Change %linkcolor to the color/format you want for links
+  var %linkcolor $+($chr(15),06)
+  ;;;; Change %ratingcolor+ to the color you want for the positive stars in the rating.
+  var %ratingcolor+ $+($chr(15),$chr(3),06)
+  ;;;; Change %ratingcolor- to the color you want for the negative stars in the rating.
+  var %ratingcolor- $+($chr(15),$chr(3),05)
+  ;;;; You can change the way this script prints out by editing
+  ;;;; %lineone, %linetwo and %linethree below. 
+  ;;;; tags must be valid and separated by a space. 
+  ;;;; valid tags are as follows: title rating votes genres
+  ;;;; runtime director writer language country date plot 
+  ;;;; shortplot cast link trailer reviews critics
+  ;;;; If you want to omit a line, just change it to 0 
+  ;;;; Use title instead of otitle if you want the title in the language related to your ip address
+  var %lineone otitle rating votes reviews critics genres runtime director writer language country date
+  var %linetwo shortplot 
+  var %linethree cast link trailer
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;End Setup;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+  var %sockname $+(IMDB,$network,$2,$ticks)
+  hadd -m %sockname lineone %lineone
+  hadd %sockname linetwo %linetwo
+  hadd %sockname linethree %linethree
+  sockopen %sockname www.imdb.com 80
+  sockmark %sockname $1-2 $+(/title/,$3,/) 0 %tagcolor %textcolor %linkcolor 0 0 %ratingcolor+ %ratingcolor-
+}
+
+menu Channel,Status {
+  .$iif($group(#IMDB) == On,$style(1)) IMDB IMDB Trigger
+  ..$iif($group(#IMDB) == On,$style(2)) On: .enable #IMDB
+  ..$iif($group(#IMDB) == Off,$style(2)) Off: .disable #IMDB
+}
+#IMDB on
+On $*:Text:/^(\+|-|!|@)IMDB.*/Si:#: {
+  var %action $regml(1)
+  if (%action isin +-) && ($regex($nick($chan,$nick).pnick,/(!|~|&|@|%)/)) {
+    if (%action == +) {
+      if ($istok(%IMDBChanList,$+($network,$chan),32)) { ; echo -at IMDB is currently running. }
+      else { 
+        .enable #IMDB
+        Set %IMDBChanList $addtok(%IMDBChanList,$+($network,$chan),32)
+        echo -at IMDB had been activated for $chan $+ .
+      }
+    }
+    else {
+      if (!$istok(%IMDBChanList,$+($network,$chan),32)) { ; echo -at IMDB is not running. }
+      else { 
+        Set %IMDBChanList $remtok(%IMDBChanList,$+($network,$chan),1,32)
+        echo -at IMDB has been deactivated for $chan $+ .
+      }
+    }
+  }
+  elseif (!$timer($+(IMDB,$network,$nick))) && ($istok(%IMDBChanList,$+($network,$chan),32)) {
+    .timer $+ $+(IMDB,$network,$nick) 1 6 noop
+    var %method $iif(%action == !,.notice $nick,$iif($regex($nick($chan,$nick).pnick,/(!|~|&|@|%|\+)/),.notice $nick,.notice $nick))
+    GIMDB %method $2-
+  }
+}
+alias EIMDB { GIMDB echo -a $1- }
+alias -l GIMDB {
+  ;  $1-2 Searching:06 $3- $+ .
+  var %sockname $+(GIMDB,$network,$2,$ticks)
+  sockopen %sockname www.google.com 80
+  sockmark %sockname $1-2 $+(/search?q=,$replace($3-,$chr(32),+),+site:imdb.com&rls=en&hl=en) $3-
+}
+On *:sockopen:GIMDB*: {
+  if (!$sockerr) {
+    sockwrite -nt $sockname GET $gettok($sock($sockname).mark,3,32) HTTP/1.0
+    sockwrite -n $sockname Host: $sock($sockname).addr
+    sockwrite -n $sockname User-Agent: Opera 9.6
+    sockwrite -n $sockname $crlf
+  }
+  else { echo -st Socket Error $nopath($script) | hfree $sockname | sockclose $sockname }
+}
+On *:sockread:GIMDB*: {
+  if ($sockerr) { echo -st Socket Error $nopath($script) | hfree $sockname | sockclose $sockname }
+  else {
+    sockread &GIMDB
+    if ($bintween(&GIMDB,Location:,ttp,1)) {
+      noop $regex($bvar(&GIMDB,1-).text,/http\:\/\/([^\.]*\.google\.[^\/]*)(.*)/i)
+      var %sockname $+(GIMDB,$network,$2,$ticks)
+      sockopen %sockname $regml(1) 80
+      sockmark %sockname $gettok($sock($sockname).mark,1-2,32) $regml(2) $gettok($sock($sockname).mark,3-,32)
+      sockclose $sockname
+      return
+    }
+    elseif ($bintween(&GIMDB,<cite>www.imdb.com/title/,/</cite>,1)) {
+      IMDB $gettok($sock($sockname).mark,1-2,32) $v1
+      sockclose $sockname
+      return    
+    }
+    elseif ($bintween(&GIMDB,Your search,</b> - did not match any documents.,1)) { 
+      $gettok($sock($sockname).mark,1-2,32) 6Couldn't find $gettok($sock($sockname).mark,4-,32) 
+      sockclose $sockname
+      return
+    }
+  }
+}
+On *:sockclose:GIMDB*: { $gettok($sock($sockname).mark,1-2,32) 6Couldn't find $gettok($sock($sockname).mark,4-,32) }
+On *:sockopen:IMDB*: {
+  if (!$sockerr) {
+    sockwrite -nt $sockname GET $gettok($sock($sockname).mark,3,32) HTTP/1.0
+    sockwrite -n $sockname Host: www.imdb.com
+    sockwrite -n $sockname User-Agent: Opera 9.6
+    sockwrite -n $sockname $crlf
+  }
+  else { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+}
+On *:sockclose:IMDB*: hfree $sockname
+On *:sockread:IMDB*: {
+  if ($sockerr) { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+  else {
+    var %IMDb | sockread %IMDb
+    if ($regex(%imdb,/<title>(.*?)<\/title>/i)) hadd -m $sockname title $+($gettok($sock($sockname).mark,5,32),Title:,$chr(32),$gettok($sock($sockname).mark,6,32)) $Xchr($remove($regml(1),IMDb -))
+    elseif ($regex(%imdb,/'og:title'\s?content="(.*?)"\s?\/>/i)) {
+      hadd -m $sockname otitle $+($gettok($sock($sockname).mark,5,32),Title:,$chr(32),$gettok($sock($sockname).mark,6,32)) $Xchr($gettok($regml(1),1,45))
+    }
+    elseif ($regex(%imdb,/([a-z]{6,8}:)/i)) sockmark $sockname $puttok($sock($sockname).mark,$regml(1),4,32)
+    elseif (class="title-extra" isin %imdb) { sockmark $sockname $puttok($sock($sockname).mark,etitle:,4,32) }
+    elseif (($regex(%imdb,/"(.*)"/i)) && ($gettok($sock($sockname).mark,4,32) == etitle:)) { 
+      hadd -m $sockname otitle $+($gettok($sock($sockname).mark,5,32),Title:,$chr(32),$gettok($sock($sockname).mark,6,32)) $Xchr($gettok($regml(1),1,45))
+      sockmark $sockname $puttok($sock($sockname).mark,natta:,4,32)
+    }
+    elseif (<h2>Storyline</h2> isin %imdb) sockmark $sockname $puttok($sock($sockname).mark,plot:,4,32)
+    elseif (<table class="cast_list"> isin %imdb) sockmark $sockname $puttok($sock($sockname).mark,cast:,4,32)
+    elseif (Release Date: isin %imdb) sockmark $sockname $puttok($sock($sockname).mark,date:,4,32)
+    elseif ($regex(%imdb,/itemprop="ratingCount">(.*?)<\/span>/i)) hadd -m $sockname votes $+($gettok($sock($sockname).mark,5,32),Votes:,$gettok($sock($sockname).mark,6,32)) $regml(1)
+    elseif ($regex(shortplot,%imdb,/<meta name="description"\scontent="(.*?)"\s/>/i)) {
+      hadd -m $sockname shortplot $+($gettok($sock($sockname).mark,5,32),Plot:,$chr(32),$gettok($sock($sockname).mark,6,32)) $Xchr($regml(shortplot,1))
+      sockmark $sockname $puttok($sock($sockname).mark,0,4,32)
+    }
+    elseif ($regex(%imdb,/itemprop="reviewCount">(.*?)<\/span>/i)) {
+      if ($gettok($sock($sockname).mark,4,32) == critics:) hadd -m $sockname critics $+($gettok($sock($sockname).mark,5,32),Critics:,$gettok($sock($sockname).mark,6,32)) $regml(1)
+      else {
+        hadd -m $sockname reviews $+($gettok($sock($sockname).mark,5,32),Reviews:,$gettok($sock($sockname).mark,6,32)) $regml(1)
+        sockmark $sockname $puttok($sock($sockname).mark,critics:,4,32)
+      }
+    }
+    elseif (*star-box-giga-star"  iswm %imdb) { sockmark $sockname $puttok($sock($sockname).mark,votes:,4,32) }
+    elseif ($gettok($sock($sockname).mark,4,32) == votes: && %imdb isnum) {
+      hadd -m $sockname votes $+($gettok($sock($sockname).mark,5,32),Votes:,$gettok($sock($sockname).mark,6,32)) %imdb
+      sockmark $sockname $puttok($sock($sockname).mark,nothing,4,32)
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == Critics:) {
+      if ($regex(%imdb,/>([\d\x2C]+)\sreviews<\/a>/i)) hadd -m $sockname critics $+($gettok($sock($sockname).mark,5,32),Critics:,$gettok($sock($sockname).mark,6,32)) $regml(1)
+    }    
+    elseif ($gettok($sock($sockname).mark,4,32) == runtime:) {
+      if ($regex(%imdb,/<time.*>(.*?)<\/time>/i)) { 
+        hadd -m $sockname runtime $+($gettok($sock($sockname).mark,5,32),Runtime:,$gettok($sock($sockname).mark,6,32)) $regml(1)
+        sockmark $sockname $puttok($sock($sockname).mark,$v1,4,32)
+        tokenize 32 $sock($sockname).mark
+        hadd -m $sockname link $+($6,$5,Link:,$chr(32),$7,http://www.imdb.com,$3)
+        if ($hget($sockname,lineone)) put $1-2 $regsubex($v1,/([\S]+)/g,$hget($sockname,\t))
+        if ($hget($sockname,linetwo)) put $1-2 $regsubex($v1,/([\S]+)/g,$hget($sockname,\t))
+        if ($hget($sockname,linethree)) put $1-2 $regsubex($v1,/([\S]+)/g,$hget($sockname,\t)) 
+        hfree $sockname
+        sockclose $sockname
+        return
+      }
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == genres:) {
+      if ($regex(%imdb,/>([^<]*)<\/a>/g)) hadd -m $sockname genres $addtok($hget($sockname,genres),$regml(1),32)
+      elseif (</div> isin %imdb) {
+        hadd -m $sockname genres $+($gettok($sock($sockname).mark,5,32),Genres:,$gettok($sock($sockname).mark,6,32)) $hget($sockname,genres)
+        sockmark $sockname $puttok($sock($sockname).mark,$v1,4,32)
+      }
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == director:) {
+      if ($regex(%imdb,/"name">(.*?)<\/span>/i)) hadd -m $sockname director $+($gettok($sock($sockname).mark,5,32),Director:,$gettok($sock($sockname).mark,6,32)) $Xchr($regml(1)) 
+      elseif (</div> isin %imdb) sockmark $sockname $puttok($sock($sockname).mark,$v1,4,32)
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == writer:) {
+      if ($regex(%imdb,/"name">(.*?)<\/span>/i)) hadd -m $sockname writer $+($gettok($sock($sockname).mark,5,32),Writer:,$gettok($sock($sockname).mark,6,32)) $Xchr($regml(1)) 
+      elseif (</div> isin %imdb) sockmark $sockname $puttok($sock($sockname).mark,$v1,4,32)
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == country:) {
+      if ($regex(%imdb,/>(.*?)<\/a>/)) set %IMDb.Country $+($iif(%IMDb.Country,$+($v1,$chr(44))),$Xchr($regml(1)))
+      elseif (</div> isin %imdb) { 
+        sockmark $sockname $puttok($sock($sockname).mark,$v1,4,32)
+        hadd -m $sockname country $+($gettok($sock($sockname).mark,5,32),Country:,$gettok($sock($sockname).mark,6,32)) %IMDb.Country
+        unset %IMDb.Country
+      }
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == language:) {
+      if ($regex(%imdb,/>([^<]*)<\/a>/)) set %IMDb.Language $+($iif(%IMDb.Language,$+($v1,$chr(44))),$Xchr($regml(1)))
+      elseif (</div> isin %imdb) { 
+        sockmark $sockname $puttok($sock($sockname).mark,$v1,4,32)
+        hadd -m $sockname language $+($gettok($sock($sockname).mark,5,32),Language:,$gettok($sock($sockname).mark,6,32)) %IMDb.Language
+        unset %IMDb.Language
+      }
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == plot:) {
+      if ($regex(%imdb,/<p>(.*)/)) { 
+        tokenize 32 $sock($sockname).mark
+        hadd -m $sockname plot $6 $+($5,Plot:,$6) $Xchr($regml(1))
+        sockmark $sockname $puttok($sock($sockname).mark,0,4,32)
+      }
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == cast:) {
+      if ($regex(%imdb,/href="\/name\/.*\/">([^<]*)<\/a>/)) set %IMDb.Cast $+($iif(%IMDb.Cast,$+($v1,$chr(44))),$Xchr($regml(1)))
+      elseif ($regex(%imdb,/alt="(.*?)"/)) set %IMDb.Cast $addtok(%IMDb.Cast,$Xchr($regml(1)),44)
+      elseif (</table> isin %imdb) { 
+        sockmark $sockname $puttok($sock($sockname).mark,0,4,32)
+        hadd -m $sockname cast $+($gettok($sock($sockname).mark,5,32),Cast:,$gettok($sock($sockname).mark,6,32)) %IMDb.Cast
+        unset %IMDb.Cast         
+        tokenize 32 $sock($sockname).mark
+        sockmark $sockname $deltok($sock($sockname).mark,10-,32)
+      }
+    }
+    elseif ($gettok($sock($sockname).mark,4,32) == date:) {
+      if ($regex(%imdb,/>(.*?)<\/time>/i)) {
+        sockmark $sockname $puttok($sock($sockname).mark,notag:,4,32)
+        tokenize 32 $sock($sockname).mark
+        hadd -m $sockname date $+($5,Release Date:,$chr(32),$6,$regml(1))
+      }
+    }
+    ;    elseif (watch trailer isin %imdb && $regex(%imdb,/<a\shref="([^<]*)"\sonclick="/)) {
+    ;      tokenize 32 $sock($sockname).mark
+    ;      hadd -m $sockname trailer $+($5,Trailer:,$chr(32),$7,http://www.imdb.com,$regml(1)) 
+    ;    }
+
+    elseif (*Trailer**</* iswmcs %imdb && $regex(%imdb,/data-video="([^"]+)"/)) {
+      tokenize 32 $sock($sockname).mark
+      hadd -m $sockname trailer $+($5,$chr(32),Trailer:,$chr(32),$7,http://www.imdb.com/video/imdb/,$regml(1)) 
+    }
+
+
+    elseif (Reviews: isin %imdb || </html> isin %imdb) {
+      tokenize 32 $sock($sockname).mark
+      hadd -m $sockname link $+($6,$5,Link:,$chr(32),$7,http://www.imdb.com,$3)
+      if ($hget($sockname,lineone)) put $1-2 $regsubex($v1,/([\S]+)/g,$hget($sockname,\t))
+      if ($hget($sockname,linetwo)) put $1-2 $regsubex($v1,/([\S]+)/g,$hget($sockname,\t))
+      if ($hget($sockname,linethree)) put $1-2 $regsubex($v1,/([\S]+)/g,$hget($sockname,\t))      
+      hfree $sockname
+      sockclose $sockname
+      return
+    }
+    elseif ($regex(%imdb,/star-box-giga-star">\s?(.*?)\s?<\/div>/i)) {
+      var %L $round($regml(1),0), %R $calc(10 - %L)
+      tokenize 32 $sock($sockname).mark
+      hadd -m $sockname rating $+($5,Rating:,$chr(32),$5,$chr(91),$10,$str(*,%L),$11,$str(*,%R),$5,$chr(93),$6) $regml(1)
+    }
+  }
+}
+alias -l AddMark { sockmark $sockname $addtok($sock($sockname).mark,$1-,32) }
+alias -l Xchr { 
+  var %return $regsubex($regsubex($1-,/&#x([A-F0-9]{1,2});/g,$chr($base($regml(\n),16,10))),/&#([0-9]{2});/g,$chr(\1)) 
+  return $replacecs(%return,&ndash;,,&middot;,·,&raquo;,»,&laquo;,«,&Uuml;,Ü,&uuml;,ü,&Aacute;,Á,&aacute;,á,&Eacute;,$&
+    É,&eacute;,é,&Iacute;,Í,&iacute;,í,&Oacute;,Ó,&oacute;,ó,&Ntilde;,Ñ,&ntilde;,ñ,&Uacute;,Ú,&uacute;,ú,&nbsp;,$chr(32),$&
+    &aelig;,æ,&quot;,")
+}
+alias -l Put {
+  if (!$regex($1,/(\.|^)(msg|notice|echo)$/Si)) || (!$3) { return }
+  var %tokens $0, %Tstart 4, %Dtimer 1500
+  if ($timer($+(Put,$2,$network)).secs) { %Dtimer = $calc($v1 * 1000) }  
+  while ($len($($+($,%Tstart,-,%tokens),2)) > 430) {
+    dec %tokens
+    if ($len($($+($,%Tstart,-,%tokens),2)) <= 430) {
+      .timer -m 1 %Dtimer $1-3 $($+($,%Tstart,-,%tokens),2))
+      inc %Dtimer 1500
+      %Tstart = $calc(%tokens + 1)
+      %tokens = $0
+    }
+  }
+  .timer -m 1 %Dtimer $1-3 $($+($,%Tstart,-,%tokens),2))
+  .timer $+ $+(Put,$2,$network) -m 1 $calc(%Dtimer + 1500) noop 
+}
+alias -l bintween {
+  var %count = 1, %mark = 0, %mark2 = 0
+  while (%count <= $4) {
+    if ($bfind($1, %mark2, $2).text) {
+      %mark = $calc($bfind($1, %mark2, $2).text + $len($2))
+      if ($bfind($1, %mark, $3).text) {
+        %mark2 = $bfind($1, %mark, $3).text
+      }
+      else { return 0 } 
+    }
+    else { return 0 }
+    inc %count
+  }
+  return $bvar($1, $iif(%mark > 0,%mark,1), $calc(%mark2 - %mark)).text
+}

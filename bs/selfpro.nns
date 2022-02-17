@@ -1,0 +1,463 @@
+on ^*:KICK:*: {
+  if (%-tnircop.enable.selfprot) {
+    if ($knick == $me) {
+      .msg chanserv unban $chan
+      .msg operserv kick $chan $nick NEVER kick an IRCop
+      .timer 1 3 join $chan
+    }
+  }
+}
+
+on ^*:BAN:*: {
+  if (%-tnircop.enable.selfprot) {
+    if (($banmask == $address($me,0)) || ($banmask == $address($me,1))) { goto unbanme }
+    elseif (($banmask == $address($me,2)) || ($banmask == $address($me,3))) { goto unbanme }
+    elseif (($banmask == $address($me,4)) || ($banmask == $address($me,5))) { goto unbanme }
+    elseif (($banmask == $address($me,6)) || ($banmask == $address($me,7))) { goto unbanme }
+    elseif (($banmask == $address($me,8)) || ($banmask == $address($me,9))) { goto unbanme }
+    halt
+    :unbanme
+    .msg operserv mode $chan -bo+b $banmask $nick $address($nick,4)
+    .msg operserv kick $chan $nick NEVER ban an IRCop
+  }
+}
+
+on *:DEOP:*: {
+  if (%-tnircop.enable.selfprot) {
+    if ($opnick == $me) {
+      if (($nick != $me) && ($nick != operserv) && ($nick != chanserv)) {
+        .msg operserv mode $chan -o+o $nick $opnick
+        kick $chan $nick NEVER take @ from an IRCop
+      }
+    }
+  }
+}
+
+; --- server notice filters
+; some of these where written for the Unreal IRCd 3.0/3.1 but others
+; are added to support the DarkFire IRCd.
+
+on ^1:SNOTICE:*: {
+  if (%-tnIRCop.enable.snotice) {
+    if (%-tnircop.enable.snotice.cr) {
+      inc %-tnircop.nsnoticeln
+      if (%-tnircop.nsnoticeln > 3) { linesep | unset %-tnircop.nsnoticeln }
+      ; *** Notice -- Kill line active for wia[216-164-250-165.s546.tnt3.atn.pa.dialup.rcn.com]
+      if (($4 == Kill) && ($5 == line)) {
+        snecho2 %-tnircop.kkecho   $+ $colour(kick) $+ Active Kill Line for $8-
+        halt
+      }
+      ; -irc.chatcircuit.com- *** Notice -- Received KILL message for tn!od@ti01a01-0251.dialup.online.no from ADM_Colin Path: line0305lf.kdt.de!ADM_Colin (ghost (tn))
+      if ($5 == kill) {
+        snecho2 %-tnircop.kkecho   $+ $colour(kick) $+ KILL $+ : $8 by $10 $13-
+        halt
+      }
+      ; -irc.chatcircuit.com- *** Notice -- Client connecting on port 6667: G-gy (pirch@202.59.252.54)
+      if ($5 == connecting) {
+        snecho2 %-tnircop.ceecho  $+ $colour(join) $+ CONNECTION to $8 $9  $+ $10- $+ 
+        set %-tnircop.lastconnect $9
+        halt
+      }
+      ;-irc.chatcircuit.com- *** Notice -- Client exiting: G-gy (pirch@202.59.252.54) [Connection reset by peer]
+      if ($5 == exiting:) {
+        snecho2 %-tnircop.ceecho  $+ $colour(quit) $+ EXITED $+ : $6  $+ $7 $+  $8-
+        halt
+      }
+      ;-irc.chatcircuit.com- *** Notice -- IP# Mismatch: 12.26.129.34 != ns.pdmnet.com[02801a0c]
+      if ($4 == IP#) {
+        snecho2 %-tnircop.oecho 4IP# Mismatch: $6-
+        halt
+      }
+      ; -- [03:21:22] -irc.chatcircuit.com- *** Notice -- agent-dvd (agent-dvd!agent@lake81-80.lakeheadu.ca) is now operator (O)
+      elseif (($8 == operator) || ($9 == operator)) {
+        snecho2 %-tnircop.oecho  $+ $colour(info2) $+ ACTIVE OLINE for $4 $5
+        halt
+      }
+      ; [04:01:49] -irc.chatcircuit.com- *** Notice -- Failed OPER attempt by Admrkirk (i@snbytnt-1134.sunlink.net)
+      elseif ($5 == oper) {
+        snecho2 %-tnircop.oecho  $+ $colour(kick) WARNING: $4-
+        halt
+      }
+      ; «02:24:48» *** Notice -- LaZZaWaY added a temp k:line for *@mosesurser*.bossig.com knucklehead
+      elseif ($8 == k:line) {
+        snecho2 %-tnircop.kkecho  $+ $colour(kick) $+ Kline added by $4 $+ :  $+ $10 $+  ( $+ $11- $+ )
+        halt
+      }
+      ; «02:15:18» *** Notice -- LaZZ removed temp k:line *@LAFAB*.splitrock.net
+      if ($7 == k:line) {
+        snecho2 %-tnircop.kkecho  $+ $colour(kick) $+ Kline removed by $4 $+ : $8
+        halt
+      }
+      ; «02:24:27» *** Notice -- LaZZ is rehashing Server config file
+      elseif ($6 == rehashing) {
+        snecho2 %-tnircop.oecho Server Configuration file REHASH by $4
+        halt
+      }
+      ; -- «03:22:21» *** Global -- from OperServ: Denied access to OperServ from  bat (non-oper)
+      ; -- [04:11:56] -irc.chatcircuit.com- *** Global -- from OperServ: LaZZ added an AKILL for *@du*.prodigy.net.mx (expires in 120 days)
+      ; -- [03:38:26] -irc.chatcircuit.com- *** Global -- from OperServ: WARNING - possible clones detected from 64.228.227.120
+      elseif (($2 == global) && ($5 == operserv:)) {
+        if ((WARNING isin $1- ) && (clones isin $1- )) {
+          snecho2 %-tnircop.osecho 4OperServ CLONE WARNING Possible clone attack from  $+ $12 $+ 
+          set %-tnircop.operserv.cloneaddy $12
+          echo -a 4»» 4Clone Warning: Press F8 to Masskill and Kline, shift + F8 to masskill and add a 30 day OperServ akill 4««
+          ;       halt
+        }
+        elseif (($6 == denied) && ($7 == access)) {
+          snecho2 %-tnircop.osecho  $+ $colour(kick) $+ OperServ Global: Illegal attempt of accessing OperServ form $11-
+          halt
+        }
+        elseif (($7 == added) && ($9 == akill)) {
+          snecho2 %-tnircop.osecho  $+ $colour(kick) $+ OperServ AKILL added by $6 for  $+ $11 $+  $12-
+          halt
+        }
+        else {
+          snecho2 %-tnircop.osecho OperServ Global: $6-
+          halt
+        }
+      }
+      ; -- «03:22:27» *** Notice -- bat (p0z3r@cc-52299.kenner1.la.home.com) is now a services admin (a)
+      elseif (($10 == admin) || ($10 == administrator)) {
+        snecho2 %-tnircop.oecho  $+ $colour(info2) $+ ACTIVE OLINE for $4 $5 ( $+ $9 $10 $+ )
+        halt
+      }
+      ; «01:53:56» *** Global -- from ChanServ: Channel #TaoOfLegacy registered by Out|{ast!Syndicate@1Cust153.tnt3.lake-charles.la.da.uu.net
+      elseif (($2 == global) && ($5 == chanserv:)) {
+        snecho2 %-tnircop.ncecho ChanServ Global: $6 $7 $8 $9 $split($10,!)
+        halt
+      }
+      ; «02:38:14» *** Global -- from NickServ: Nickname ou2mame registered by NoOne@d0-126.hntnny.optonline.net
+      elseif (($2 == global) && ($5 == NickServ:)) {
+        snecho2 %-tnircop.ncecho NickServ Global: $6-
+        halt
+      }
+      elseif (($2 == locops) || ($2 == global) || ($2 == chatops)) {
+        if ($5 == [ $me $+ : ] ) {
+          if ($2 == locops) { snecho2 %-tnircop.glecho 14LocOps --> $6-  | halt }
+          elseif ($2 == global) { snecho2 %-tnircop.glecho 14GlobOps --> $6-  | halt }
+          elseif ($2 == chatops) { snecho2 %-tnircop.glecho 14ChatOps --> $6-  | halt }
+        }
+        ; «00:43:19» LocOps -- Received SQUIT services.chatcircuit.com from services.chatcircuit.com[localhost] (Shutting down on SIGTERM)
+        elseif ($5 == SQUIT) { snecho2 %-tnircop.oecho SQUIT ( $+ $6 $+ ) from $8- | halt }
+        ; «00:43:20» LocOps -- Link with services.chatcircuit.com[@127.0.0.1.3410] established.
+        elseif ($4 == Link) { snecho2 %-tnircop.oecho Link established: $6 | halt }
+        ; Global -- Nick collision on ccsc (services.chatcircuit.com 1 <- services.chatcircuit.com[localhost] 1)
+
+        elseif ($5 == [ $server $+ : ] ) {
+          if ($8 == SAMODE) {
+            snecho2 %-tnircop.oecho SAMODE on $9 by $6 $+  $10-
+            halt
+          }
+          else {          
+            snecho2 %-tnircop.oecho $5-
+            halt
+          }
+        }
+        snecho2 %-tnircop.glecho $2-
+        halt
+      }
+      ;  «03:59:21» *** Notice -- names abuser mies[khnjo.demon.nl] #ybbot,#chatcircuit,#blah
+      elseif (($4 == names) && ($5 == abuser)) {
+        snecho2 %-tnircop.oecho  $+ $colour(kick) Names abuser: $6- | halt
+      }
+      elseif (($4 == did) && ($6 == /whois)) {
+        snecho2 %-tnircop.oecho  $+ $colour(info2) $+ Whois on $me requested by  $+ $2 $+  $3 | halt
+      }
+      elseif ($2 == helpop) {
+        snecho2 %-tnircop.oecho  $+ $colour(info2) $+ HelpOp requested by $5 $+  $iif(helpop isin $6, [ $chr(45) $7- ] ,$6-) | halt
+      }
+
+      elseif ($2 == operkick) {
+        snecho2 %-tnircop.kkecho  $+ $colour(kick) $+ OperKick: $3- | halt
+      }
+      ;  *** Notice -- Q:lined nick cumbubble from <unregistered> on irc.chatcircuit.com
+      elseif ($4 == Q:lined) {
+        snecho2 %-tnircop.oecho  $+ $colour(kick) $+ Active Q:Line: $+  nick  $+ $6 $+  from $8
+        halt
+      }
+      ; *** Notice -- Forbidding Q-lined nick cumbubble from [62.227.67.15].
+      elseif ($5 == Q-lined) {
+        snecho2 %-tnircop.oecho Forbidding Q-lined nick  $+ $7 $+  $8-
+        halt
+      }
+      ; *** Notice -- QuadraServ added a temp z:line *@206.216.82.252 [attempt to use Q:lined nick]
+      elseif ($8 == z:line) { snecho2 %-tnircop.kkecho  $+ $colour(kick) $+ Z:line $+  $5 by $4 $+ : $9- | halt }
+      ; *** Notice -- the|navigator removed temp z:line *@123.456.789.123
+      elseif ($7 == z:line) { snecho2 %-tnircop.kkecho  $+ colour(kick) $+ Z:line $+  $5 by $4 $chr(91) $+ $8 $+ $chr(93) | halt }
+      ;  *** Notice -- services.chatcircuit.com z:lined *@194.182.255.153 on ChaTcIRCuiT IRC Network [misconfigured dns server (again)]
+      elseif ($5 == z:lined) { snecho 2 %-tnircop.kkecho  $+ $colour(kick) Z:line $+  by $4 $6- | halt }
+      ; «01:47:46» *** Notice -- the|navigator used SAPART to make peachy part #chatcircuit
+      elseif ($6 == sapart) { snecho2 %-tnircop.oecho SAPART by $4 $+ : sapart $9 $11 | halt }
+      ; «01:48:01» *** Notice -- the|navigator used SAJOIN to make peachy join #alpine_chat
+      elseif ($6 == sajoin) { snecho2 %-tnircop.oecho SAJOIN by $4 $+ : sajoin $9 $11 | halt }
+      ;   «04:58:13» *** Notice -- Entering high-traffic mode (incoming = 16.00 kb/s, outgoing = 0.50 kb/s currently)
+      ;   «04:58:24» *** Notice -- Resuming standard operation (incoming = 0.11 kb/s, outgoing = 1.11 kb/s now)
+
+      ; [21:51:50] -irc.chatcircuit.com- *** the|navigator did a /stats L on you! IP may have been shown
+
+      else { snecho2 %-tnircop.oecho $1- | halt }
+    }
+    ; ----------------
+    ; ========< If the user only wants routing, but no formatting, this part will be used. >===========
+    ; ----------------
+    elseif (%-tnircop.enable.snotice.r) {
+      inc %-tnircop.nsnoticeln
+      if (%-tnircop.nsnoticeln > 3) { linesep | unset %-tnircop.nsnoticeln }
+      ; *** Notice -- Kill line active for wia[216-164-250-165.s546.tnt3.atn.pa.dialup.rcn.com]
+      if (($4 == Kill) && ($5 == line)) {
+        snecho2 %-tnircop.kkecho  $1-
+        halt
+      }
+      ; -irc.chatcircuit.com- *** Notice -- Received KILL message for tn!od@ti01a01-0251.dialup.online.no from ADM_Colin Path: line0305lf.kdt.de!ADM_Colin (ghost (tn))
+      if ($5 == kill) {
+        snecho2 %-tnircop.kkecho  $1-
+        halt
+      }
+      ; -irc.chatcircuit.com- *** Notice -- Client connecting on port 6667: G-gy (pirch@202.59.252.54)
+      if ($5 == connecting) {
+        snecho2 %-tnircop.ceecho $1-
+        set %-tnircop.lastconnect $9
+        halt
+      }
+      ;-irc.chatcircuit.com- *** Notice -- Client exiting: G-gy (pirch@202.59.252.54) [Connection reset by peer]
+      if ($5 == exiting:) {
+        snecho2 %-tnircop.ceecho $1-
+        halt
+      }
+      ;-irc.chatcircuit.com- *** Notice -- IP# Mismatch: 12.26.129.34 != ns.pdmnet.com[02801a0c]
+      if ($4 == IP#) {
+        snecho2 %-tnircop.oecho $1-
+        halt
+      }
+      ; -- [03:21:22] -irc.chatcircuit.com- *** Notice -- agent-dvd (agent-dvd!agent@lake81-80.lakeheadu.ca) is now operator (O)
+      elseif (($8 == operator) || ($9 == operator)) {
+        snecho2 %-tnircop.oecho $1-
+        halt
+      }
+      ; [04:01:49] -irc.chatcircuit.com- *** Notice -- Failed OPER attempt by Admrkirk (i@snbytnt-1134.sunlink.net)
+      elseif ($5 == oper) {
+        snecho2 %-tnircop.oecho $1-
+        halt
+      }
+      ; «02:24:48» *** Notice -- LaZZaWaY added a temp k:line for *@mosesurser*.bossig.com knucklehead
+      elseif ($8 == k:line) {
+        snecho2 %-tnircop.kkecho $1-
+        halt
+      }
+      ; «02:15:18» *** Notice -- LaZZ removed temp k:line *@LAFAB*.splitrock.net
+      if ($7 == k:line) {
+        snecho2 %-tnircop.kkecho $1-
+        halt
+      }
+      ; «02:24:27» *** Notice -- LaZZ is rehashing Server config file
+      elseif ($6 == rehashing) {
+        snecho2 %-tnircop.oecho $1-
+        halt
+      }
+      ; -- «03:22:21» *** Global -- from OperServ: Denied access to OperServ from  bat (non-oper)
+      ; -- [04:11:56] -irc.chatcircuit.com- *** Global -- from OperServ: LaZZ added an AKILL for *@du*.prodigy.net.mx (expires in 120 days)
+      ; -- [03:38:26] -irc.chatcircuit.com- *** Global -- from OperServ: WARNING - possible clones detected from 64.228.227.120
+      elseif (($2 == global) && ($5 == operserv:)) {
+        if ((WARNING isin $1- ) && (clones isin $1- )) {
+          snecho2 %-tnircop.osecho $1-
+          set %-tnircop.operserv.cloneaddy $12
+          echo -a 4»» 4Clone Warning: Press F8 to Masskill and Kline, shift + F8 to masskill and add a 30 day OperServ akill 4««
+          ;       halt
+        }
+        elseif (($6 == denied) && ($7 == access)) {
+          snecho2 %-tnircop.osecho $1-
+          halt
+        }
+        elseif (($7 == added) && ($9 == akill)) {
+          snecho2 %-tnircop.osecho $1-
+          halt
+        }
+        else {
+          snecho2 %-tnircop.osecho $1-
+          halt
+        }
+      }
+      ; -- «03:22:27» *** Notice -- bat (p0z3r@cc-52299.kenner1.la.home.com) is now a services admin (a)
+      elseif (($10 == admin) || ($10 == administrator)) {
+        snecho2 %-tnircop.oecho $1-
+        halt
+      }
+      ; «01:53:56» *** Global -- from ChanServ: Channel #TaoOfLegacy registered by Out|{ast!Syndicate@1Cust153.tnt3.lake-charles.la.da.uu.net
+      elseif (($2 == global) && ($5 == chanserv:)) {
+        snecho2 %-tnircop.ncecho $1-
+        halt
+      }
+      ; «02:38:14» *** Global -- from NickServ: Nickname ou2mame registered by NoOne@d0-126.hntnny.optonline.net
+      elseif (($2 == global) && ($5 == NickServ:)) {
+        snecho2 %-tnircop.ncecho $1-
+        halt
+      }
+      elseif (($2 == locops) || ($2 == global) || ($2 == chatops)) {
+        if ($5 == [ $me $+ : ] ) {
+          if ($2 == locops) { snecho2 %-tnircop.glecho $1- | halt }
+          elseif ($2 == global) { snecho2 %-tnircop.glecho $1- | halt }
+          elseif ($2 == chatops) { snecho2 %-tnircop.glecho $1- | halt }
+        }
+        ; «00:43:19» LocOps -- Received SQUIT services.chatcircuit.com from services.chatcircuit.com[localhost] (Shutting down on SIGTERM)
+        elseif ($5 == SQUIT) { snecho2 %-tnircop.oecho $1- | halt }
+        ; «00:43:20» LocOps -- Link with services.chatcircuit.com[@127.0.0.1.3410] established.
+        elseif ($4 == Link) { snecho2 %-tnircop.oecho $1- | halt }
+        ; Global -- Nick collision on ccsc (services.chatcircuit.com 1 <- services.chatcircuit.com[localhost] 1)
+
+        elseif ($5 == [ $server $+ : ] ) {
+          if ($8 == SAMODE) {
+            snecho2 %-tnircop.oecho $1-
+            halt
+          }
+          else {          
+            snecho2 %-tnircop.oecho $1-
+            halt
+          }
+        }
+        snecho2 %-tnircop.glecho $1-
+        halt
+      }
+      ;  «03:59:21» *** Notice -- names abuser mies[khnjo.demon.nl] #ybbot,#chatcircuit,#blah
+      elseif (($4 == names) && ($5 == abuser)) {
+        snecho2 %-tnircop.oecho $1- | halt
+      }
+      elseif (($4 == did) && ($6 == /whois)) {
+        snecho2 %-tnircop.oecho $1- | halt
+      }
+      elseif ($2 == helpop) {
+        snecho2 %-tnircop.oecho $1- | halt
+      }
+      elseif ($2 == operkick) {
+        snecho2 %-tnircop.kkecho $1- | halt
+      }
+      ;  *** Notice -- Q:lined nick cumbubble from <unregistered> on irc.chatcircuit.com
+      elseif ($4 == Q:lined) {
+        snecho2 %-tnircop.oecho $1-
+        halt
+      }
+      ; *** Notice -- Forbidding Q-lined nick cumbubble from [62.227.67.15].
+      elseif ($5 == Q-lined) {
+        snecho2 %-tnircop.oecho $1-
+        halt
+      }
+      ; *** Notice -- QuadraServ added a temp z:line *@206.216.82.252 [attempt to use Q:lined nick]
+      elseif ($8 == z:line) { snecho2 %-tnircop.kkecho $1- | halt }
+      ; *** Notice -- the|navigator removed temp z:line *@123.456.789.123
+      elseif ($7 == z:line) { snecho2 %-tnircop.kkecho $1- | halt }
+      ;  *** Notice -- services.chatcircuit.com z:lined *@194.182.255.153 on ChaTcIRCuiT IRC Network [misconfigured dns server (again)]
+      elseif ($5 == z:lined) { snecho 2 %-tnircop.kkecho $1- | halt }
+      ; «01:47:46» *** Notice -- the|navigator used SAPART to make peachy part #chatcircuit
+      elseif ($6 == sapart) { snecho2 %-tnircop.oecho $1- | halt }
+      ; «01:48:01» *** Notice -- the|navigator used SAJOIN to make peachy join #alpine_chat
+      elseif ($6 == sajoin) { snecho2 %-tnircop.oecho $1- | halt }
+      ;   «04:58:13» *** Notice -- Entering high-traffic mode (incoming = 16.00 kb/s, outgoing = 0.50 kb/s currently)
+      ;   «04:58:24» *** Notice -- Resuming standard operation (incoming = 0.11 kb/s, outgoing = 1.11 kb/s now)
+
+      ; [21:51:50] -irc.chatcircuit.com- *** the|navigator did a /stats L on you! IP may have been shown
+
+      else { snecho2 %-tnircop.oecho $1- | halt }
+    }
+  }
+}
+
+on ^*:DISCONNECT: { writeinivars }
+
+alias writeinivars {
+  ; Format:
+  ; /writeini -n <inifile> <section> [item] [value]
+  ;
+  ; write the Enable / Disable section
+  ;
+  writeini tnircop.ini enable snotice %-tnircop.enable.snotice
+  writeini tnircop.ini enable snotice.cr %-tnircop.enable.snotice.cr
+  writeini tnircop.ini enable snotice.r %-tnircop.enable.snotice.r
+  writeini tnircop.ini enable operalias %-tnircop.enable.operalias
+  writeini tnircop.ini enable operserv %-tnircop.enable.operserv
+  writeini tnircop.ini enable ncserv %-tnircop.enable.ncserv
+  writeini tnircop.ini enable snotice %-tnircop.enable.snotice
+  writeini tnircop.ini enable selfprot %-tnircop.enable.selfprot
+  ;
+  ; write the routing variables
+  ;
+  writeini tnircop.ini routing ceecho %-tnircop.ceecho
+  writeini tnircop.ini routing glecho %-tnircop.glecho
+  writeini tnircop.ini routing osecho %-tnircop.osecho
+  writeini tnircop.ini routing oecho %-tnircop.oecho
+  writeini tnircop.ini routing kkecho %-tnircop.kkecho
+  writeini tnircop.ini routing whecho %-tnircop.whecho
+  writeini tnircop.ini routing rawecho %-tnircop.rawecho
+  writeini tnircop.ini routing statsecho %-tnircop.statsecho
+  writeini tnircop.ini routing whoecho %-tnircop.whoecho
+  ;
+  ; write window positions and size
+  ;
+  writeini tnircop.ini windows cowx %-tnircop.cowx
+  writeini tnircop.ini windows cowy %-tnircop.cowy
+  writeini tnircop.ini windows coww %-tnircop.coww
+  writeini tnircop.ini windows cowh %-tnircop.cowh
+  writeini tnircop.ini windows infox %-tnircop.infox
+  writeini tnircop.ini windows infoy %-tnircop.infoy
+  writeini tnircop.ini windows infoh %-tnircop.infoh
+  writeini tnircop.ini windows infow %-tnircop.infow
+  writeini tnircop.ini windows whwx %-tnircop.whwx
+  writeini tnircop.ini windows whwy %-tnircop.whwy
+  writeini tnircop.ini windows whww %-tnircop.whww
+  writeini tnircop.ini windows whwh %-tnircop.whwh
+  ;
+  ; Misc variables
+  ;
+  writeini tnircop.ini misc opernick %-tnircop.opernick
+  echo -s 12»» All settings saved 12««
+}
+
+
+on *:CONNECT: { readinivars }
+
+alias readinivars {
+
+  ; Format:
+  ; $readini <-n> <filename> <section> <item>
+  ;
+  ; Read Enable / Disable section
+  set %-tnircop.enable.routing $readini tnircop.ini enable routing
+  set %-tnircop.enable.operalias $readini tnircop.ini enable operalias
+  set %-tnircop.enable.operserv $readini tnircop.ini enable operserv
+  set %-tnircop.enable.ncserv $readini tnircop.ini enable ncserv
+  set %-tnircop.enable.snotice $readini tnircop.ini enable snotice
+  set %-tnircop.enable.selfprot $readini tnircop.ini enable selfprot
+  set %-tnircop.enable.snotice.cr $readini tnircop.ini enable snotice.cr
+  set %-tnircop.enable.snotice.r $readini tnircop.ini enable snotice.r
+  ;
+  ; read routing variables
+  ;
+  set %-tnircop.ceecho $readini tnircop.ini routing ceecho
+  set %-tnircop.glecho $readini tnircop.ini routing glecho
+  set %-tnircop.osecho $readini tnircop.ini routing osecho
+  set %-tnircop.oecho $readini tnircop.ini routing oecho
+  set %-tnircop.kkecho $readini tnircop.ini routing kkecho
+  set %-tnircop.whecho $readini tnircop.ini routing whecho
+  set %-tnircop.rawecho $readini tnircop.ini routing rawecho
+  set %-tnircop.statsecho $readini tnircop.ini routing statsecho
+  set %-tnircop.whoecho $readini tnircop.ini routing whoecho
+  ;
+  ; read window positions and size
+  ;
+  set %-tnircop.cowx $readini tnircop.ini windows cowx
+  set %-tnircop.cowy $readini tnircop.ini windows cowy
+  set %-tnircop.coww $readini tnircop.ini windows coww
+  set %-tnircop.cowh $readini tnircop.ini windows cowh
+  set %-tnircop.infox $readini tnircop.ini windows infox
+  set %-tnircop.infoy $readini tnircop.ini windows infoy
+  set %-tnircop.infoh $readini tnircop.ini windows infoh
+  set %-tnircop.infow $readini tnircop.ini windows infow
+  set %-tnircop.whwx $readini tnircop.ini windows whwx
+  set %-tnircop.whwy $readini tnircop.ini windows whwy
+  set %-tnircop.whww $readini tnircop.ini windows whww
+  set %-tnircop.whwh $readini tnircop.ini windows whwh
+  ;
+  ; read misc var section
+  ;
+  set %-tnircop.opernick $readini tnircop.ini misc opernick
+  ;
+  echo -s 12»» Settings reloaded 12««
+}

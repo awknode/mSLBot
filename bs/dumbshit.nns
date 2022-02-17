@@ -1,0 +1,741 @@
+On $owner:text:@nazi:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  /msg #              4,4==================
+  /msg #              4,4==0,0============0,0==4,4==
+  /msg #              4,4==0,0==1,1==0,0==1,1======0,0==4,4==
+  /msg #              4,4==0,0==1,1==0,0==1,1==0,0======4,4==
+  /msg #              4,4==0,0==1,1==========0,0==4,4==
+  /msg #              4,4==0,0======1,1==0,0==1,1==0,0==4,4==
+  /msg #              4,4==0,0==1,1======0,0==1,1==0,0==4,4==
+  /msg #              4,4==0,0============0,0==4,4==
+  /msg #              4,4==================
+}
+
+on *:TEXT:!powerwheel*:#: {
+  if (%flood [ $+ [ $nick ] $+ [ $right($1,-1) ] ] > 0) { notice $nick You must wait $duration($v1) in order to do that again. | halt }
+  set -z %flood [ $+ [ $nick ] $+ [ $right($1,-1) ] ] 60
+  msg # $nick powerlevel is $r(1,10000) $+ !
+}
+
+On *:TEXT:.hug *:#: {
+  spamprotect
+  exprotect $1-
+describe # 4♥♡❤♡♥12 $2 04♥♡❤♡♥ }
+
+On *:TEXT:.kiss *:#: {
+  spamprotect
+  exprotect $1-
+describe # (づ｡◕‿‿◕｡)04。。・゜゜・。。・゜❤12 $2 04❤ }
+
+(づ｡◕‿‿◕｡)04。。・゜゜・。。・゜❤ noop 04❤
+
+On $owner:text:.dd *:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  if (!$2) { halt }
+  /msg # 9Docking time.	
+  /msg # 8===> <===8
+  /msg # 8===><===8
+  /msg # 8==<<===8
+  /msg # 8===>>==8
+  /msg # 8==<<===8
+  /msg # 8===*~6♥~*===8
+  /msg # $nick & $2 4 lyf
+}
+
+On $*:Text:/^[$](pack|smoke)(\s|$)/Si:#: { 
+  spamprotect 
+  exprotect $1-
+  if (!$2) && ($2 != 0) { 
+    msg $chan 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_  80P68u56b44l32i20c 21S33e45r57v69i81c82e 70A58n46n34o22u58n70c82e81m69e57n45t 4CANNON BALL Get ready to pack a bowl, roll a joint, blaze a dab, vape some clear, just be ready to smoke 9dank in10 2 minutes. 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_ 
+    timer_dank1 0 120 msg $!eval( $chan , 0) 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_ 73L61a49d37i38e50s 62& 74G75e63n51t39s28, 40g52e64t 65y53o41u29r 30b42o54w66l67s55,43j31o32i44n56t68s69,57d45a33b34s46,58a70n71d 59v47a35p36e48s 4READY!! 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_
+    timer_dank2 0 121 msg $!eval( $chan , 0) 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_ 46_34\22|23/35_ 10509 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_ 46_34\22|23/35_
+    timer_dank3 0 122 msg $!eval( $chan , 0) 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_ 10409 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_
+    timer_dank4 0 123 msg $!eval( $chan , 0) 80_68\56!44/32_ 20_21\33|45/57_ 10309 80_68\56!44/32_ 20_21\33|45/57_
+    timer_dank5 0 124 msg $!eval( $chan , 0) 80_68\56!44/32_ 10209 80_68\56!44/32_ 
+    timer_dank6 0 125 msg $!eval( $chan , 0) 77⠱65⠛53⠑41⠱29⠛17⠱18⠛30⠑42⠱54⠛66⠱78⠛79⠑67⠱55⠛43⠱31⠛ 041 19⠑20⠱32⠛44⠱56⠛68⠑80⠱81⠛69⠱57⠛45⠑33⠱21⠛22⠱34⠛46⠑58⠱70⠛
+    timer_dank7 0 126 msg $!eval( $chan , 0) 09(̅_̅_̅_̅((_̅_̲̅08м̲̅a̲̅я̲̅i̲̅j̲̅u̲̅a̲̅n̲̅a̲̅̅04_̅_̅_̅() 9ڪے4 FIRE9 75t63h51a39t 28s40h52i64t 65u53p 41h29o30m42i54e66. 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_ 44N56o68w 69r57e45l33a34x46. 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_
+    timer_dank8 0 129 timer_dank* off
+    halt
+  }
+  if ($left($2,-1) isnum 1-9) && (*m iswm $2) && ($2 != 0) { 
+    msg $chan 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_  80P68u56b44l32i20c 21S33e45r57v69i81c82e 70A58n46n34o22u58n70c82e81m69e57n45t 4CANNON BALL Get ready to pack a bowl, roll a joint, blaze a dab, vape some clear, just be ready to smoke 9dank in10 $left($2,-1) minute(s). 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_ 
+    timer_dank1 0 $duration($right($2,2) 0s) msg $!eval( $chan , 0) 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_ 73L61a49d37i38e50s 62& 74G75e63n51t39s28, 40g52e64t 65y53o41u29r 30b42o54w66l67s55,43j31o32i44n56t68s69,57d45a33b34s46,58a70n71d 59v47a35p36e48s 4READY!! 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_ 
+    timer_dank2 0 $duration($right($2,2) 1s) msg $!eval( $chan , 0) 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_ 46_34\22|23/35_ 10509 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_ 46_34\22|23/35_
+    timer_dank3 0 $duration($right($2,2) 2s) msg $!eval( $chan , 0) 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_ 10409 80_68\56!44/32_ 20_21\33|45/57_ 69_81\82!70/58_
+    timer_dank4 0 $duration($right($2,2) 3s) msg $!eval( $chan , 0) 80_68\56!44/32_ 20_21\33|45/57_ 10309 80_68\56!44/32_ 20_21\33|45/57_
+    timer_dank5 0 $duration($right($2,2) 4s) msg $!eval( $chan , 0) 80_68\56!44/32_ 102 80_68\56!44/32_
+    timer_dank6 0 $duration($right($2,2) 5s) msg $!eval( $chan , 0) 77⠱65⠛53⠑41⠱29⠛17⠱18⠛30⠑42⠱54⠛66⠱78⠛79⠑67⠱55⠛43⠱31⠛ 041 19⠑20⠱32⠛44⠱56⠛68⠑80⠱81⠛69⠱57⠛45⠑33⠱21⠛22⠱34⠛46⠑58⠱70⠛
+    timer_dank7 0 $duration($right($2,2) 6s) msg $!eval( $chan , 0) 09(̅_̅_̅_̅((_̅_̲̅08м̲̅a̲̅я̲̅i̲̅j̲̅u̲̅a̲̅n̲̅a̲̅̅04_̅_̅_̅() 9ڪے4 FIRE9 75t63h51a39t 28s40h52i64t 65u53p 41h29o30m42i54e66. 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_ 44N56o68w 69r57e45l33a34x46. 80_68\56!44/32_ 20G21A33N45J57A 69_81\82!70/58_
+    timer_dank8 0 $duration($right($2,2) 9s) timer_dank* off
+    halt 
+  }
+  else { msg $chan 2nd input is invalid. i.e. - .pack 4m }
+}
+alias xr2 var %o = $r(0,72) | $iif($isid, return, say) $regsubex($1-, /(*UTF8)(\S)/g, $chr(3) $+ $gettok(17 18 30 42 54 66 78 79 67 55 43 31 19 20 32 44 56 68 80 81 69 57 45 33 21 22 34 46 58 70 82 83 71 59 47 35 23 24 36 48 60 72 84 85 73 61 49 37 25 26 38 50 62 74 86 87 75 63 51 39 27 28 40 52 64 76 77 65 53 41 29,$calc((\n + %o )- $calc($floor($calc((\n + %o -1)/71))*71)), 32) $+ \1)
+
+	
+On $owner:text:.nazi:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  /msg $chan            ░░░░░░░░░░░░░░░▄▀▄░░░░░░░░░░░░░░░
+  /msg #              ░░░░░░░░░░░░░▄▀░░░▀▄░░░░░░░░░░░░░
+  /msg #              ░░░░░░░░░░░▄▀░░░░▄▀█░░░░░░░░░░░░░
+  /msg #              ░░░░░░░░░▄▀░░░░▄▀░▄▀░▄▀▄░░░░░░░░░
+  /msg #              ░░░░░░░▄▀░░░░▄▀░▄▀░▄▀░░░▀▄░░░░░░░
+  /msg #              ░░░░░░░█▀▄░░░░▀█░▄▀░░░░░░░▀▄░░░░░
+  /msg #              ░░░▄▀▄░▀▄░▀▄░░░░▀░░░░▄█▄░░░░▀▄░░░
+  /msg #              ░▄▀░░░▀▄░▀▄░▀▄░░░░░▄▀░█░▀▄░░░░▀▄░
+  /msg #              ░█▀▄░░░░▀▄░█▀░░░░░░░▀█░▀▄░▀▄░▄▀█░
+  /msg #              ░▀▄░▀▄░░░░▀░░░░▄█▄░░░░▀▄░▀▄░█░▄▀░
+  /msg #              ░░░▀▄░▀▄░░░░░▄▀░█░▀▄░░░░▀▄░▀█▀░░░
+  /msg #              ░░░░░▀▄░▀▄░▄▀░▄▀░█▀░░░░▄▀█░░░░░░░
+  /msg #              ░░░░░░░▀▄░█░▄▀░▄▀░░░░▄▀░▄▀░░░░░░░
+  /msg #              ░░░░░░░░░▀█▀░▄▀░░░░▄▀░▄▀░░░░░░░░░
+  /msg #              ░░░░░░░░░░░░░█▀▄░▄▀░▄▀░░░░░░░░░░░
+  /msg #              ░░░░░░░░░░░░░▀▄░█░▄▀░░░░░░░░░░░░░
+  /msg #              ░░░░░░░░░░░░░░░▀█▀░░░░░░░░░░░░░░░
+}
+
+On $owner:TEXT:.dank:#: {
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  msg # 9                                .
+  msg # 9                               M
+  msg # 9                              dM
+  msg # 9                              MMr
+  msg # 9                             4MMML                  .
+  msg # 9                             MMMMM.                xf
+  msg # 9             .              "MMMMM               .MM-
+  msg # 9              Mh..          +MMMMMM            .MMMM
+  msg # 9              .MMM.         .MMMMML.          MMMMMh
+  msg # 9               )MMMh.        MMMMMM         MMMMMMM
+  msg # 8                3MMMMx.     'MMMMMMf      xnMMMMMM"
+  msg # 8                '*MMMMM      MMMMMM.     nMMMMMMP"
+  msg # 8                  *MMMMMx    "MMMMM\    .MMMMMMM=
+  msg # 8                   *MMMMMh   "MMMMM"   JMMMMMMP
+  msg # 8                     MMMMMM   3MMMM.  dMMMMMM            .
+  msg # 8                      MMMMMM  "MMMM  .MMMMM(        .nnMP"
+  msg # 8          =..          *MMMMx  MMM"  dMMMM"    .nnMMMMM*
+  msg # 8            "MMn...     'MMMMr 'MM   MMM"   .nMMMMMMM*"
+  msg # 4             "4MMMMnn..   *MMM  MM  MMP"  .dMMMMMMM""
+  msg # 4               ^MMMMMMMMx.  *ML "M .M*  .MMMMMM**"
+  msg # 4                  *PMMMMMMhn. *x > M  .MMMM**""
+  msg # 4                     ""**MMMMhx/.h/ .=*"
+  msg # 4                              .3P"%....
+  msg # 4                            nP"     "*MMnx                9Very Dank
+}
+
+
+On $owner:text:.csn:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  /msg #                                      |            \ 
+  /msg #                                     |       \      | 
+  /msg #                                     | @      \      \ 
+  /msg #                                      \        |     | 
+  /msg #                                      |         \     \ 
+  /msg #                                       \         \    | 
+  /msg #                                       |          \    | 
+  /msg #                                       |          |    | 
+  /msg #                        ,-----.         \         |    ) 
+  /msg #                      /'   _)))         |          \   | 
+  /msg #                     /   /  - -         ##         \   | 
+  /msg #                    (   (    _' _ _______#/        |   /
+  /msg #                   /    )`  `\`(_;______ (        /    | 
+  /msg #                  /  __)' /--'`-'       )|       | ,   / 
+  /msg #                 (.-'  - '`-.          ( |       </ |||| 
+  /msg #                /            :         `-|        ,//// 
+  /msg #               |   ,    \   \'           |       / 
+  /msg #                \   \    @   @           |      | 
+  /msg #                 \   \__.'__.'           |      | 
+  /msg #                  \   \  /               (      / 
+  /msg #                 /  \  \                 |     | 
+  /msg #           CocK SUCKinG FuCKiNg NIGGERS
+}
+
+On $owner:TEXT:shrug*:#: {
+  spamprotect
+  exprotect $1-
+  msg # $xr2(¯\_(ツ)_/¯)
+}
+
+On $owner:TEXT:wtf:#: {
+  spamprotect
+  exprotect $1-
+  msg # ✖‿✖
+}
+
+
+On $owner:TEXT:fag:#: {
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  msg # $xr2(┌∩┐(　*¯∇¯)┌∩┐ ☆ Ｆ Ａ Ｇ Ｇ Ｏ Ｔ ☆)
+}
+
+On $owner:text:.jtt:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  /msg #                                      |            \ 
+  /msg #                                     |       \      | 
+  /msg #                                     | @      \      \ 
+  /msg #                               _.. _  \        |     | 
+  /msg #                             / /'''\\ |         \     \ 
+  /msg #                            / / _  _|) \         \    | 
+  /msg #                           /  )  _' |\ |          \    | 
+  /msg #                        __/-')\ `-'/') |          |    | 
+  /msg #                    _.-'       ` -'( )) \         |    ) 
+  /msg #                 .-'     _,        )( ) |          \   | 
+  /msg #                (     .-"_'    \    \   ##         \   | 
+  /msg #                 ``-.__   `-._//`\'__\___#/        |   / 
+  /msg #                       `--._   \ 0)_____ (        /    | 
+  /msg #                        .'  `\\\\,'__.' )|       | ,   / 
+  /msg #                      /       ~~.'    ( |       </ |||| 
+  /msg #                    . '        /       `-|        ,//// 
+  /msg #                  .'       . )'          |       / 
+  /msg #                  |         \            |      | 
+  /msg #                   \         \           |      | 
+  /msg #                    `\        \          (     / 
+  /msg #                      `\       \         |     | 
+  /msg #                 Just the tip for tonight baby. Just the tip.
+}
+
+On $owner:text:.zeekill:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  msg #              ░░░░░░░░░░░▄▀▀▀▀▀▀▀▀▀▀▀▀▀▀▄░░░░░░░░░░░ 
+  msg #              ░░░░░░░░▄▀░░░░░░░░░░░░░▒▒▒▒▒▄░░░░░░░░░
+  msg #              ░░░░░░▄▀▒▒▒▒░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒█░░░░░░░░
+  msg #              ░░░░░█▒▒▒▒░░░░▒▒▒▒▒▒▒▒▒▒░░░░▒▒█░░░░░░░
+  msg #              ░░░░█▒▒▄▀▀▀▀▀▄▄▒▒▒▒▒▒▒▒▒▄▄▀▀▀▀▀▀▄░░░░░
+  msg #              ░░▄▀▒▒▒▄█████▄▒█▒▒▒▒▒▒▒█▒▄█████▄▒█░░░░
+  msg #              ░█▒▒▒▒▐██▄████▌▒█▒▒▒▒▒█▒▐██▄████▌▒█░░░
+  msg #              ▀▒▒▒▒▒▒▀█████▀▒▒█▒░▄▒▄█▒▒▀█████▀▒▒▒█░░
+  msg #              ▒▒▐▒▒▒░░░░▒▒▒▒▒█▒░▒▒▀▒▒█▒▒▒▒░░░░▒▒▒▒█░
+  msg #              ▒▌▒▒▒░░░▒▒▒▒▒▄▀▒░▒▄█▄█▄▒▀▄▒▒▒░░░░▒▒▒▒▌
+  msg #              ▒▌▒▒▒▒░▒▒▒▒▒▒▀▄▒▒█▌▌▌▌▌█▄▀▒▒▒▒▒░░░▒▒▒▐
+  msg #              ▒▐▒▒▒▒▒▒▒▒▒▒▒▒▒▌▒▒▀███▀▒▌▒▒▒▒▒▒▒▒▒▒▒▒▌
+  msg #              ▀▀▄▒▒▒▒▒▒▒▒▒▒▒▌▒▒▒▒▒▒▒▒▒▐▒▒▒▒▒▒▒▒▒▒▒█░
+  msg #              ▀▄▒▀▄▒▒▒▒▒▒▒▒▐▒▒▒▒▒▒▒▒▒▄▄▄▄▒▒▒▒▒▒▄▄▀░░
+  msg #              ▒▒▀▄▒▀▄▀▀▀▄▀▀▀▀▄▄▄▄▄▄▄▀░░░░▀▀▀▀▀▀░░░░░
+  msg #              ▒▒▒▒▀▄▐▒▒▒▒▒▒▒▒▒▒▒▒▒▐░░░░░░░░░░░░░░░░░
+}
+
+on $*:text:!brain:#:{ msg # $me consists of $tot_size lines of code. }
+alias -l total_lines { noop $findfile($mircdir\scripts\bs,*.mrc,0,calc_file $1-) }
+alias -l calc_file {
+  var %l = $lines($1-)
+  if (%l) { set -e %tot_lines $calc(%tot_lines + %l) }
+}
+alias -l tot_size {
+  total_lines
+  var %tot = %tot_lines
+  unset %tot_lines
+  if (%tot) { return %tot }
+  else { return 0 }
+}
+
+On $*:text:/^[.!@]bong/Si:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  msg # 09Light that shit, 09Inhale that shit, 9Passsss thatttttt shitttttt. You high yet9 $nick $+ ?
+  /set %fact $rand(1,35)
+  if (%fact == 1) msg # "Herb is the healing of a nation, alcohol is the destruction." -09Bob Marley
+  if (%fact == 2) msg # "When you smoke the herb, it reveals you to yourself." -09Bob Marley
+  if (%fact == 3) msg # "It's a good thing most people bleed on the inside or this would be a gory, blood-smeared earth." - 09Beatrice Sparks
+  if (%fact == 4) msg # "Why is marijuana against the law? It grows naturally upon our planet. Doesn’t the idea of making nature against the law seem to you a bit . . . unnatural?" -09Bill Hicks
+  if (%fact == 5) msg # "The illegality of cannabis is outrageous, an impediment to full utilization of a drug which helps produce the serenity and insight, sensitivity and fellowship so desperately needed in this increasingly mad and dangerous world." -09Carl Sagan
+  if (%fact == 6) msg # "We all need something to help us unwind at the end of the day. You might have a glass of wine, or a joint, or a big delicious blob of heroin to silence your silly brainbox of its witterings but there has to be some form of punctuation, or life just seems utterly relentless." -09Russel Brand
+  if (%fact == 7) msg # "Federal and state laws (should) be changed to no longer make it a crime to possess marijuana for private use." -09Richard M. Nixon
+  if (%fact == 8) msg # "The amount of money and of legal energy being given to prosecute hundreds of thousands of Americans who are caught with a few ounces of marijuana in their jeans simply makes no sense - the kindest way to put it. A sterner way to put it is that it is an outrage, an imposition on basic civil liberties and on the reasonable expenditure of social energy." -09William F. Buckley Jr.
+  if (%fact == 9) msg # "So when he asked about getting high, I didn't think, I agreed. We smoked some good California green. Took three tries to put me in the place he said I should be."  -09Ellen Hopkins
+  if (%fact == 10) msg # "From 1920 to 1933 the United States government imposed a nationwide ban on the sale, production, importation, and transportation of alcohol. Fast forward nearly a century and it seems we have learned nothing from the hiccup in our legislation. Much the same way alcohol was banned then, marijuana now faces the same legal opposition -- though we are approaching a wave of change. Below are five of our favorite quotes that sum up the ineffectiveness of prohibition from our cultural predecessors." -09Truth
+  if (%fact == 11) msg # "Prohibition will work great injury to the cause of temperance. It is a species of intemperance within itself, for it goes beyond the bounds of reason in that it attempts to control a man's appetite by legislation, and makes a crime out of things that are not crimes. A Prohibition law strikes a blow at the very principles upon which our government was founded." -09Abraham Lincoln
+  if (%fact == 12) msg # "Prohibition only drives drunkenness behind doors and into dark places, and does not cure it, or even diminish it." -09Mark Twain
+  if (%fact == 13) msg # "Prohibition has made nothing but trouble" -09Al Capone"
+  if (%fact == 14) msg # "Prohibition is the trigger of crime.” -09Ian Fleming"
+  if (%fact == 15) msg # "Prohibition? HA! They tried that in the movies and it didn't work" -09Homer Pimpson
+  if (%fact == 16) msg # "I think that marijuana should not only be legal, I think it should be a cottage industry. It would be wonderful for the state of Maine. There's some pretty good homegrown dope. I'm sure it would be even better if you could grow it with fertilizers and have greenhouses." -09Stephen King
+  if (%fact == 17) msg # "I enjoy smoking cannabis and see no harm in it". -09Jennifer Anniston
+  if (%fact == 18) msg # "Even if one takes every reefer madness allegation of the prohibitionists at face value, marijuana prohibition has done far more harm to far more people than marijuana ever could." -09William F. Buckley
+  if (%fact == 19) msg # "Smoking's a way to let you down slowly from a ballgame. It also makes you use less of the resources around. It makes people better in the way they act towards society. Everybody's nicer. It's hard to be mean when you're stoned." -09Bill Lee
+  if (%fact == 20) msg # "Why use up the forests which were centuries in the making and the mines which required ages to lay down, if we can get the equivalent of forest and mineral products in the annual growth of the hemp fields?" -09Henry Ford
+  if (%fact == 21) msg # "Forty million Americans smoked marijuana; the only ones who didn't like it were Judge Ginsberg, Clarence Thomas and Bill Clinton." -09Jay Leno
+  if (%fact == 22) msg # "When I was a kid I inhaled frequently. That was the point." -09Barack Obama
+  if (%fact == 23) msg # "Hemp is of first necessity to the wealth & protection of the country." -09Thomas Jefferson
+  if (%fact == 24) msg # "That is not a drug. It’s a leaf." -09Arnold Schwarzenigger
+  if (%fact == 25) msg # "If the words "life, liberty and the pursuit of happiness" don't include the right to experiment with your own consciousness, then the Declaration of Independence isn't worth the hemp it was written on." 09Terrence McKenna
+  if (%fact == 26) msg # "The biggest killer on the planet is stress and I still think the best medicine is and always has been cannabis." -09Willie Nelson
+  if (%fact == 27) msg # "Why is marijuana against the law? It grows naturally upon our planet. Doesn't the idea of making nature against the law seem to you a bit . . . unnatural?" -09Bill Hicks
+  if (%fact == 28) msg # "I used to smoke marijuana. But I'll tell you something: I would only smoke it in the late evening. Oh, occasionally the early evening, but usually the late evening - or the mid-evening. Just the early evening, mid-evening and late evening. Occasionally, early afternoon, early mid-afternoon, or perhaps the late-mid-afternoon. Oh, sometimes the early-mid-late-early morning. . . . ...But never at dusk." -09Steve Martin
+  if (%fact == 29) msg # "Make the most you can of the Indian Hemp seed and sow it everywhere." -09George Washington
+  if (%fact == 30) msg # "It really puzzles me to see marijuana connected with narcotics . . . dope and all that crap. It's a thousand times better than whiskey - it's an assistant - a friend." Louis Armstrong
+  if (%fact == 31) msg # "The illegality of cannabis is outrageous, an impediment to full utilization of a drug which helps produce the serenity and insight, sensitivity and fellowship so desperately needed in this increasingly mad and dangerous world." -09Carl Sagan
+  if (%fact == 32) msg # "I have always loved marijuana. It has been a source of joy and comfort to me for many years. And I still think of it as a basic staple of life, along with beer and ice and grapefruits -and millions of Americans agree with me." -09Hunter S. Thompson
+  if (%fact == 33) msg # "Is marijuana addictive? Yes, in the sense that most of the really pleasant things in life are worth endlessly repeating." -09Richard Neville
+  if (%fact == 34) msg # "I think people need to be educated to the fact that marijuana is not a drug. Marijuana is an herb and a flower. God put it here. If He put it here and He wants it to grow, what gives the government the right to say that God is wrong?" -09Willie Nelson
+  if (%fact == 35) msg # "I give you every seed-bearing plant on the face of the whole earth..." -09Holy Bible
+}
+
+On $*:text:/^[.!@]dab/Si:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  /set %fact $rand(1,4)
+  if ($2) { msg # $nick gives a 09dab to $2 $+ , they both get 09high as 09fuck together. | halt }
+  if (%fact == 1) msg # $nick places the 09dab into the wax pen and gets high as fuck
+  if (%fact == 2) msg # $nick slings 09dab outside because a cop is behind him and he just realized he's not in a weed legal state. No high for you.
+  if (%fact == 3) msg # $nick drops 09dab onto modified 09super bong and watches it melt in seconds while he gets lifted off all the smoke pouring down his lungs. This nigger is 09high as fuck.
+  if (%fact == 4) msg # $nick smokes a 09dab and didn't share with anyone else. Get that motherfucker.
+  if (%fact == 5) msg # $nick waits on obamacare to work to drop a 09dab, waits...waits...waits...
+}
+
+On $owner:text:/^[@](ss|ϟϟ)/Si:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  msg #  /     \             \            /    \       
+  msg # |       |             \          |      |      
+  msg # |       `.             |         |       :     
+  msg # `        |             |        \|       |     
+  msg #  \       | /       /  \\\   --__ \\       :    
+  msg #   \      \/   _--~~          ~--__| \     |    
+  msg #    \      \_-~                    ~-_\    |    
+  msg #     \_     \        _.--------.______\|   |    
+  msg #       \     \______// _ ___ _ (_(__>  \   |    
+  msg #        \   .  C ___)  ______ (_(____>  |  /    
+  msg #        /\ |   C ____)/      \ (_____>  |_/     
+  msg #       / /\|   C_____)       |  (___>   /  \    
+  msg #      |   (   _C_____)\______/  // _/ /     \   
+  msg #      |    \  |__   \\_________// (__/       |  
+  msg #     |  \_          ___\       /_          _/ | 
+  msg #    |              /    |     |  \            | 
+  msg #    |             |    /       \  \           | 
+  msg #    |          / /    |         |  \           |
+  msg #    |         / /      \__/\___/    |          |
+  msg #   |         / /        |    |       |         |
+  msg #   |          |         |    |       |         |
+}
+
+On $owner:text:@sonic *:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  msg # 151,1lolhylolhylolhyl2,2olhy1,1lo12,12lhylolhylolh2,2yl7,7ol12,12hylolh2,2ylolhylolh1,1ylolhylo
+  msg # 151,1lolhylolhylolhyl2,2olhy12,12lolhylolhylo2,2lh7,7ylol12,12hy2,2lolhylol1,1hylolhylolhylo
+  msg # 151,1lolhylolhylolhyl2,2ol12,12hylolhylolhyl2,2o7,7lhylol12,12hy2,2lo12,12lh2,2yl1,1olhylolhylolhylo
+  msg # 151,1lolhylolhylolhyl12,12olhylolhylolhylolhylolhyl2,2o12,12lhylol1,1hylolhylolhylo
+  msg # 151,1lolhylolhylolhyl12,12olhylolhylolhylolhylolhylolh2,2yl12,12olhylo1,1lhylolhylo
+  msg # 151,1lolhylolhylolh12,12ylolhylolhylolhylolhylolhylolh2,2ylol12,12hylolhyl1,1olhylo
+  msg # 151,1lolhylolhylolh2,2yl12,12olhylolhyl15,15olhy12,12lolhylol2,2hy12,12lolh2,2ylol12,12hylolhylol1,1hylo
+  msg # 151,1lolhylolhylolhyl12,12olhylo1,1lh15,15ylolhylo12,12lhylolhylolh2,2ylol12,12hy2,2lolhyl12,12olhy1,1lo
+  msg # 151,1lolhylolhylolhyl12,12olhy1,1lolh15,15ylolhylo12,12lhylolhylo2,2lhylolhylolhylolhy1,1lo
+  msg # 151,1lolhylolhylolhylol14,14hy1,1lolh15,15ylolhylo2,2lh12,12ylolhylo2,2lhylolhylo1,1lhylolhy2,2lo
+  msg # 151,1lolhylolhylolh14,14yl1,1ol15,15hy1,1lolh15,15ylolhy7,7lol12,12hylolhy2,2lolhylol1,1hylolhylolhylo
+  msg # 151,1lolhylolhylo14,14lh1,1yl14,14olhy15,15lolhylol7,7hylolhyl12,12ol2,2hylolhyl12,12olhy1,1lolhylolhylo
+  msg # 151,1lolhylolhylolhylol7,7hylolhylolhylolhyl5,5ol2,2hylolhyl12,12olhylolh1,1ylolhylo
+  msg # 151,1lolhylolhylolhylol7,7hylolhylolhylolhyl5,5ol2,2hylolhylolhy12,12lolhyl1,1olhylo
+  msg # 151,1lolhylolhylolhylol5,5hy7,7lolhylolhylol5,5hyl2,2olhylolhylolhylolh12,12yl1,1olhylo
+  msg # 151,1lolhylolhylolhylolhy5,5lolhylolhylolh2,2ylolhylolhylolhylolhyl12,12ol1,1hylo
+  msg # 151,1lolhylolhylolhylolhylo12,12lhylolhy2,2lolhylolhylolhylol1,1hylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhy12,12lolh7,7ylol12,12hylo7,7lhylolhy2,2lolh1,1ylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhy12,12lo7,7lhylolhy12,12lolh5,5ylolhy7,7lolh2,2yl1,1olhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhy12,12lo7,7lhylolhy12,12lolh2,2ylolh5,5ylolh7,7yl2,2ol1,1hylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhy12,12lolh7,7ylol12,12hylolh2,2ylolhylo5,5lh7,7yl2,2ol1,1hylolhylolhylo
+  msg # 151,1lolhylolhylolhylol0,0hy1,1lo12,12lhylolhylolh0,0ylolhyl7,7olh5,5yl2,2olhy1,1lolhylolhylo
+  msg # 151,1lolhylolhylolhyl0,0olhylo2,2lh12,12ylolhylo0,0lhylolhylo7,7lh5,5yl2,2olhy1,1lolhylolhylo
+  msg # 151,1lolhylolhylolhyl0,0olhylo1,1lh2,2yl1,1ol2,2hy12,12lo0,0lhylolhylolh2,2ylolhy1,1lolhylolhylo
+  msg # 151,1lolhylolhylolhylol0,0hy1,1lolh2,2ylol1,1hy12,12lolh0,0ylolhylo1,1lhylol2,2hy1,1lolhylolhylo
+  msg # 151,1lolhylolhylolhylolhylolh2,2ylol1,1hylo12,12lh2,2yl0,0olhy1,1lolhylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhylolh2,2ylol1,1hylo12,12lh2,2yl1,1olhylolhylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhylolh2,2ylol1,1hylolh12,12yl2,2ol1,1hylolhylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhylolh2,2ylol1,1hylolh12,12yl2,2ol1,1hylolhylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhylo0,0lhylolhy1,1lo15,15lhylol0,0hylo1,1lhylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhy0,0lolhylolhy1,1l0,0olhylolhylo1,1lhylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhylolhy5,5lo0,0lhylolhy15,15lo5,5lhyl0,0olhy5,5lo1,1lhylolhylolhylolhylo
+  msg # 151,1lolhylolhylolhyl0,0olhylo5,5lhyl15,4ol0,0hylo15,15lh0,0yl5,5olhylo1,1lhylolhylolhylolhylo
+  msg # 151,1lolhylolhylo5,5lhylolhylo15,4lhylolhylolh0,0ylol5,5hylolh1,1ylolhylolhylolhylo
+  msg # 151,1lolhylol5,5hylolhyl15,4olhylolhylolhylolhyl0,0ol5,5hylolh1,1ylolhylolhylolhylo
+  msg # 151,0 Sonic says FUCK YOU you fucking FUCK ASS $2-
+}
+
+	
+On $owner:text:/^[.!@]bbc/Si:#: { 
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  msg #     8,8dixdixdixdixdi1,1xdixdixdix8,8dixdixdixdixdixdixdixdixdixdixdixdixdixdi
+  msg #       8,8dixdixdixdix1,1dix6,6dix1,1d6,6ixdi1,1xdi8,8xdixdixdixdixdixdixdixdixdixdixdixdixdi
+  msg #       8,8dixdixdixdi1,1xd6,6ixdixdixdixdi1,1xd8,8ixdixdixdixdixdixdixdixdixdixdixdixdi
+  msg #       8,8dixdixdixd1,1ix6,6dixdixdixdixdixd1,1i8,8xdixdixdixdixdixdixdixdixdixdixdixdi
+  msg #       8,8dixdixdix1,1di6,6xdixdixdixdixdixd1,1ix8,8dixdixdixdixdixdixdixdixdixdixdixdi
+  msg #       8,8dixdixdix1,1d6,6ixdixdixd1,1i6,6xdixdixdi1,1xd8,8ixdixdixdixdixdixdixdixdixdixdixdi
+  msg #       9,9dixdixdix1,1d6,6ixdixdixd1,1i6,6xdixdixdix1,1di9,9xdixdixdixdixdixdixdixdixdixdixdi
+  msg #       9,9dixdixdix1,1di6,6xdixdixd1,1i6,6xdixdixdixd1,1i9,9xdixdixdixdixdixdixdixdixdixdixdi
+  msg #       9,9dixdixdixd1,1ix6,6dixd1,1ixd5,5i1,1xdixdixdixdi9,9xdixdixdixdixdixdixdixdixdixdixdi
+  msg #       9,9dixdixdixdi1,1xdixdi5,5xdixdixdixdixd1,1i9,9xdixdixdixdixdixdixdixdixdixdixdi
+  msg #       9,9dixdixdixdix1,1di5,5xdixdixdixdixdixd1,1ix9,9dixdixdixdixdixdixdixdixdixdixdi
+  msg #       9,9dixdixdixdixd1,1i5,5xdixdixdixdixdixdi1,1x9,9dixdixdixdixdixdixdixdixdixdixdi
+  msg #       11,11dixdixdixdixd1,1ix5,5dixdixdixdixdix1,1d5,5i1,1xd11,11ixdixdixdixdixdixdixdixdixdixdi
+  msg #       11,11dixdixdixdixdi1,1x5,5dixd1,1ix5,5dixdixdi1,1x5,5dix1,1di11,11xdixdixdixdixdixdixdixdixdixdi
+  msg #       11,11dixdixdixdixdi1,1xd5,5ixdi1,1xd5,5ixdixdi1,1x5,5di1,1x5,5d1,1i11,11xdixdixdixdixdixdixdixdixdixdi
+  msg #       11,11dixdixdixdixdix1,1di5,5x1,1di5,5x1,1dixd5,5ixd1,1ix5,5d1,1ix5,5d1,1ix11,11dixdixdixdixdixdixdixdixdixdi
+  msg #       11,11dixdixdixdixdixd1,1i5,5xdi1,1xd5,5ix1,1dixdi5,5x1,1di5,5xdi1,1x11,11dixdixdixdixdixdixdixdixdixdi
+  msg #       11,11dixdixdixdixdixd1,1i5,5xdix1,1di5,5xdi1,1xd5,5i1,1xd5,5ixdi1,1xd11,11ixdixdixdixdixdixdixdixdixdi
+  msg #       12,12dixdixdixdixdixd1,1i5,5xdixd1,1ixd5,5ixdi1,1x5,5dixdix1,1d12,12ixdixdixdixdixdixdixdixdixdi
+  msg #       12,12dixdixdixdixdixd1,1i5,5xdixdix1,1di5,5xd1,1i5,5xdixdix1,1di12,12xdixdixdixdixdixdixdixdixdi
+  msg #       12,12dixdixdixdixdixd1,1i5,5xdixdixd1,1ix5,5d1,1ix5,5dixdixd1,1ix12,12dixdixdixdixdixdixdixdixdi
+  msg #       12,12dixdixdixdixdixd1,1i5,5xdixdixdi1,1x5,5di1,1x5,5dixdixdi1,1x12,12dixdixdixdixdixdixdixdixdi
+  msg #       12,12dixdixdixdixdixd1,1i5,5xdixdixdix1,1d5,5i1,1xd5,5ixdixdi1,1xd12,12ixdixdixdixdixdixdixdixdi
+  msg #       12,12dixdixdixdixdixd1,1ix5,5dixdixdix1,1di5,5x1,1di5,5xdixdix1,1d12,12ixdixdixdixdixdixdixdixdi
+  msg #       6,6dixdixdixdixdixdi1,1x5,5dixdixdixd1,1ix5,5d1,1ix5,5dixdix1,1d6,6ixdixdixdixdixdixdixdixdi
+  msg #       6,6dixdixdixdixdixdi1,1xd5,5ixdixdixdi1,1x5,5di1,1x5,5dixdix1,1di6,6xdixdixdixdixdixdixdixdi
+  msg #       6,6dixdixdixdixdixdix1,1d5,5ixdixdixdi1,1x5,5di1,1x5,5dixdixd1,1ix6,6dixdixdixdixdixdixdixdi
+  msg #       6,6dixdixdixdixdixdix1,1d5,5ixdixdixdi1,1x5,5di1,1x5,5dixdixdi1,1x6,6dixdixdixdixdixdixdixdi
+  msg #       6,6dixdixdixdixdixdix1,1di5,5xdixdixdi1,1x5,5di1,1x5,5dixdixdi1,1xdi6,6xdixdixdixdixdixdixdi
+  msg #       6,6dixdixdixdixd1,1ix6,6dixd1,1ix5,5dixdixdixdixdixdixdix1,1dixd6,6ixdixd1,1i6,6xdixdixdixdi
+  msg #       13,13dixdixdi1,1x13,13dixdi1,1xdixdixd5,5ixdixdixdixdixdixdix1,1di5,5x1,1dixdixdi13,13xdixdixdixdi
+  msg #       13,13dixdixdix1,1di13,13x1,1dixdixdixdixdixd5,5ixdixdixdi1,1xd5,5ixdixd1,1ixdi13,13xdixdixdixdixdi
+  msg #       13,13dixdixdixd1,1ixdi5,5xdixd1,1ix5,5dixdix1,1di5,5xdix1,1dix5,5dix1,1di5,5xdixd1,1i5,5xd1,1ix13,13dixdixdixdixdi
+  msg #       13,13dixdixdix1,1di5,5xdi1,1xdix5,5di1,1xd5,5ixdixdixdixdi1,1xd5,5ixd1,1i5,5xdixdi1,1xdixd13,13ixdixdixdixdi
+  msg #       13,13dixdixdix1,1dix5,5dixdixdi1,1x5,5dixdixdixdixdixdixdixdix1,1dix5,5dix1,1di13,13xdixdixdixdi
+  msg #       13,13dix1,1dix13,13d1,1ixd5,5i1,1xdix5,5di1,1xdixdix5,5dixdix1,1dix5,5di1,1xd5,5ixdixdi1,1xd5,5ixdixd1,1i13,13xdixdixdixdi
+  msg #       4,4dix1,1d4,4i1,1xdi4,4x1,1d5,5ixdixdix1,1d5,5ixdix1,1di5,5xdixdi1,1xdixdix5,5dixdixdixdixd1,1i4,4xdixdixdixdi
+  msg #       4,4dixdixdix1,1d5,5ixdixdixdixdixdixdixdixdixdixdixdixd1,1ixdixdi4,4xdixdixdixdi
+  msg #       4,4dixdixdix1,1dixdix5,5dixdixdix1,1d5,5ixdi1,1xd5,5ixdi1,1xd5,5ixdixdixdixdix1,1dixd4,4ixdixdixdi
+  msg #       4,4dixdix1,1dixdi5,5xdixdix1,1d5,5ixdixd1,1ixdixdix5,5d1,1ix5,5dixdixdi1,1xdi5,5xd1,1ixd4,4ix1,1dix4,4dixdixdi
+  msg #       4,4dixd1,1ixd4,4ixd1,1ix5,5dixdi1,1xd5,5ixdix1,1dixd4,4ixdi1,1xdi5,5xdixdi1,1x5,5dixdi1,1xdi4,4xdixdixdixdixdi
+  msg #       4,4dixd1,1i4,4xdixdi1,1xdix5,5d1,1ix5,5dixd1,1ixdi4,4x1,1dix4,4dix1,1dixdix5,5dix1,1dixdixdix4,4dixdixdixdixdi
+  msg #       7,7dixdixdixdixdi1,1xdixdixdi7,7xd1,1i7,7xd1,1ix7,7di1,1xd7,7ixdix1,1dixdix7,7dixdi1,1x7,7dixdixdixdixdi
+  msg #       7,7dixdixdixdixdixd1,1ix7,7dixdixdixd1,1i7,7xdi1,1x7,7dixdixdixdi1,1x7,7dixdix1,1d7,7ixdixdixdixdi
+  msg #       7,7dixdixdixdixdix1,1di7,7xdixdixdixd1,1i7,7xdi1,1xd7,7ixdixdixdi1,1xd7,7ixdixdixdixdixdixdi
+  msg #       7,7dixdixdixdixdi1,1xd7,7ixdixdixdixdixdix1,1di7,7xdixdixdix1,1di7,7xdixdixdixdixdixdi
+  msg #       7,7dixdixdixdixdi1,1x7,7dixdixdixdixdixdix1,1di7,7xdixdixdixd1,1i7,7xdixdixdixdixdixdi
+}
+
+On $owner:text:/^[.!@]cock/Si:#: { 
+  spamprotect
+  exprotect $1-
+  msg #       .".".". 
+  msg #     (`       `)               _.-=-.
+  msg #      '._.--.-;             .-`  -'  '.
+  msg #     .-'`.o )  \           /  .-_.--'  `\
+  msg #    `;---) \    ;         /  / ;' _-_.-' `
+  msg #      `;"`  ;    \        ; .  .'   _-' \
+  msg #       (    )    |        |  / .-.-'    -`
+  msg #        '-.-'     \       | .' ` '.-'-\`
+  msg #         /_./\_.|\_\      ;  ' .'-'.-.
+  msg #         /         '-._    \` /  _;-,
+  msg #        |         .-=-.;-._ \  -'-,
+  msg #        \        /      `";`-`,-"`)
+  msg #         \       \     '-- `\.\
+  msg #          '.      '._ '-- '--'/
+  msg #            `-._     `'----'`;
+  msg #                `"""--.____,/
+  msg #                       \\  \
+  msg #                       // /`
+  msg #                 ___// /__
+  msg #               (`(`(---"-`)
+}
+
+On $owner:text:/^[.!@]pidgin/Si:#: { 
+  spamprotect
+  exprotect $1-
+  msg # ^ÂÊÎÔÛâêîôûĈĉĜĝĤĥĴĵŜŝŴŵŶŷˆ̭̂᷍ḒḓḘḙḼḽṊṋṰṱṶṷẐẑẤấẦầẨẩẪẫẬậẾếỀềỂểỄễỆệỐốỒồỔổỖỗỘộ⨣⨶⩯ꞈ＾󠁞
+}
+
+On $owner:text:/^[.!@]fu */Si:#: { 
+  spamprotect
+  exprotect $1-
+  msg # Hey $$2- $+ , ┌∩┐(◣_◢)┌∩┐ $+ . Secondly, fuck you m8. I've seen barrels of piss with more worth than you.   ̿̿'̿'\̵͇̿̿\=(•̪○)=/̵͇̿̿/'̿̿ ̿ ̿ ̿
+}
+
+On $owner:text:/^[.!@](lg)(\s|$)/Si:#: { 
+  if ($2 == $null) { msg $chan Improper syntax. [Ex: !lg <search>] | halt }
+  spamprotect
+  exprotect $1-
+  msg # 14(Learn 2 Google14)  http://lmgtfy.com/?q= $+ $replace($2-,$chr(32),+)
+}
+
+On $owner:text:/^[.!@](ipt|iptorrents)(\s|$)/Si:#: { 
+  spamprotect
+  exprotect $1-
+  if ($2 == $null) { msg $chan Improper syntax. [Ex: !ipt <search>] }
+  if ($3) && (!$4) { msg # 14(IPTorrents14) https://iptorrents.com/t?q= $+ $+($2,$chr(43),$3,$chr(38),qf,$chr(61)) }
+  if ($2) && ($3 == $null) { msg # 14(IPTorrents14) https://iptorrents.com/t?q= $+ $+($2-,$chr(38),qf,$chr(61)) }
+  if ($2) && ($3) && ($4) { msg # 14(IPTorrents14) https://iptorrents.com/t?q= $+ $+($2-,$chr(43),$3,$chr(43),$4,$chr(38),qf,$chr(61)) }
+}
+
+;On $owner:text:/^[.!@](sg)(\s|$)/Si:#: { 
+;  if ($2 == $null) { msg $chan Improper syntax. [Ex: !sg <search>] | halt }
+;  spamprotect
+;  exprotect $1-
+;  msg # 14[IPTorrents14] arch?q= $+ $replace($2-,$chr(32),+)
+;}
+
+On $*:TEXT:/^[.!@](leafly|leaf|strain)(\s|$)/Si:#: {
+  if ($2 == $null) { msg $chan Improper syntax. [Ex: !strain <search>] | halt }
+  spamprotect
+  exprotect $1-
+  msg $chan 14(Leafly14)  https://www.leafly.com/search?q= $+ $replace($2-,$chr(32),+) 
+}
+
+
+On $owner:text:/^[.!@]stfu/Si:#: {
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  /msg #   |^^^^^^^^^^^\||____
+  /msg #   | The STFU Truck |||""'|""\__
+  /msg #   |______________  || __|__|__|
+  /msg #    (@)@)"""""""**|(@)(@)**|(@)
+  /msg #   OH LOOK YOUR RIDE IS HERE!
+  /msg #   I hate faggots
+  /msg #   Tits ( . Y . ) or GTFO
+}
+
+
+on $owner:text:/^([+-][aov])\s?(.+)?/iS:#:{ 
+  spamprotect
+  exprotect $1-
+  mode # $regml(1) $iif(!$regml(2),$nick,$regml(2)) 
+}
+
+;on *:TEXT:*cms*:#: {
+;  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+;  msg # $xr2(Cock Meat Sandwich) 
+;}
+
+
+on *:TEXT:*sup*danK*:#: {
+  if ($network == HackTimes ) && ($chan == #insecurity ) { halt }
+  spamprotect
+  exprotect $1-
+  /set %fact $rand(1,10)
+  if (%fact == 1) msg $chan Just chillin $+ , about to smoke one. What's good?
+  if (%fact == 2) msg $chan Sittin around horny as hell, you?
+  if (%fact == 3) msg $chan Laying down naked, wishing you were here.
+  if (%fact == 4) msg $chan Helping bosko with a rootkit. Wyd?
+  if (%fact == 5) msg $chan Cleaning up Legend's Mum, she fell on a dick again.
+  if (%fact == 6) msg $chan Playing with my box, sup?
+  if (%fact == 7) msg $chan Doing it with the lights on.
+  if (%fact == 8) msg $chan Riding Batmayne reverse cowgirl for bins. Sup with you $nick ?
+  if (%fact == 9) msg $chan Fondling BooZer for Xanax bars, what are you up to baby?
+  if (%fact == 10) msg $chan Sneaking in the bathroom, I found vein's stash of 30's so I'm crushing/snorting as much as I can befor he sees me. ^_^
+}
+
+
+on *:TEXT:I'm lost*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan $nick , you're in $chan on $network m8.
+  halt
+}
+
+on *:TEXT:Im lost*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan $nick , you're in $chan on $network m8.
+  halt
+}
+
+on *:TEXT:I am lost*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan $nick , you're in $chan on $network m8.
+  halt
+}
+
+on *:TEXT:I'm still lost*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan holy shit $nick are you fucking retarded? rofl. Just google it already.
+  halt
+}
+
+on *:TEXT:Im still lost*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan holy shit $nick are you fucking retarded? rofl. Just google it already.
+  halt
+}
+
+on *:TEXT:*chinese man say*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan He who stands on toilet, is high on pot.
+  halt
+}
+
+
+on *:TEXT:I am still lost*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan holy shit $nick are you fucking retarded? rofl. Just google it already.
+  halt
+}
+
+on *:TEXT:stfu danK*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan Don't you fucking tell me to stfu. I should have skeptical teach you a lesson for that but for now I'm not, I'm going to keep my cool. One more fucking time though..
+  halt
+}
+
+on *:TEXT:*hey danK*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan whatup $nick $+ .
+  halt
+}
+
+on *:TEXT:*hello danK*:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan Sup $nick $+ ? What's good homie?
+  halt
+}
+
+on *:TEXT:danK:#: {
+  spamprotect
+  exprotect $1-
+  /msg $chan Sup $nick $+ ? The fuck you want?
+  halt
+}
+
+
+on *:TEXT:bye*:#: {
+  spamprotect
+  exprotect $1-
+  /set %fact $rand(1,120)
+  if (%fact == 1) msg $chan Goodbye
+  if (%fact == 2) msg $chan Bye-bye
+  if (%fact == 3) msg $chan Bye
+  if (%fact == 4) msg $chan Godspeed
+  if (%fact == 5) msg $chan Buhbyes
+  if (%fact == 6) msg $chan Talk to you later
+  if (%fact == 7) msg $chan Ta ta for now
+  if (%fact == 8) msg $chan Ciao
+  if (%fact == 9) msg $chan Sayanora
+  if (%fact == 10) msg $chan Kamsahamnidah
+  if (%fact == 11) msg $chan Unhello
+  if (%fact == 12) msg $chan See ya
+  if (%fact == 13) msg $chan McGoodbye
+  if (%fact == 14) msg $chan May the forces of evil get lost on the way to you front doorstep
+  if (%fact == 15) msg $chan Live long and prosper
+  if (%fact == 16) msg $chan Cheerio!
+  if (%fact == 17) msg $chan Out
+  if (%fact == 18) msg $chan come back now, don't be scared. it's only pussy
+  if (%fact == 19) msg $chan May your teeth never be replaced by freshly ironed wool socks.
+  if (%fact == 20) msg $chan So long
+  if (%fact == 21) msg $chan Farewell
+  if (%fact == 22) msg $chan Bon voyage
+  if (%fact == 23) msg $chan May you never awaken one morning and find yourself with Iranian death camps for hands and Gorbachev's eyelids attached to your feet.
+  if (%fact == 24) msg $chan Aloha
+  if (%fact == 25) msg $chan L'hitraot
+  if (%fact == 26) msg $chan Kol Tuv
+  if (%fact == 27) msg $chan Shalom
+  if (%fact == 28) msg $chan Peace out
+  if (%fact == 29) msg $chan May your spleen never transform into a solution to the European Union's impending energy crisis and become a battlefield for an upcoming war to end all wars.
+  if (%fact == 30) msg $chan Be well, fellow citizen
+  if (%fact == 31) msg $chan I must take leave of you now
+  if (%fact == 32) msg $chan Adios $nick
+  if (%fact == 33) msg $chan Arrivaderci $nick
+  if (%fact == 34) msg $chan Do svidanja $nick
+  if (%fact == 35) msg $chan Au revoir $nick
+  if (%fact == 36) msg $chan Hasta la vista $nick
+  if (%fact == 37) msg $chan Fare thee well $nick
+  if (%fact == 38) msg $chan May your mouth never be conquered by a band of marauding Vikings.
+  if (%fact == 39) msg $chan Auf Wiederhören
+  if (%fact == 40) msg $chan Auf Wiedersehen
+  if (%fact == 41) msg $chan Servus
+  if (%fact == 42) msg $chan Tschüss
+  if (%fact == 43) msg $chan Tschüs
+  if (%fact == 44) msg $chan Tschö
+  if (%fact == 45) msg $chan Tschau
+  if (%fact == 46) msg $chan Bis dann
+  if (%fact == 47) msg $chan Bis bald
+  if (%fact == 48) msg $chan Bis später
+  if (%fact == 49) msg $chan May you never have your soul absorbed into the Netherworld by a power-hungry televangelist.
+  if (%fact == 50) msg $chan Bis morgen
+  if (%fact == 51) msg $chan Bis Freitagabend
+  if (%fact == 52) msg $chan Bis nächste Woche
+  if (%fact == 53) msg $chan God be with ye
+  if (%fact == 54) msg $chan Bis zur Konferenz
+  if (%fact == 55) msg $chan Bis irgendwann
+  if (%fact == 56) msg $chan Kkkkk...out.
+  if (%fact == 57) msg $chan Stay cool, home-brotha
+  if (%fact == 58) msg $chan Tot Ziens
+  if (%fact == 59) msg $chan Later days
+  if (%fact == 60) msg $chan Tschuess
+  if (%fact == 61) msg $chan Avrio
+  if (%fact == 62) msg $chan Adeus $nick $+ !
+  if (%fact == 63) msg $chan That'll be all $nick .
+  if (%fact == 64) msg $chan I'm leaving now.
+  if (%fact == 65) msg $chan May the Abu Jabi never bake muffins in your lower intestine.
+  if (%fact == 66) msg $chan No more of $nick , finally.
+  if (%fact == 67) msg $chan gtfo $nick
+  if (%fact == 68) msg $chan And...I'm out!
+  if (%fact == 69) msg $chan Cheers m8
+  if (%fact == 70) msg $chan What's keeping you $nick ?
+  if (%fact == 71) msg $chan Get lost $nick 
+  if (%fact == 72) msg $chan Aavjo 
+  if (%fact == 73) msg $chan Shalom, y'all! 
+  if (%fact == 74) msg $chan Hallo
+  if (%fact == 75) msg $chan Later,  
+  if (%fact == 76) msg $chan If I don't return, avenge my death! 
+  if (%fact == 77) msg $chan This is me. And this is the back of me. 
+  if (%fact == 78) msg $chan Tutloo 
+  if (%fact == 79) msg $chan Chevio 
+  if (%fact == 80) msg $chan Pip Pip 
+  if (%fact == 81) msg $chan See ya later, alligator 
+  if (%fact == 82) msg $chan Not now, brown cow 
+  if (%fact == 83) msg $chan 'Til then, penguin 
+  if (%fact == 84) msg $chan Hasta mañana, iguana 
+  if (%fact == 85) msg $chan You stay classy $nick .
+  if (%fact == 86) msg $chan Tallyhoo! 
+  if (%fact == 87) msg $chan Timeout for now Houston 
+  if (%fact == 88) msg $chan Keep it between the lines... 
+  if (%fact == 89) msg $chan Dasvedania 
+  if (%fact == 90) msg $chan Paka 
+  if (%fact == 91) msg $chan Keep it real 
+  if (%fact == 92) msg $chan May your mother's cousin never be assaulted by Attila the Hun at the supermarket (thanks [in part] to Merlin)
+  if (%fact == 93) msg $chan Hasta luego 
+  if (%fact == 94) msg $chan Leb wohl! 
+  if (%fact == 95) msg $chan Mach's gut! 
+  if (%fact == 96) msg $chan À voir! 
+  if (%fact == 97) msg $chan À bientôt!
+  if (%fact == 98) msg $chan Äddi! 
+  if (%fact == 99) msg $chan Avoir! 
+  if (%fact == 100) msg $chan Nos veremos. 
+  if (%fact == 101) msg $chan Vaarwel. 
+  if (%fact == 102) msg $chan Zàijiàn 
+  if (%fact == 103) msg $chan Zdravo 
+  if (%fact == 104) msg $chan Tchau 
+  if (%fact == 105) msg $chan Tootles 
+  if (%fact == 106) msg $chan Até logo 
+  if (%fact == 107) msg $chan Hasta la pasta 
+  if (%fact == 108) msg $chan Valle! 
+  if (%fact == 109) msg $chan Móin, móin! 
+  if (%fact == 110) msg $chan Xau 
+  if (%fact == 111) msg $chan Beijinhos 
+  if (%fact == 112) msg $chan Vá 
+  if (%fact == 113) msg $chan Abraço 
+  if (%fact == 114) msg $chan Fica bem 
+  if (%fact == 115) msg $chan Até amanhã 
+  if (%fact == 116) msg $chan May the dick be with you.
+  if (%fact == 117) msg $chan TTYL 
+  if (%fact == 118) msg $chan chao 
+  if (%fact == 119) msg $chan Don't let the back door hit ya where the good Lord split ya
+  if (%fact == 120) msg $chan Rip in pieces. 
+}

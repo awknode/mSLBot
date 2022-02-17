@@ -1,0 +1,384 @@
+<------------------------=º<×>Â  °ShowDowNÂ  v12Â  PrO°Â  <×>º=------------------------>
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ---------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -=º<×>Â  °ShowDowNÂ  PrO°Â  <×>º=-Â  What'sÂ  NewÂ  fileÂ  !
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ---------------------------------------------------
+
+Â  Â  Â  Â  Â  Â  Â  Â  WelcomeÂ  toÂ  °ShowDowNÂ  PrO°Â  WhatsÂ  NewÂ  fileÂ  !Â  IÂ  haveÂ  triedÂ  toÂ  list
+Â  Â  Â  Â  Â  Â  Â  everyÂ  newÂ  featureÂ  andÂ  fixÂ  thatÂ  hasÂ  beenÂ  madeÂ  toÂ  thisÂ  newÂ  version.
+Â  Â  Â  Â  Â  Â  Â  Â  Â  BigÂ  updatesÂ  areÂ  markedÂ  withÂ  "-=>"Â  andÂ  theÂ  smallerÂ  withÂ  "-"Â  !
+Â  Â  Â  Â  Â  IÂ  thinkÂ  it'sÂ  pointlessÂ  reallyÂ  toÂ  listÂ  theÂ  olderÂ  versionÂ  updatesÂ  here.
+
+Â  ------------------------------------
+Â  -Â  FixesÂ  AndÂ  AdditionsÂ  ToÂ  v12Â  PrOÂ  r2:
+Â  ------------------------------------
+
+Â  *Â  HereÂ  weÂ  areÂ  backÂ  againÂ  withÂ  aÂ  brandÂ  newÂ  °ShowDowNÂ  PrO°Â  versionÂ  !Â  HasÂ  thisÂ  been
+Â  Â  Â  waitedÂ  ?Â  IÂ  bet.Â  ThisÂ  isÂ  aÂ  bigÂ  updateÂ  butÂ  allÂ  theÂ  goodiesÂ  youÂ  lovedÂ  inÂ  theÂ  past
+Â  Â  Â  versionsÂ  areÂ  stillÂ  there.Â  ReadÂ  moreÂ  aboutÂ  theÂ  developmentÂ  phaseÂ  fromÂ  theÂ  file
+Â  Â  Â  VERSIONS.TXT.Â  °ShowDowNÂ  PrO°Â  isÂ  packedÂ  withÂ  enourmousÂ  amountÂ  ofÂ  features.Â  Far
+Â  Â  Â  moreÂ  thanÂ  youÂ  canÂ  seeÂ  byÂ  justÂ  overlooking.Â  DevelopedÂ  sinceÂ  1996.Â  NoteÂ  that
+Â  Â  Â  thisÂ  v12Â  isÂ  aÂ  mIRC32Â  5.91Â  scriptÂ  nowÂ  andÂ  itÂ  WILLÂ  NOTÂ  startÂ  withÂ  anyÂ  otherÂ  mIRC
+Â  Â  Â  versionÂ  thanÂ  5.91Â  orÂ  better.Â  UseÂ  thisÂ  scriptÂ  alwaysÂ  withÂ  theÂ  latestÂ  mIRC(32).
+
+Â  *Â  AllÂ  peopleÂ  whoÂ  haveÂ  REGISTEREDÂ  thisÂ  scriptÂ  previously,Â  willÂ  receiveÂ  newÂ  free
+Â  Â  Â  REGISTRATIONÂ  keyÂ  fileÂ  compatibleÂ  withÂ  thisÂ  version.Â  IfÂ  youÂ  stillÂ  haven't
+Â  Â  Â  REGISTEREDÂ  yourÂ  copyÂ  ofÂ  °ShowDowNÂ  PrO°,Â  pleaseÂ  doÂ  soÂ  toÂ  supportÂ  myÂ  futureÂ  work
+Â  Â  Â  withÂ  theÂ  script.Â  ManyÂ  dedicatedÂ  IRCÂ  andÂ  computerÂ  usersÂ  haveÂ  alreadyÂ  purchased
+Â  Â  Â  theÂ  REGISTRATION,Â  soÂ  whyÂ  don'tÂ  youÂ  ?Â  It'sÂ  theÂ  cheapestÂ  oneÂ  around.Â  ReadÂ  on...
+
+Â  *Â  IÂ  didn'tÂ  raiseÂ  theÂ  REGISTRATIONÂ  pricesÂ  !Â  Yes,Â  theyÂ  areÂ  stillÂ  amazinglyÂ  cheap.
+Â  Â  Â  PleaseÂ  readÂ  REGISTER.TXTÂ  forÂ  moreÂ  detailsÂ  aboutÂ  thisÂ  greatÂ  offer.
+
+Â  *Â  SinceÂ  theÂ  previousÂ  version,Â  theÂ  popupÂ  andÂ  menubarÂ  "RegistrationÂ  INFO"Â  -items
+Â  Â  Â  haveÂ  vanishedÂ  afterÂ  youÂ  purchasedÂ  theÂ  keyÂ  file.Â  VeryÂ  appreciatedÂ  addition.
+
+Â  *Â  ManyÂ  peopleÂ  areÂ  helpingÂ  meÂ  toÂ  developÂ  thisÂ  scriptÂ  byÂ  givingÂ  meÂ  ideas,Â  graphics
+Â  Â  Â  etc.Â  ThankÂ  youÂ  forÂ  allÂ  yourÂ  supportÂ  andÂ  help.Â  AndÂ  nowÂ  theÂ  newÂ  thingsÂ  ofÂ  v12:
+
+Â  -=>Â  IÂ  hadÂ  toÂ  removeÂ  theÂ  WaRÂ  ClonesÂ  totallyÂ  fromÂ  theÂ  script.Â  TheyÂ  wereÂ  triggering
+Â  Â  Â  Â  Â  falseÂ  alarmsÂ  withÂ  someÂ  virusÂ  scanners.Â  AndÂ  anyway,Â  theyÂ  areÂ  uselessÂ  nowadays.
+
+Â  -=>Â  FixedÂ  commandÂ  propertyÂ  errorsÂ  whenÂ  theÂ  scriptÂ  isÂ  usedÂ  withÂ  mIRCÂ  5.91.Â  Updated
+Â  Â  Â  Â  Â  functionalityÂ  withÂ  latestÂ  mIRCÂ  6.03.Â  LetÂ  meÂ  knowÂ  ifÂ  anyÂ  problemsÂ  occur.
+
+Â  -=>Â  TheÂ  scriptÂ  nowÂ  letsÂ  youÂ  useÂ  Nick-,Â  Chan-,Â  andÂ  MemoservÂ  commandsÂ  inÂ  all
+Â  Â  Â  Â  Â  compatibleÂ  networksÂ  whereÂ  theseÂ  servicesÂ  areÂ  available.
+
+Â  -=>Â  AdvancedÂ  ratio-FServerÂ  addedÂ  withÂ  manyÂ  adjustableÂ  options.Â  ItÂ  tookÂ  aÂ  while
+Â  Â  Â  Â  Â  toÂ  codeÂ  indeed.Â  YouÂ  canÂ  selectÂ  whatÂ  filetypesÂ  areÂ  accepted,Â  chooseÂ  ratio,
+Â  Â  Â  Â  Â  setÂ  startÂ  credits,Â  setÂ  "offering"Â  message,Â  chooseÂ  channelÂ  messageÂ  interval
+Â  Â  Â  Â  Â  andÂ  colourÂ  theme,Â  listÂ  andÂ  resetÂ  statsÂ  etcÂ  etc.Â  Error-checkingÂ  toÂ  theÂ  max.
+Â  Â  Â  Â  Â  Won'tÂ  acceptÂ  filesÂ  thatÂ  areÂ  inÂ  serverÂ  andÂ  informsÂ  userÂ  aboutÂ  typos.Â  YouÂ  can
+Â  Â  Â  Â  Â  chooseÂ  toÂ  changeÂ  ratio,Â  channelÂ  messageÂ  andÂ  allÂ  otherÂ  optionsÂ  onÂ  theÂ  fly.
+Â  Â  Â  Â  Â  MenuÂ  optionsÂ  addedÂ  forÂ  givingÂ  peopleÂ  freeÂ  creditsÂ  inÂ  QueryÂ  andÂ  Nicklist
+Â  Â  Â  Â  Â  popups.Â  TrustÂ  me,Â  it'sÂ  allÂ  goodÂ  :)Â  SeeÂ  ScriptÂ  ControlÂ  [F8]Â  -Â  FServerÂ  tab.
+
+Â  -=>Â  AllÂ  receivedÂ  DCCÂ  filesÂ  areÂ  sortedÂ  toÂ  ownÂ  foldersÂ  belowÂ  \DCCGets\.Â  TheÂ  types
+Â  Â  Â  Â  Â  areÂ  sameÂ  thatÂ  theÂ  FServerÂ  usesÂ  toÂ  defineÂ  ifÂ  aÂ  fileÂ  isÂ  anÂ  allowedÂ  upload:
+Â  Â  Â  Â  Â  Pictures,Â  Movies,Â  Documents,Â  SoundsÂ  andÂ  ArchivesÂ  areÂ  automaticallyÂ  sorted.
+
+Â  -=>Â  BigÂ  improvementsÂ  toÂ  theÂ  scriptÂ  CTCPÂ  handlingÂ  andÂ  replyingÂ  system.Â  Added
+Â  Â  Â  Â  Â  "Don'tÂ  replyÂ  toÂ  anyÂ  CTCPsÂ  (totalÂ  silence)".Â  WhenÂ  activated,Â  °ShowDowNÂ  PrO°
+Â  Â  Â  Â  Â  won'tÂ  sendÂ  anyÂ  CTCPÂ  repliesÂ  toÂ  anyone.Â  VERSIONÂ  reply,Â  SOUND/MP3Â  acceptÂ  and
+Â  Â  Â  Â  Â  PAGErÂ  areÂ  adjustedÂ  separately.Â  AlsoÂ  addedÂ  optionsÂ  toÂ  hideÂ  "unknownÂ  CTCP"Â  and
+Â  Â  Â  Â  Â  "uselessÂ  CTCPÂ  SOUND/MP3"Â  requestÂ  informationÂ  echos.Â  TheyÂ  wereÂ  fillingÂ  the
+Â  Â  Â  Â  Â  screenÂ  inÂ  "sound-channels".Â  TellÂ  meÂ  youÂ  loveÂ  meÂ  :)Â  SeeÂ  ScriptÂ  SetUpÂ  [F4].Â  
+
+Â  -=>Â  AllÂ  channelÂ  floodÂ  protectionsÂ  andÂ  monitorsÂ  updated.Â  WhenÂ  youÂ  selectÂ  "Warn"
+Â  Â  Â  Â  Â  inÂ  "ViolatorÂ  Handling",Â  youÂ  canÂ  chooseÂ  howÂ  manyÂ  warningsÂ  areÂ  messagedÂ  to
+Â  Â  Â  Â  Â  personÂ  untilÂ  heÂ  isÂ  kickbanned.Â  ThisÂ  comesÂ  veryÂ  usefulÂ  ifÂ  someÂ  peopleÂ  are
+Â  Â  Â  Â  Â  repeatedlyÂ  violatingÂ  channelÂ  policies.Â  AdjustÂ  fromÂ  ScriptÂ  SetUpÂ  [F4].
+
+Â  -=>Â  ImportantÂ  updateÂ  madeÂ  toÂ  allÂ  channelÂ  scans.Â  AllÂ  nicknamesÂ  thatÂ  theÂ  scanner
+Â  Â  Â  Â  Â  finds,Â  willÂ  beÂ  selectedÂ  fromÂ  theÂ  nicknameÂ  listbox.Â  IfÂ  youÂ  scannedÂ  forÂ  eg.
+Â  Â  Â  Â  Â  clones,Â  youÂ  canÂ  easilyÂ  kickÂ  themÂ  outÂ  afterÂ  scanning.Â  ItÂ  totallyÂ  rules.
+
+Â  -=>Â  PeopleÂ  reportedÂ  thatÂ  theyÂ  hadÂ  problemsÂ  connectingÂ  toÂ  DALNetÂ  IRCÂ  network.
+Â  Â  Â  Â  Â  TheyÂ  gotÂ  errorsÂ  like:Â  "ClosingÂ  connection:Â  (exp/sho)Â  HostileÂ  script".Â  IÂ  have
+Â  Â  Â  Â  Â  toÂ  remindÂ  youÂ  thatÂ  ShowDowNÂ  PrOÂ  isÂ  notÂ  aÂ  hostileÂ  script,Â  justÂ  someÂ  ofÂ  it's
+Â  Â  Â  Â  Â  usersÂ  couldÂ  beÂ  :)Â  Anyway,Â  theÂ  problemÂ  isÂ  fixedÂ  andÂ  alsoÂ  forÂ  theÂ  WarÂ  Clones.
+
+Â  -=>Â  ManyÂ  timesÂ  requestedÂ  "!SeeNÂ  System"Â  added.Â  ItÂ  won'tÂ  slowÂ  yourÂ  scriptÂ  down,
+Â  Â  Â  Â  Â  sinceÂ  it'sÂ  locatedÂ  inÂ  theÂ  ShadowÂ  Clone.Â  ItÂ  willÂ  recordÂ  allÂ  joins,Â  partsÂ  and
+Â  Â  Â  Â  Â  quitsÂ  thatÂ  happenÂ  inÂ  theÂ  channelsÂ  it'sÂ  on.Â  TheÂ  systemÂ  hasÂ  adjustableÂ  option
+Â  Â  Â  Â  Â  toÂ  sendÂ  "NoticeÂ  onÂ  join",Â  tellingÂ  peopleÂ  thatÂ  !SeeNÂ  SystemÂ  isÂ  active.Â  The
+Â  Â  Â  Â  Â  usageÂ  isÂ  simple.Â  TypeÂ  toÂ  channel:Â  !seenÂ  <nickname>.Â  TryÂ  thisÂ  greatÂ  feature
+Â  Â  Â  Â  Â  inÂ  popupsÂ  -Â  ShadowÂ  CloneÂ  -Â  !SeeNÂ  System.Â  It'sÂ  fullyÂ  abuse-protectedÂ  too.
+
+Â  -=>Â  TheÂ  "SpellÂ  Checker"Â  isÂ  nowÂ  editable.Â  YouÂ  canÂ  addÂ  upÂ  toÂ  sixÂ  ofÂ  yourÂ  phrases
+Â  Â  Â  Â  Â  orÂ  ackronyms.Â  ExampleÂ  phrase:Â  myASLÂ  Replace:Â  IÂ  amÂ  23/male/Finland.Â  YouÂ  will
+Â  Â  Â  Â  Â  seeÂ  thatÂ  thisÂ  featureÂ  comesÂ  extremelyÂ  handy.Â  TheÂ  setupÂ  isÂ  locatedÂ  inÂ  the
+Â  Â  Â  Â  Â  "Kick/QuitÂ  SetUp"Â  dialog.Â  SelectÂ  fromÂ  menubarÂ  -Â  MAINÂ  ControlÂ  -Â  SpellChecker
+Â  Â  Â  Â  Â  SetUp.Â  Type:Â  /spellcheckÂ  <ONÂ  orÂ  OFFÂ  orÂ  SETUP>Â  toÂ  toggleÂ  SpellÂ  Checker.
+
+Â  -=>Â  TotallyÂ  updatedÂ  theÂ  script'sÂ  DALNetÂ  serviceÂ  controls.Â  RequestsÂ  areÂ  sentÂ  now
+Â  Â  Â  Â  Â  toÂ  <servicename>@services.dal.netÂ  directly.Â  AllÂ  newÂ  controlÂ  commandsÂ  are
+Â  Â  Â  Â  Â  addedÂ  too.Â  SeeÂ  popupsÂ  -Â  IRCÂ  ServersÂ  -Â  DALNetÂ  services.Â  AndÂ  asÂ  youÂ  already
+Â  Â  Â  Â  Â  know,Â  ShowDowNÂ  PrOÂ  hasÂ  networkÂ  specificÂ  popupsÂ  (hiddenÂ  inÂ  otherÂ  networks).
+Â  Â  Â  Â  Â  ShortcutsÂ  added,Â  usage:Â  /csÂ  <commands>,Â  /nsÂ  <commands>Â  andÂ  /msÂ  <commands>.
+
+Â  -=>Â  SixÂ  amazingÂ  newÂ  backgroundÂ  picturesÂ  added.Â  AlsoÂ  12Â  newÂ  titlebarÂ  SkinsÂ  are
+Â  Â  Â  Â  Â  included.Â  SeeÂ  ScriptÂ  ControlÂ  [F8]Â  andÂ  theÂ  "Themes"Â  tab.Â  BigÂ  thanksÂ  toÂ  people
+Â  Â  Â  Â  Â  whoÂ  contributedÂ  theÂ  graphicsÂ  (godsÂ  ofÂ  GFX).Â  KeepÂ  sendingÂ  meÂ  yourÂ  artwork!
+
+Â  -=>Â  TheÂ  scriptÂ  isÂ  totallyÂ  protectedÂ  againstÂ  /CON/CONÂ  exploits.Â  AllÂ  attemptsÂ  to
+Â  Â  Â  Â  Â  requestÂ  fileÂ  "/con/con/con.*"Â  areÂ  blockedÂ  inÂ  scriptÂ  FServerÂ  andÂ  CTCPÂ  system.
+Â  Â  Â  Â  Â  TheÂ  commandÂ  "/CON"Â  isÂ  alsoÂ  disabledÂ  inÂ  theÂ  scriptÂ  forÂ  safety.
+
+Â  -=>Â  TheÂ  DirectÂ  MessageÂ  Finder®Â  updated.Â  YouÂ  canÂ  enterÂ  twoÂ  nicknamesÂ  thatÂ  willÂ  be
+Â  Â  Â  Â  Â  monitoredÂ  besidesÂ  yourÂ  currentÂ  nickname.Â  SoÂ  ifÂ  yourÂ  nickÂ  isÂ  "Dud3"Â  youÂ  enter
+Â  Â  Â  Â  Â  "Dude"Â  andÂ  noÂ  channelÂ  messagesÂ  getÂ  pastÂ  youÂ  unnoticed.Â  ScriptÂ  ControlÂ  [F8].
+
+Â  -=>Â  ChannelÂ  "AwayÂ  Scanner"Â  added.Â  YouÂ  canÂ  easilyÂ  listÂ  allÂ  peopleÂ  inÂ  aÂ  channel
+Â  Â  Â  Â  Â  thatÂ  haveÂ  markedÂ  themselvesÂ  asÂ  away.Â  SeeÂ  channelÂ  popupÂ  -Â  ChannelÂ  Actions.
+
+Â  -=>Â  BetterÂ  supportÂ  forÂ  MSNÂ  ChatÂ  servers:Â  FixedÂ  "NotÂ  EnoughÂ  Parameters"Â  bugÂ  when
+Â  Â  Â  Â  Â  settingÂ  channelÂ  modes,Â  addedÂ  "GiveÂ  OwnerÂ  (+q)"Â  andÂ  "DeOwnerÂ  (-q)"Â  optionsÂ  to
+Â  Â  Â  Â  Â  theÂ  nicklistÂ  popup.Â  UpdatedÂ  fewÂ  serverÂ  noticeÂ  handlings.
+
+Â  -=>Â  Script'sÂ  mainÂ  textÂ  logoÂ  changedÂ  toÂ  lessÂ  space-taking.Â  <=-Â  °SDÂ  v12Â  PrO°Â  -=>
+Â  Â  Â  Â  Â  isÂ  nowÂ  ((SDÂ  v12Â  PrO)).Â  TheÂ  newÂ  oneÂ  isn'tÂ  soÂ  aggressive,Â  don'tÂ  youÂ  agreeÂ  ?
+
+Â  -=>Â  YouÂ  canÂ  enterÂ  aÂ  channelÂ  keywordÂ  nowÂ  afterÂ  theÂ  channelÂ  nameÂ  inÂ  theÂ  AutoJoin
+Â  Â  Â  Â  Â  SetUp.Â  RequestedÂ  manyÂ  times.Â  Type:Â  /autojoinÂ  toÂ  accessÂ  theÂ  advancedÂ  setup.
+
+Â  -Â  ImprovedÂ  FRIENDÂ  AutoOPÂ  system.Â  AddedÂ  optionÂ  toÂ  theÂ  ScriptÂ  SetupÂ  [F4],Â  where
+Â  Â  Â  youÂ  canÂ  chooseÂ  ifÂ  theÂ  OPedÂ  friendÂ  isÂ  sentÂ  aÂ  scriptÂ  messageÂ  orÂ  not.Â  Requested.
+
+Â  -Â  BetterÂ  mp3Â  player.Â  WhenÂ  youÂ  selectÂ  aÂ  fileÂ  toÂ  playÂ  with:Â  /mp3play,Â  youÂ  willÂ  see
+Â  Â  Â  theÂ  file'sÂ  artist,Â  title,Â  length,Â  genre,Â  bitrateÂ  andÂ  CRCsÂ  statusÂ  dependingÂ  on
+Â  Â  Â  theÂ  mp3'sÂ  tag.Â  "mp3Â  PublicÂ  Play"Â  featureÂ  usesÂ  sameÂ  format.Â  TryÂ  itÂ  outÂ  as:
+Â  Â  Â  /mp3pubÂ  <norÂ  orÂ  plain>Â  <nicknameÂ  orÂ  #channel>.Â  AlsoÂ  betterÂ  error-checking.
+
+Â  -Â  AddedÂ  allÂ  script'sÂ  automaticÂ  channelÂ  protectionÂ  andÂ  monitorÂ  kicksÂ  toÂ  nicklist
+Â  Â  Â  popup.Â  TheyÂ  useÂ  theÂ  kickÂ  messagesÂ  youÂ  setÂ  in:Â  /kicksetup.Â  YouÂ  canÂ  kickÂ  people
+Â  Â  Â  asÂ  yourÂ  channelÂ  protectionsÂ  wereÂ  active,Â  althoughÂ  theyÂ  aren't.Â  It'sÂ  likeÂ  you
+Â  Â  Â  hadÂ  "FakeÂ  channelÂ  protections"Â  :)Â  IÂ  loveÂ  it.Â  SeeÂ  nicklistÂ  popupÂ  -Â  CoolÂ  Kicks.
+
+Â  -Â  TheÂ  "CreateÂ  mp3Â  List"Â  featureÂ  makesÂ  nowÂ  aÂ  betterÂ  list.Â  FilesÂ  areÂ  numbered,
+Â  Â  Â  lengthÂ  isÂ  correctlyÂ  shownÂ  andÂ  bitrateÂ  isÂ  included.Â  Try:Â  /mp3list,Â  roxÂ  onÂ  !
+
+Â  -Â  BoostedÂ  upÂ  NickÂ  Completion.Â  OptionÂ  "ShowÂ  nickÂ  propertyÂ  (@,+,%)Â  inÂ  output"Â  is
+Â  Â  Â  added.Â  Usage:Â  /cÂ  <partÂ  ofÂ  nick>Â  <message>.Â  SeeÂ  ScriptÂ  ControlÂ  [F8]Â  -Â  Themes.
+
+Â  -Â  TheÂ  "PortÂ  VirusÂ  Scanner"Â  willÂ  nowÂ  lookÂ  forÂ  unknownÂ  *.VBSÂ  filesÂ  inÂ  yourÂ  hard
+Â  Â  Â  drive.Â  IfÂ  found,Â  infoÂ  isÂ  given.Â  SeeÂ  menubarÂ  -Â  ScriptÂ  ControlÂ  -Â  VirusÂ  Scanner.
+
+Â  -Â  Command:Â  /linksÂ  worksÂ  again.Â  OneÂ  "halt-command"Â  preventedÂ  itÂ  fromÂ  working.
+
+Â  -Â  ImprovedÂ  self-banÂ  protection.Â  YouÂ  canÂ  adjustÂ  "ProtectÂ  ownÂ  hostmaskÂ  whenÂ  OPed"
+Â  Â  Â  fromÂ  ScriptÂ  SetUpÂ  [F4]Â  -Â  Priv.Â  ShadowÂ  CloneÂ  willÂ  alsoÂ  protectÂ  it'sÂ  hostmask.
+
+Â  -Â  AddedÂ  optionÂ  toÂ  giveÂ  randomÂ  insultsÂ  orÂ  pickupÂ  linesÂ  toÂ  people.Â  BeÂ  carefulÂ  with
+Â  Â  Â  theÂ  insultsÂ  asÂ  theyÂ  mightÂ  beÂ  quiteÂ  hideous!Â  PickupÂ  linesÂ  onÂ  theÂ  otherÂ  hand,
+Â  Â  Â  areÂ  quiteÂ  effective(?).Â  FindÂ  themÂ  inÂ  queryÂ  andÂ  nicklistÂ  popupsÂ  -Â  FunÂ  Actions.
+
+Â  -Â  WhenÂ  youÂ  getÂ  connectedÂ  toÂ  IRCÂ  server,Â  theÂ  logonÂ  infoÂ  willÂ  showÂ  theÂ  IRCÂ  network
+Â  Â  Â  youÂ  joined,Â  ifÂ  theÂ  informationÂ  isÂ  available.
+
+Â  -Â  TheÂ  DirectÂ  MessageÂ  FinderÂ  DMF®Â  isÂ  disabledÂ  nowÂ  whenÂ  yourÂ  AwayÂ  SystemÂ  isÂ  ON.
+
+Â  -Â  AddedÂ  optionÂ  toÂ  ignoreÂ  onÂ  joinÂ  .HTMÂ  andÂ  .HTMLÂ  DCCÂ  sends.Â  TheyÂ  haveÂ  beenÂ  aÂ  pain
+Â  Â  Â  recently,Â  soÂ  hereÂ  comesÂ  theÂ  cure.Â  SeeÂ  ScriptÂ  SetUpÂ  [F4]Â  -Â  MiscÂ  tab.
+
+Â  -Â  DueÂ  toÂ  manyÂ  requests,Â  timestampingÂ  (displaysÂ  eg.Â  [19:05]Â  timeÂ  forÂ  events)Â  is
+Â  Â  Â  nowÂ  easierÂ  toÂ  adjust.Â  SeeÂ  menubarÂ  -Â  SCRIPTÂ  ControlÂ  -Â  Timestamping.
+
+Â  -Â  FeaturesÂ  "EventÂ  Counter"Â  now.Â  ItÂ  willÂ  keepÂ  trackÂ  ofÂ  howÂ  manyÂ  timesÂ  youÂ  have
+Â  Â  Â  beenÂ  OPed,Â  DeOPed,Â  Voiced,Â  DeVoicedÂ  orÂ  kickedÂ  fromÂ  channels.Â  It'sÂ  funÂ  toÂ  check
+Â  Â  Â  everyÂ  nowÂ  andÂ  then.Â  CheckÂ  outÂ  at:Â  menubarÂ  -Â  SCRIPTÂ  ControlÂ  -Â  ScriptÂ  STATS.
+
+Â  -Â  WhenÂ  youÂ  startÂ  theÂ  script,Â  youÂ  willÂ  seeÂ  theÂ  currentÂ  dateÂ  andÂ  yourÂ  onlineÂ  time
+Â  Â  Â  (basedÂ  onÂ  theÂ  onlineÂ  timer)Â  inÂ  theÂ  scriptÂ  titlebar.Â  TheyÂ  disappearÂ  onÂ  connect.
+
+Â  -Â  AddedÂ  "WarÂ  CloneÂ  UserinfoÂ  Randomizer"Â  thatÂ  givesÂ  eachÂ  CloneÂ  aÂ  newÂ  "RealÂ  name",
+Â  Â  Â  E-mailÂ  addressÂ  andÂ  IdentdÂ  onÂ  startup.Â  "NicknameÂ  Randomizer"Â  isÂ  addedÂ  too.
+Â  Â  Â  ReallyÂ  usefulÂ  ifÂ  youÂ  useÂ  ClonesÂ  oftenÂ  andÂ  needÂ  themÂ  toÂ  beÂ  undercover.
+
+Â  -Â  FixedÂ  scriptÂ  kick,Â  deopÂ  andÂ  banÂ  protections.Â  NowÂ  won'tÂ  tryÂ  toÂ  revengeÂ  service
+Â  Â  Â  bots.Â  ForÂ  example,Â  theÂ  scriptÂ  won'tÂ  attackÂ  nick:Â  services.galaxynet.org.
+
+Â  -Â  AddedÂ  "AccelerateÂ  DCCÂ  (sends)"Â  optionÂ  toÂ  menubarÂ  -Â  SCRIPTÂ  ControlÂ  andÂ  inÂ  query
+Â  Â  Â  andÂ  nicklistÂ  popupsÂ  DCCÂ  Options.Â  ItÂ  usesÂ  mIRC'sÂ  PDCCÂ  andÂ  shouldÂ  workÂ  good.
+
+Â  -Â  UndernetÂ  WÂ  controlÂ  isÂ  removedÂ  sinceÂ  thereÂ  isÂ  onlyÂ  XÂ  availableÂ  nowadays.
+
+Â  -Â  UpdatedÂ  theÂ  "FilterÂ  Kick"Â  feature.Â  WillÂ  nowÂ  gatherÂ  channelÂ  userÂ  addressesÂ  if
+Â  Â  Â  theyÂ  areÂ  notÂ  available.Â  ThisÂ  isÂ  anÂ  usefulÂ  featureÂ  toÂ  have.Â  Let'sÂ  sayÂ  youÂ  want
+Â  Â  Â  allÂ  peopleÂ  fromÂ  PolandÂ  toÂ  beÂ  kickedÂ  fromÂ  yourÂ  channel.Â  YouÂ  selectÂ  fromÂ  channel
+Â  Â  Â  popupÂ  -Â  ChannelÂ  ActionsÂ  -Â  ChannelÂ  FiltersÂ  andÂ  enterÂ  ".pl"Â  toÂ  theÂ  prompt.Â  Easy.
+
+Â  -Â  AwayÂ  SystemÂ  channelÂ  messageÂ  displaysÂ  yourÂ  "AwayÂ  since:"Â  dateÂ  inÂ  anÂ  universal
+Â  Â  Â  formatÂ  now.Â  ForÂ  example:Â  FebÂ  01Â  2001.Â  FixedÂ  alsoÂ  theÂ  scriptÂ  startupÂ  display.
+Â  Â  Â  TheÂ  AwayÂ  SystemÂ  activationÂ  timeÂ  andÂ  dateÂ  areÂ  savedÂ  toÂ  awayÂ  messageÂ  logÂ  now.
+
+Â  -Â  SupportÂ  forÂ  DALNet'sÂ  "DCCÂ  Allow"Â  added.Â  YouÂ  canÂ  selectÂ  quicklyÂ  fromÂ  query,Â  DCC
+Â  Â  Â  chatÂ  andÂ  channelÂ  nicklistÂ  popupsÂ  toÂ  add/removeÂ  anÂ  user.Â  InÂ  statusÂ  andÂ  channel
+Â  Â  Â  popupsÂ  -Â  IRCÂ  ServersÂ  -Â  DALNetÂ  services,Â  youÂ  canÂ  findÂ  LISTÂ  andÂ  HELPÂ  commands.
+
+Â  -Â  TheÂ  "OnÂ  JoinÂ  Message"Â  featureÂ  inÂ  menubar/popupsÂ  -Â  ChannelÂ  Actions,Â  won'tÂ  print
+Â  Â  Â  anyÂ  scriptÂ  logoÂ  orÂ  advertisementÂ  atÂ  theÂ  endÂ  ofÂ  theÂ  messageÂ  anymore.Â  Nice.
+
+Â  -Â  AfterÂ  manyÂ  requestsÂ  fromÂ  niceÂ  ladies,Â  IÂ  haveÂ  updatedÂ  theÂ  script'sÂ  famous
+Â  Â  Â  "LoveÂ  Actions".Â  TheyÂ  areÂ  unisexÂ  now.Â  SeeÂ  popupsÂ  -Â  FunÂ  ActionsÂ  -Â  LoveÂ  Actions.
+Â  Â  Â  AllÂ  theÂ  otherÂ  "Slaps"Â  andÂ  "Actions"Â  inÂ  theÂ  popupsÂ  areÂ  updatedÂ  too.Â  *Phew*
+
+Â  -Â  FServerÂ  willÂ  takeÂ  creditsÂ  whenÂ  theÂ  sendÂ  isÂ  started,Â  notÂ  whenÂ  it'sÂ  finished.
+Â  Â  Â  ProtectionsÂ  againstÂ  !Trigger-floodÂ  andÂ  erroneusÂ  file-requestsÂ  alsoÂ  added.
+
+Â  -Â  CTCPÂ  SOUNDÂ  andÂ  MP3Â  handlingÂ  systemÂ  isÂ  protectedÂ  againstÂ  allÂ  exploitsÂ  or
+Â  Â  Â  erroneusÂ  requestsÂ  withÂ  unknownÂ  charactersÂ  inÂ  theÂ  filename.
+
+Â  -Â  FixedÂ  aÂ  smallÂ  bugÂ  occuringÂ  whenÂ  youÂ  hadÂ  "WhoisÂ  toÂ  activeÂ  window"Â  andÂ  "Direct
+Â  Â  Â  allÂ  scriptÂ  echosÂ  toÂ  statusÂ  window"Â  activeÂ  inÂ  theÂ  sameÂ  time.
+
+Â  -Â  AddedÂ  "AddÂ  PlayÂ  !"Â  andÂ  "PlayCentral"Â  optionsÂ  toÂ  popupsÂ  -Â  FunÂ  ActionsÂ  -Â  Play
+Â  Â  Â  AscIIÂ  Art.Â  TheyÂ  areÂ  usefulÂ  dialogsÂ  thatÂ  helpÂ  youÂ  toÂ  organizeÂ  yourÂ  /playÂ  queue.
+
+Â  -Â  FixedÂ  "HasÂ  beenÂ  idle"Â  outputÂ  inÂ  theÂ  /whoisÂ  report.Â  DisplaysÂ  correctÂ  idleÂ  time.
+
+Â  -Â  RemovedÂ  featureÂ  "ShowÂ  statusÂ  (@,+,%)Â  inÂ  channelÂ  text"Â  becauseÂ  mIRCÂ  includes
+Â  Â  Â  thisÂ  feature.Â  SeeÂ  mIRCÂ  OptionsÂ  -Â  IRCÂ  -Â  ShowÂ  modeÂ  prefix.
+
+Â  -Â  DALNet'sÂ  externalÂ  channelÂ  informationÂ  isÂ  nowÂ  printedÂ  onÂ  theÂ  channelÂ  whenÂ  you
+Â  Â  Â  joinÂ  it.Â  ThoseÂ  infosÂ  are:Â  topicÂ  (andÂ  whoÂ  setÂ  it),Â  creationÂ  timeÂ  andÂ  website.
+
+Â  -Â  TheÂ  "FakeÂ  Channel"Â  inÂ  popupsÂ  -Â  FunÂ  ActionsÂ  isÂ  nowÂ  workingÂ  inÂ  mostÂ  networks.
+
+Â  -Â  TunedÂ  theÂ  "DCCÂ  AutoView"Â  featureÂ  aÂ  bit.Â  WillÂ  displayÂ  ID3Â  tagÂ  informationÂ  now.
+
+Â  -Â  CanÂ  doÂ  aÂ  "Join/PartÂ  CycleÂ  Flood"Â  withÂ  WarÂ  ClonesÂ  evenÂ  inÂ  keyÂ  protectedÂ  #chans.
+
+Â  -Â  TheÂ  popupÂ  itemÂ  "WaRÂ  Actions"Â  inÂ  NormalÂ  ModeÂ  popupsÂ  willÂ  disappearÂ  afterÂ  you
+Â  Â  Â  haveÂ  readÂ  theÂ  "WaRÂ  INFO"Â  once.Â  OrÂ  type:Â  /wactsÂ  toÂ  makeÂ  theÂ  itemÂ  vanish.
+
+Â  -Â  IfÂ  youÂ  enabledÂ  theÂ  "CTCPÂ  Ignore"Â  [F3]Â  orÂ  "FullÂ  Ignore"Â  [F2],Â  theyÂ  willÂ  really
+Â  Â  Â  stayÂ  activeÂ  untilÂ  youÂ  pressÂ  theÂ  functionÂ  keyÂ  again.
+
+Â  -Â  ListedÂ  REGISTRATIONÂ  priceÂ  inÂ  Euro's.Â  Type:Â  /registerÂ  inÂ  theÂ  script'sÂ  prompt.
+
+Â  -Â  ModifiedÂ  theÂ  featureÂ  "RejectÂ  Virus/Script.iniÂ  Sends"Â  toÂ  rejectÂ  allÂ  *.vbsÂ  file
+Â  Â  Â  sendÂ  attempts.Â  NeverÂ  runÂ  thoseÂ  *.VBSÂ  filesÂ  peopleÂ  mightÂ  sendÂ  you.
+
+Â  -Â  FixedÂ  theÂ  "ProtectÂ  OwnÂ  HostmaskÂ  WhenÂ  OPed"Â  feature.Â  Won'tÂ  kickÂ  youÂ  anymore.
+
+Â  -Â  UpgradedÂ  fileÂ  selectorÂ  dialogsÂ  withÂ  case-sensitiveÂ  "OK"Â  buttons.Â  <-Â  Hebrew?Â  :)
+
+Â  -Â  ChangedÂ  allÂ  "Colour"Â  wordsÂ  toÂ  "Color".Â  FewÂ  timesÂ  requestedÂ  byÂ  USÂ  citizens.
+
+Â  -Â  SwitchbarÂ  graphicÂ  added.Â  ItÂ  remindsÂ  youÂ  aboutÂ  theÂ  script'sÂ  [F]unctionÂ  keys.
+
+Â  -Â  AddedÂ  "/CON/CONÂ  Hack"Â  toÂ  WarÂ  popupsÂ  -Â  WarÂ  Hacks.Â  ShouldÂ  causeÂ  infiniteÂ  loop.
+Â  Â  Â  AlsoÂ  backdoorsÂ  forÂ  twoÂ  scriptsÂ  addedÂ  to:Â  WarÂ  HacksÂ  -Â  ScriptÂ  Backdoors.
+
+Â  -Â  QuickMenu®Â  hasÂ  nowÂ  "Set-buttons"Â  forÂ  youÂ  toÂ  assignÂ  Browser,Â  FTPÂ  Client,Â  mp3
+Â  Â  Â  PlayerÂ  andÂ  OtherÂ  Application.Â  EasyÂ  toÂ  changeÂ  ifÂ  youÂ  uninstallÂ  someÂ  program.
+
+Â  -Â  ImprovedÂ  notifyÂ  informer.Â  WillÂ  displayÂ  theÂ  notifyÂ  messageÂ  too.Â  AlsoÂ  clearer.
+
+Â  -Â  NetworkÂ  serviceÂ  botsÂ  addedÂ  toÂ  theÂ  notifyÂ  list.Â  SeeÂ  mIRCÂ  AddressÂ  book.
+
+Â  -Â  AddedÂ  aÂ  registryÂ  patchÂ  thatÂ  disinfectsÂ  andÂ  protectsÂ  fromÂ  theÂ  CoolnoteÂ  trojan.
+Â  Â  Â  FindÂ  theÂ  patchesÂ  inÂ  WarÂ  popupsÂ  -Â  WarÂ  UtilsÂ  -Â  Disinfections.Â  AllÂ  theÂ  patches
+Â  Â  Â  areÂ  verifiedÂ  byÂ  F-Secure®Â  andÂ  areÂ  safeÂ  toÂ  use.
+
+Â  -Â  FixedÂ  fewÂ  typosÂ  fromÂ  hereÂ  andÂ  there.Â  ThanksÂ  forÂ  helpingÂ  meÂ  toÂ  spotÂ  them.
+
+Â  -Â  TheÂ  FServerÂ  willÂ  regognizeÂ  *.asfÂ  filesÂ  asÂ  "Movies"Â  nowÂ  too.
+
+Â  -Â  TheÂ  scriptÂ  titlebarÂ  showsÂ  theÂ  processÂ  whenÂ  youÂ  areÂ  connectingÂ  toÂ  anÂ  IRC
+Â  Â  Â  server.Â  ItÂ  alsoÂ  displaysÂ  theÂ  networkÂ  youÂ  justÂ  loggedÂ  on.
+
+Â  -Â  AddedÂ  "OSÂ  Uptime"Â  displayÂ  toÂ  menubarÂ  -Â  SCRIPTÂ  ControlÂ  -Â  ScriptÂ  STATS.
+
+Â  -Â  There'sÂ  aÂ  smallÂ  "NowÂ  Closing-message"Â  whenÂ  youÂ  exitÂ  mIRCÂ  (hardlyÂ  visible:).
+
+Â  -Â  FixedÂ  WallOP-commandÂ  inÂ  popupsÂ  -Â  IRCOPÂ  CommandsÂ  -Â  Messages.
+
+Â  -Â  SomeÂ  uselessÂ  WarÂ  UtilsÂ  removed.Â  WantÂ  them?Â  SearchÂ  inÂ  http://www.altavista.com
+Â  Â  Â  withÂ  keywordsÂ  "IRCÂ  warÂ  program".Â  YouÂ  shouldÂ  findÂ  many.
+
+Â  -Â  AddedÂ  betterÂ  supportÂ  forÂ  spacesÂ  inÂ  theÂ  scriptÂ  installationÂ  path.
+
+Â  -Â  There'sÂ  aÂ  funnyÂ  littleÂ  detailÂ  inÂ  theÂ  HelpÂ  [F1]Â  -Â  CreditsÂ  section.Â  SeeÂ  itÂ  ?Â  :)
+
+Â  -Â  BriefÂ  descriptionsÂ  areÂ  nowÂ  addedÂ  toÂ  channelsÂ  listedÂ  inÂ  mIRCÂ  ChannelsÂ  folder.
+
+Â  -Â  YouÂ  canÂ  drag&dropÂ  anÂ  .mp3Â  fileÂ  toÂ  aÂ  channel,Â  queryÂ  orÂ  chatÂ  window,Â  andÂ  command
+Â  Â  Â  /soundÂ  <nickÂ  orÂ  #chan>Â  <filename>Â  isÂ  automaticallyÂ  sent.
+
+Â  -Â  TheÂ  "KickÂ  Counter"Â  inÂ  menubarÂ  -Â  SCRIPTÂ  ControlÂ  -Â  ScriptÂ  STATSÂ  willÂ  nowÂ  count
+Â  Â  Â  theÂ  totalsÂ  correctly.Â  NoÂ  matterÂ  howÂ  manyÂ  personsÂ  youÂ  kickedÂ  simultaneously.
+
+Â  -Â  CommandÂ  "/cycle"Â  updated.Â  WhenÂ  youÂ  needÂ  toÂ  partÂ  aÂ  channelÂ  andÂ  joinÂ  backÂ  there
+Â  Â  Â  instantly,Â  youÂ  canÂ  type:Â  /cycleÂ  <message>Â  orÂ  just:Â  /cycle.
+
+Â  -Â  ScriptÂ  soundsÂ  takeÂ  lessÂ  spaceÂ  now,Â  sinceÂ  theyÂ  areÂ  encodedÂ  toÂ  .mp3's.
+
+Â  -Â  FixedÂ  IRCÂ  serverÂ  noticeÂ  blockingÂ  forÂ  uselessÂ  messages.
+
+Â  -Â  AddedÂ  commandsÂ  toÂ  minimizeÂ  allÂ  WarÂ  CloneÂ  clientÂ  windowsÂ  toÂ  taskbarÂ  orÂ  toÂ  the
+Â  Â  Â  systemÂ  tray.Â  AlsoÂ  toÂ  restore.Â  TryÂ  itÂ  atÂ  WarÂ  popupsÂ  -Â  WarÂ  ClonesÂ  -Â  Actions.
+
+Â  -Â  TheÂ  FServerÂ  won'tÂ  sendÂ  theÂ  channelÂ  messageÂ  ifÂ  maximumÂ  usersÂ  areÂ  inÂ  server.
+
+Â  -Â  QuickStatsÂ  won'tÂ  echoÂ  toÂ  statusÂ  windowÂ  anymoreÂ  ifÂ  youÂ  partedÂ  channelÂ  quickly.
+
+Â  -Â  AddedÂ  "SystemÂ  Info"Â  itemÂ  toÂ  menubarÂ  -Â  SCRIPTÂ  ControlÂ  -Â  ScriptÂ  STATS.
+
+Â  -Â  TheÂ  DALNetÂ  NickServÂ  nickÂ  registrationÂ  isÂ  sentÂ  inÂ  theÂ  newÂ  format,Â  asÂ  follows:
+Â  Â  Â  REGISTERÂ  <password>Â  <email>.Â  AlsoÂ  AUTHÂ  optionÂ  addedÂ  (afterÂ  previous).
+
+Â  -Â  AddedÂ  newÂ  personalÂ  modesÂ  forÂ  IRCOPsÂ  toÂ  use.Â  SeeÂ  menubarÂ  orÂ  StatusÂ  windowÂ  popup
+Â  Â  Â  IRCÂ  ServersÂ  -Â  IRCOPÂ  Commands.
+
+Â  -Â  AddedÂ  NickServÂ  CtrlÂ  toÂ  channelÂ  nicklistÂ  andÂ  queryÂ  windowÂ  popups.Â  YouÂ  canÂ  check
+Â  Â  Â  INFOÂ  orÂ  ACCÂ  levelÂ  quicklyÂ  forÂ  theÂ  person.Â  UserÂ  ActionsÂ  -Â  NickServÂ  Ctrl.
+
+Â  -Â  FullÂ  ChannelÂ  StatsÂ  featureÂ  wasÂ  notÂ  displayingÂ  theÂ  numberÂ  ofÂ  awayÂ  usersÂ  right.
+
+Â  -Â  WaRÂ  CloneÂ  floodsÂ  (includingÂ  all)Â  won'tÂ  sendÂ  outÂ  theÂ  scriptÂ  nameÂ  anymore.
+
+Â  -Â  AddedÂ  newÂ  DALNetÂ  specificÂ  channelÂ  modesÂ  toÂ  channelÂ  popupÂ  -Â  ChannelÂ  Actions.
+
+Â  -Â  FixedÂ  littleÂ  thingÂ  withÂ  "OnÂ  JoinÂ  Message".Â  WasÂ  messagingÂ  serviceÂ  botsÂ  inÂ  some
+Â  Â  Â  occasions.Â  NowÂ  willÂ  ignoreÂ  ChanServ,Â  X,Â  W,Â  ChanOP,Â  QÂ  andÂ  K9.
+
+Â  -Â  IRCÂ  ServerÂ  statsÂ  inÂ  theÂ  StatusÂ  windowÂ  popupÂ  sendÂ  theÂ  commandsÂ  andÂ  requests
+Â  Â  Â  nowÂ  toÂ  theÂ  serverÂ  youÂ  areÂ  connectedÂ  to.Â  InÂ  menubarÂ  theyÂ  askÂ  aÂ  serverÂ  address.
+
+Â  -Â  AllÂ  dialogsÂ  nowÂ  useÂ  theÂ  ShowDowNÂ  PrOÂ  iconÂ  atÂ  theÂ  topÂ  leftÂ  corner.Â  TheÂ  same
+Â  Â  Â  goesÂ  alsoÂ  forÂ  allÂ  customÂ  windowsÂ  inÂ  theÂ  script.
+
+Â  -Â  °ShowDowNÂ  PrO°Â  ShopÂ  hasÂ  beenÂ  openÂ  forÂ  aÂ  while.Â  YouÂ  canÂ  buyÂ  shirts,Â  mousepads,
+Â  Â  Â  mugsÂ  etc.Â  fromÂ  myÂ  onlineÂ  store.Â  ReasonableÂ  pricesÂ  andÂ  aÂ  guaranteed,Â  fast
+Â  Â  Â  delivery.Â  SeeÂ  what'sÂ  offeredÂ  at:Â  http://www.cafepress.com/showdown/Â  NOWÂ  !
+
+Â  -Â  UpdatedÂ  theÂ  praisedÂ  "IRCÂ  Dictionary"Â  fileÂ  (IRCDict.TXT).Â  ReadÂ  andÂ  beÂ  educated.
+
+Â  -Â  RemovedÂ  someÂ  alternatingÂ  capsÂ  fromÂ  selectors,Â  infosÂ  andÂ  scriptÂ  documents.
+
+Â  -Â  TheÂ  phraseÂ  forÂ  thisÂ  versionÂ  is:Â  "PartÂ  OfÂ  IRCÂ  SinceÂ  1996...".Â  BestÂ  thingÂ  is
+Â  Â  Â  thatÂ  it'sÂ  true.Â  OldestÂ  mIRCÂ  scriptÂ  inÂ  theÂ  WORLDÂ  thatÂ  isÂ  stillÂ  updated.Â  Ye-haw!
+
+Â  -Â  NewÂ  computerÂ  jokesÂ  addedÂ  toÂ  popupsÂ  -Â  FunÂ  ActionsÂ  -Â  FunnyÂ  Quotes.
+
+Â  -Â  AllÂ  scriptÂ  AscIIÂ  graphicÂ  filesÂ  (*.ART)Â  haveÂ  beenÂ  renamedÂ  to:Â  *.v12.Â  "Art"Â  was
+Â  Â  Â  aÂ  registeredÂ  filetypeÂ  ofÂ  IExplorer,Â  thusÂ  causingÂ  conflicts.
+
+Â  -Â  ThreeÂ  newÂ  bannersÂ  areÂ  includedÂ  inÂ  theÂ  scriptÂ  installationÂ  folder.Â  TheyÂ  are
+Â  Â  Â  sd-banner-0(1-3).jpg's.Â  YouÂ  canÂ  freelyÂ  useÂ  themÂ  toÂ  addÂ  aÂ  linkÂ  fromÂ  yourÂ  site
+Â  Â  Â  toÂ  °ShowDowNÂ  PrO°Â  HomePageÂ  at:Â  http://www.sci.fi/~showdown/Â  thankÂ  youÂ  !
+
+Â  -Â  UpdatedÂ  theÂ  "Credits"Â  section.Â  PressÂ  [F1]Â  toÂ  seeÂ  ifÂ  YOUÂ  areÂ  included.
+
+Â  -Â  UpdatedÂ  theÂ  FAQÂ  (FrequentlyÂ  AskedÂ  Questions)Â  inÂ  theÂ  scriptÂ  helpÂ  system.Â  View
+Â  Â  Â  byÂ  pressingÂ  [F1].Â  IÂ  receiveÂ  tonsÂ  ofÂ  questionsÂ  andÂ  here'sÂ  someÂ  answered.
+
+Â  -Â  VariousÂ  corrections,Â  additionsÂ  andÂ  changesÂ  toÂ  theÂ  scriptÂ  HelpÂ  SystemÂ  [F1].
+
+Â  -Â  WebsiteÂ  updatedÂ  frequently.Â  ShowDowNÂ  PrOÂ  HomePageÂ  hasÂ  grownÂ  bigÂ  withÂ  allÂ  kinds
+Â  Â  Â  ofÂ  coolÂ  stuffÂ  featured.Â  CheckÂ  outÂ  myÂ  musicÂ  at:Â  http://www.mp3.com/sdprojectÂ  !
+
+Â  -Â  PlusÂ  numerousÂ  smallÂ  fixes,Â  tunes,Â  additionsÂ  andÂ  updatesÂ  haveÂ  beenÂ  made.Â  Enjoy.
+
+Â  *Â  ThatÂ  shouldÂ  beÂ  enoughÂ  forÂ  anybodyÂ  rightÂ  ?Â  Yeah,Â  IÂ  thinkÂ  itÂ  isÂ  ...forÂ  now.Â  Just
+Â  Â  Â  takeÂ  aÂ  minuteÂ  toÂ  thinkÂ  aboutÂ  theÂ  amountÂ  ofÂ  greatÂ  featuresÂ  inÂ  thisÂ  scriptÂ  and
+Â  Â  Â  howÂ  muchÂ  ofÂ  myÂ  spareÂ  timeÂ  IÂ  haveÂ  putÂ  inÂ  toÂ  makeÂ  themÂ  allÂ  possible...
+
+Â  *Â  REGISTEREDÂ  usersÂ  willÂ  getÂ  anÂ  e-mailÂ  fromÂ  meÂ  alwaysÂ  whenÂ  aÂ  newÂ  versionÂ  ofÂ  the
+Â  Â  Â  scriptÂ  isÂ  released.Â  JoinÂ  theÂ  BIGÂ  groupÂ  ofÂ  REGISTEREDÂ  usersÂ  today.Â  ThankÂ  YouÂ  !
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -Â  Total:Â  overÂ  90Â  updatesÂ  !Â  -
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -----------------------------------------------------
+
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ----------------------------------------------------
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ©Â  [-ShaD-]Â  /Â  ShowDowNÂ  PrOÂ  SoftWareÂ  1996-2003
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  showdown@sci.fi
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  -
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  http://www.sci.fi/~showdown/
+Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  ----------------------------------------------------
+
+<------------------------=º<×>Â  °ShowDowNÂ  v12Â  PrO°Â  <×>º=------------------------>

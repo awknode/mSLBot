@@ -1,0 +1,46 @@
+on $*:TEXT:*:#: {
+  if ($1 == !regchk) {
+    if ($nick isop $chan) {
+      if ($2) {
+        if (!$3) {
+          spamprotect
+          exprotect $1-
+          set %_regchk.nick $2
+          set %_regchk.chan $chan
+          set %_regchk.network $network
+          msg nickserv info $2 all
+        }
+        else { msg $chan Improper Syntax. }
+      }
+      else { msg $chan No Nick Stated. }
+    }
+    if ($1 == !idle) {
+      if ($nick isop $chan) {
+        if ($2) {
+          spamprotect
+          exprotect $1-
+          if ($2 ison $chan) { msg $chan $2 has been Idle for $+($duration($nick($chan,$2).idle),.) }
+          else { msg $chan $2 is not currently in $+($chan,.) }
+        }
+        else { msg $chan No nick, 12dick. }
+        }
+      else { msg $chan 12Invalid permissions. }
+    }
+  }
+}
+on ^*:NOTICE:*:*: {
+  if ($nick == NickServ) {
+    if (%_regchk.nick) {
+      if ((Time registered:* iswm $1-) || (*Registered :* iswm $1-)) { set %_regchk.find $1- | _regchkreturn | halt }
+      if (*e-mail verification code* iswm $1-) { set %_regchk.find2 $1- | _regchkreturn | halt }
+      if ((*isn't registered.* iswm $1-) || (*is not registered.* iswm $1-)) { _regchkreturn | halt }
+    }
+  }
+}
+
+alias -l _regchkreturn {
+  ; if (%_regchk.find) { msg %_regchk.chan %_regchk.nick is registered on $+(%_regchk.network,.) $+(,$chr(91),,%_regchk.find,,$chr(93),) | halt }
+  elseif (%_regchk.find2) { msg %_regchk.chan %_regchk.nick is awaiting an e-mail verification. $+(,$chr(91),,%_regchk.find2,,$chr(93),) | halt }
+  ; else { msg %_regchk.chan %_regchk.nick is not registered on $+(%_regchk.network,.) | halt }
+  unset %_regchk.*
+}

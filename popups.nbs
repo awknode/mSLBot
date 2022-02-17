@@ -1,0 +1,91 @@
+menu Control,nicklist {
+  $iif($1 != $null,C&ontrol)
+  .$iif(o isin $usermode,IRCOp)
+  ..&Kill...:.raw kill $1 $chr(58) $+ $$eddialog(Please enter a reason for killing $1 $+ .)
+  ..&G-line...:.raw gline $1 $chr(58) $+ $$eddialog(Please enter reason for G-lining $1 $+ .)
+  ..-
+  ..&Quote...:.raw $$eddialog(Please enter a raw command.)
+  ..&Wallop...:.raw wallops $1 $chr(58) $+ $$eddialog(Please enter a wallop message you want to send.)
+  .$iif($notify($notify($1)),$style(1)) &Notify list:.notify $iif($notify($notify($1)),-r) $1 $network
+  .-
+  .A&uto modes
+  ..Give auto &op:giveaop $1 $chan
+  ..Give auto &voice:giveavoice $1 $chan
+  ..-
+  ..&Take auto op:takeaop $1 $chan
+  ..T&ake auto voice:takeavoice $1 $chan
+  ..Ta&ke all auto modes:takemodes $1 $chan
+  .&Mass modes
+  ..$submenu($psetmmode($1,+))
+  ..-
+  ..$submenu($psetmmode($1,-))
+  .Mas&k modes
+  ..$submenu($psetmkmode($1,+))
+  ..-
+  ..$submenu($psetmkmode($1,-))
+  .-
+  .$submenu($psetumode($1,+))
+  .-
+  .$submenu($psetumode($1,-))
+  .-
+  .T&ake all modes:md - $+ $nickmode $str($1 $+ $chr(32),$len($nickmode))
+  $iif($1 != $null && $q.net && L ison $chan,&L access...):l.uc $1 $chan
+  $iif($1 != $null && $q.net && Q ison $chan,&Q access...):q.uc $1 $chan
+  $iif($1 != $null && $u.net,&X bot)
+  .&Access:.msg X@channels.undernet.org access $chan = $+ $1
+  .&User info:.msg X@channels.undernet.org info = $+ $1
+  .&Verify:.msg X@channels.undernet.org verify $1
+  -
+  $iif($1 != $null,&Slap)
+  .&Random:randslap $1
+  .-
+  .$submenu($pslaps($1))
+  .-
+  .&Edit...:setup -c Messages|Slaps
+}
+alias giveaop {
+  .aop on
+  .aop $1-2 3 $network
+  mode $2 +o $1
+  thmecho -a $thmhl($1) has been added to the auto-op list on $thmhl($2) $+ .
+}
+alias giveavoice {
+  .avoice on
+  .avoice $1-2 3 $network
+  mode $2 +v $1
+  thmecho -a $thmhl($1) has been added to the auto-voice list on $thmhl($2) $+ .
+}
+alias takeaop {
+  .aop -r $1-2 3
+  thmecho -a $thmhl($1) has been removed from the auto-op list on $thmhl($2) $+ .
+}
+alias takeavoice {
+  .avoice -r $1-2 3
+  thmecho -a $thmhl($1) has been removed from the auto-voice list on $thmhl($2) $+ .
+}
+alias takemodes {
+  .avoice -r $1-2 3
+  .aop -r $1-2 3
+  thmecho -a $thmhl($1) has been removed from the auto-voice and auto-op lists on $thmhl($2) $+ .
+}
+alias chan.bans { if ($1 isnum) && ($chan($2).ibl) && ($ibl($2,$1)) { return $+($1,. $remove($v1,:),	by $ibl($2,$1).by,:pcb) Ban $chr(35) $+ $1 in $2 $cr $ibl($2,$1) set by $ibl($2,$1).by } }
+alias sub.away { if ($1 isnum) && ($hget(awaypreset,$1).item) { return $+(&,$replace($v1,_,$chr(32)),:aw) $v1 } }
+menu channel {
+  $shorten(12,$chan)
+  .&Quickinfo	 $chan:pcb Quickinfo $cr $chan
+  .-
+  .&Modes	 $chan($chan).mode:pcb $chan modes $cr $chan($chan).mode
+  .&Users	 $pusers(a):pcb Users in $chan $cr $pusers(a)
+  .&Peak	 $ppeak:pcb User peak in $chan $cr $ppeak
+  .&Opped	 $pusers(o):pcb Opped users in $chan $cr $pusers(o)
+  .&Voiced	 $pusers(v):pcb Voiced users in $chan $cr $pusers(v)
+  .&Regulars	 $pusers(r):pcb Regular users in $chan $cr $pusers(r)
+  .&Ban list
+  ..$iif(!$chan($chan).ibl,$style(2) &Unknown):cc
+  ..$iif(!$ibl($chan,0) && $chan($chan).ibl,$style(2) &Empty):cc
+  ..$submenu($chan.bans($1,$chan))
+
+}
+}
+alias chan.bans { if ($1 isnum) && ($chan($2).ibl) && ($ibl($2,$1)) { return $+($1,. $remove($v1,:),	by $ibl($2,$1).by,:pcb) Ban $chr(35) $+ $1 in $2 $cr $ibl($2,$1) set by $ibl($2,$1).by } }
+alias sub.away { if ($1 isnum) && ($hget(awaypreset,$1).item) { return $+(&,$replace($v1,_,$chr(32)),:aw) $v1 } }

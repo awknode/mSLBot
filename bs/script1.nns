@@ -1,0 +1,23 @@
+	
+
+On *:load:set %_mschan #testzz
+On *:unload:unset %ms.* | unset %_mschan
+alias _mslist {
+  var %count = $var(%ms.*,0)
+  if ($window(@Sort1,state)) { window -c @Sort1 } | if ($window(@Sort2,state)) { window -c @Sort2 }
+  window -h @Sort1 | window -h @Sort2
+  while (%count) { aline @Sort1 $remove($var(%ms.*,%count),$chr(37),ms.) $var(%ms.*,%count).value | dec %count }
+  filter -wwucte 2 32 @Sort1 @Sort2 *
+  var %x = 1 | while (%x <= 5) { msg %_mschan $+(,%x,.,) Release Name: $gettok($line(@Sort2,%x),1,32) :: Searched: $gettok($line(@Sort2,%x),$gettok($line(@Sort2,%x),0,32),32) times. | inc %x }
+  window -c @Sort1 | window -c @Sort2
+}
+on *:text:!mostsearched:%_mschan:{
+  if !%msfld. [ $+ [ $nick ] ] {
+    set -u3 %msfld. [ $+ [ $nick ] ] 1
+    msg %_mschan 7Most Searched: Top 5 search packs:
+    _mslist
+  }
+}
+on *:text:!search *:%_mschan: { _msinc $replace($2-,$chr(32),$chr(46)) }
+on *:text:!s *:%_mschan: { _msinc $replace($2-,$chr(32),$chr(46)) }
+alias _msinc { inc $+(%,ms.,$1-) }

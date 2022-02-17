@@ -1,0 +1,233 @@
+On *:TEXT:*:#: {
+  if ($1 == !nig) {
+    var %adminchk = $+($nick,$chr(58),$address($nick,0))
+    if ($istok($bm.add(admins),%adminchk,32)) {
+      if ($2 == add) {
+        spamprotect
+        exprotect $1-
+        if ($3) {
+          if ($4) {
+            if ($regex($4,/^(\*\!.*?@.*?)$/)) {
+              if (!$5) {
+                var %newadmin = $+($3,$chr(58),$regml(1))
+                if ($istok($bm.add(admins),%newadmin,32)) { notice $nick Nick: $3 has already been added with host: $regml(1) }
+                else { writeini $bm.file $network admins $iif($bm.add(admins),$bm.add(admins)) %newadmin | notice $nick Nick: $3 has been added with host: $regml(1) | notice $3 You have been added as bot Owner. Type .cmd for your list of commands. }
+              }
+              else { notice $nick 12Invalid format. 12[ie: !nig add nick *!ident@host (Mask Type: 0)] }
+            }
+            else { notice $nick Improper host mask. 12[ie: *!ident@host.host (Mask Type: 0)] }
+          }
+          else { notice $nick 12Invalid format. 12[ie: !nig add nick *!ident@host (Mask Type: 0)] }
+        }
+        else { notice $nick 12Invalid format. 12[ie: !nig add nick *!ident@host (Mask Type: 0)] }
+      }
+      elseif ($2 == del) {
+        if ($3) {
+          if ($4) {
+            if ($regex($4,/^(\*\!.*?@.*?)$/)) {
+              if (!$5) {
+                var %remadmin = $+($3,$chr(58),$regml(1))
+                if ($bm.add(admins) == %remadmin) { remini $bm.file $network admins %remadmin | notice $nick Nick: $3 has been removed with host: $regml(1) (Note: No Admins Left. Must Add A Admin by /cmdline To Continue.) }
+                elseif ($istok($bm.add(admins),%remadmin,32)) { writeini $bm.file $network admins $remtok($bm.add(admins),%remadmin,0,32) | notice $nick Nick: $3 has been removed with host: $regml(1) }
+                else { notice $nick Nick: $3 doesn't exist with Host: $regml(1) }
+              }
+              else { notice $nick 12Invalid format. 12[ie: !nig del nick *!ident@host (Mask Type: 0)] }
+            }
+            else { notice $nick Improper host mask. 12[ie: *!ident@host.host (Mask Type: 0)] }
+          }
+          else { notice $nick 12Invalid format. 12[ie: !nig del nick *!ident@host (Mask Type: 0)] }
+        }
+        else { notice $nick 12Invalid format. 12[ie: !nig del nick *!ident@host (Mask Type: 0)] }
+      }
+      elseif ($2 == list) {
+        spamprotect
+        exprotect $1-
+        if (!$3) {
+          var %a = 1,%tota = $numtok($bm.add(admins),32)
+          notice $nick Owner List $+(,[,$network,]) $+([Total: ,%tota,]:) Check your notice.
+          while (%a <= %tota) {
+            var %nick = $gettok($gettok($bm.add(admins),%a,32),1,58),%host = $gettok($gettok($bm.add(admins),%a,32),2,58)
+            notice $nick Owner $+(,%a,:) Nick: %nick Host: %host
+            inc %a
+          }
+        }
+      }
+      else { notice $nick Unknown command. 12[ie: !nig < add :: del :: list >] }
+    }
+    else { notice $nick 6Invalid permissions. }
+  }
+  if ($1 == !user) {
+    var %adminchk = $+($nick,$chr(58),$address($nick,0))
+    if ($istok($user.add(admins),%adminchk,32)) {
+      if ($2 == add) {
+        spamprotect
+        exprotect $1-
+        if ($3) {
+          if ($4) {
+            if ($regex($4,/^(\*\!.*?@.*?)$/)) {
+              if (!$5) {
+                var %newadmin = $+($3,$chr(58),$regml(1))
+                if ($istok($user.add(admins),%newadmin,32)) { notice $nick Nick: $3 has already been added with host: $regml(1) }
+                else { writeini $user.file $network admins $iif($user.add(admins),$user.add(admins)) %newadmin | guser owner $3 | notice $nick Nick: $3 has been added with host: $regml(1) | notice $3 You have been added as bot Admin. Type .cmd for your list of commands. }
+              }
+              else { notice $nick 12Invalid format. 12[ie: !user add nick *!ident@host (Mask Type: 0)] }
+            }
+            else { notice $nick Improper host mask. 12[ie: *!ident@host.host (Mask Type: 0)] }
+          }
+          else { notice $nick 12Invalid format. 12[ie: !user add nick *!ident@host (Mask Type: 0)] }
+        }
+        else { notice $nick 12Invalid format. 12[ie: !user add nick *!ident@host (Mask Type: 0)] }
+      }
+      elseif ($2 == del) {
+        if ($3) {
+          if ($4) {
+            if ($regex($4,/^(\*\!.*?@.*?)$/)) {
+              if (!$5) {
+                var %remadmin = $+($3,$chr(58),$regml(1))
+                if ($user.add(admins) == %remadmin) { remini $user.file $network admins %remadmin | ruser owner $3- $address($3,0) | notice $nick Nick: $3 has been removed with host: $regml(1) (Note: No Admins Left. Must Add A Admin by /cmdline To Continue.) }
+                elseif ($istok($user.add(admins),%remadmin,32)) { writeini $user.file $network admins $remtok($user.add(admins),%remadmin,0,32) | notice $nick Nick: $3 has been removed with host: $regml(1) }
+                else { notice $nick Nick: $3 doesn't exist with Host: $regml(1) }
+              }
+              else { notice $nick 12Invalid format. 12[ie: !user del nick *!ident@host (Mask Type: 0)] }
+            }
+            else { notice $nick Improper host mask. 12[ie: *!ident@host.host (Mask Type: 0)] }
+          }
+          else { notice $nick 12Invalid format. 12[ie: !user del nick *!ident@host (Mask Type: 0)] }
+        }
+        else { notice $nick 12Invalid format. 12[ie: !user del nick *!ident@host (Mask Type: 0)] }
+      }
+      elseif ($2 == list) {
+        exprotect $1-
+        spamprotect
+        if (!$3) {
+          var %a = 1,%tota = $numtok($user.add(admins),32)
+          notice $nick Admin List $+(,[,$network,]) $+([Total: ,%tota,]:) Check your notice.
+          while (%a <= %tota) {
+            var %nick = $gettok($gettok($user.add(admins),%a,32),1,58),%host = $gettok($gettok($user.add(admins),%a,32),2,58)
+            notice $nick Admin $+(%a,:) Nick: %nick Host: %host
+            inc %a
+          }
+        }
+      }
+      else { notice $nick Unknown command. 12[ie: !user < add :: del :: list>] }
+    }
+    else { notice $nick 6Invalid permissions. }
+  }
+  ;  if ($1 == !vhost) && ($chan == #vhost2) {
+  ;    if (*voidptr* iswm $2-) { notice $nick Sorry, you may not have a vhost of this nature. Please choose another. | halt }
+  ;    if (!$2) { msg $chan 12Invalid format. [Ex. !vhost my.vhost.here] | halt }
+  ;    msg hostserv set $nick $2
+  ;    notice $nick Your vhost has now been activated. Type "/msg hostserv ON" to activate it now.
+  ;  }
+}
+
+On *:JOIN:#: {
+  if ($botmaster($network,$nick)) { mode $chan +ao $nick $nick }
+}
+
+
+;On *:TEXT:#main: {
+;  if $chkstat($network,$nick) { 
+;  msg $chan Welcome back $nick $+ . It's good to see you about around these parts. Don't be a stranger massa, I'll treat ya good bossem. }
+;}
+
+;-----------------------------------RAW Modes-------------------------------------;
+;-----------------------------------RAW Start-------------------------------------;
+
+;alias -l msgchan { var %sup = $chan | msg $chan }
+;RAW 401:*: { if (No such isin $3-) { 
+;    msg $chan No such nick
+;    halt
+;  }
+;}
+;if ($numeric == 468) && (Only servers may set isin $3-) {
+;  msg $chan Invalid privileges. | halt
+;}
+;if ($numeric == 460) && (cannot set mode isin $3-) {
+;  msg $chan Invalid privileges. | halt
+;}
+;if ($numeric == 482) && (You must have isin $3-) || ($numeric == 482) && (You're not channel isin $3-) {
+;  msg %chan Invalid Privileges. | halt
+;}
+;if ($numeric == 499) && (You're not a channel isin $3-) {
+;  msg %chan Invalid privileges. | halt
+;}
+;}
+
+;-------------------------------------Aliases---------------------------------------;
+;-----------------------------------Alias Start-------------------------------------;
+
+
+alias -l bm.file { return $mircdir\scripts\botmaster.ini }
+alias -l bm.add { return $readini($bm.file,$network,admins) }
+
+alias -l user.file { return $mircdir\scripts\userlist.ini }
+alias -l user.add { return $readini($user.file,$network,admins) }
+
+alias owner { 
+  var %nick = $1, %network = $2, %admin = $address(%nick,0), %user_admin = $+($nick,$chr(58),$address($nick,0))
+  var %admins = $readini($user.file,%nick,admins)
+  if (%admins) { 
+    if ($istok(%user.add(admins),%user_admin,32)) { return $true }
+    else { return $false }
+  }
+  else { return $false }
+}
+
+alias clotmaster {
+  var %network = $1, %nick = $2, %host = $address(%nick,0), %bm_host = $+(%network,$chr(44),%host)
+  var %hosts = $readini($bm.file,%nick,hosts)
+  if (%hosts) { 
+    if ($istok(%hosts,%bm_host,32)) { return $true }
+    else { return $false }
+  }
+  else { return $false }
+}
+
+alias botmaster {
+  var %nick = $1, %network = $2, %admin = $address(%nick,0), %bm_admin = $+($nick,$chr(58),$address($nick,0))
+  var %admins = $readini($bm.file,%nick,admins)
+  if (%admins) { 
+    if ($istok($bm.add(admins),%bm_admin,32)) { return $true }
+    else { return $false }
+  }
+  else { return $false }
+}
+
+alias addmin {
+  if ($1) {
+    if ($2) {
+      if ($regex($2,/^(\*\!.*?@.*?)$/)) {
+        if (!$3) {
+          var %newadmin = $+($1,$chr(58),$regml(1))
+          if ($istok($_pic.sets(admins),%newadmin,32)) { echo -a * Admin already added. Nick: $1 Host: $regml(1) }
+          else {
+            echo -a * Adding admin. Nick: $1 Host: $regml(1)
+            writeini $user.file $network admins $iif($user.add(admins),$user.add(admins)) %newadmin
+            echo -a * Admin added. Nick: $1 Host: $regml(1)
+          }
+        }
+        else { echo -a * 12Invalid format. 12[ie: /addmin nick *!ident@host (Mask Type: 0)] }
+      }
+      else { notice $nick Improper Host Mask. 12[ie: *!ident@host.host [Mask Type: 0]) }
+    }
+    else { echo -a * 12Invalid format. 12[ie: /addmin nick *!ident@host [Mask Type: 0]) }
+  }
+  else { echo -a * 12Invalid format. 12[ie: /addmin nick *!ident@host [Mask Type: 0]) }
+}
+
+alias nothere { set %chan $chan | set -u3 %is.online.check on }
+
+alias GetIdent {
+  var %nick-ident = $remove($gettok($address($1,3),1,$asc(@)),*!*)
+  return %nick-ident
+}
+
+alias chkstat { var %x = $nick($1,$2).pnick | var %i = 0 | while (%i < $gettok(~*&*@*%,0,42)) { 
+    inc %i | if ($gettok(~*&*@*%,%i,42) == $left(%x,1)) { 
+      return $gettok(~*&*@*%,%i,42) | halt 
+    } 
+  } 
+}
+
+unset %chan %is.online.check

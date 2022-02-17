@@ -1,0 +1,38 @@
+alias socket {
+  if (!$2) { 
+    echo $color(info) -a * /socket: Usage: .socket <host|ip> <port>
+    halt
+  } 
+  if ($2 !isnum 1-65535) { echo $color(info) -a * .socket: PORT must be a number from 1-65535 inclusive.
+  halt }
+  if (!$sock($+(socket-,$1,:,$2))) {
+    sockopen $+(socket-,$1,:,$2) $1 $2
+    window -gke103 $+(@,socket-,$1,:,$2)
+    aline -ph 2 $+(@,socket-,$1,:,$2) * Connecting to $+($1,:,$2)
+  }
+}
+on *:SOCKOPEN:socket-*: {
+  if ($sock($sockname)) {
+    aline -ph 3 $+(@,$sockname) * Connected!
+    ;This is a known bug: Sometimes it says Connected! even though it failed to connect. If anyone can tell me why this happens, I would really appreciate it.
+  } 
+  else { aline -ph 3 $+(@,$sockname) * Unable to connect. 
+  }
+}
+on *:SOCKREAD:socket-*: {
+  sockread -f %t.sr
+  aline -ph $+(@,$sockname) %t.sr
+  unset %t.sr
+}
+on *:SOCKCLOSE:socket-*: {
+  aline -ph 2 $+(@,$sockname) * Disconnected from $sock($sockname).addr $+[(,$sock($sockname).ip,]) (Host disconnected)
+}
+on *:CLOSE:@socket-*: {
+  sockclose $remove($target,@)
+}
+on *:INPUT:@socket-*: {
+  if ($mid($1,1,1) != .) {
+    sockwrite -nt $remove($target,@) $1-
+    aline -ph $target $1-
+  }
+}

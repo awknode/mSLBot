@@ -1,0 +1,440 @@
+On *:START: {
+  if (!$hget(lastinfo)) { hmake lastinfo 20 }
+  hload -s lastinfo lastinfo.hsh
+}
+
+On *:LOAD: {
+  if (!$hget(lastinfo)) { hmake lastinfo 20 }
+  hload -s lastinfo lastinfo.hsh
+}
+
+on *:TEXT:!lfmhelp*:#: {
+  if ($2 == nr) {
+    .query $nick The New Releases command works 4 ways:
+    .query $nick 1. !lfmnr - This will show 5 (Default) recommended new albums based on the person who triggered it
+    .query $nick 2. !lfmnr <1-10> - This will show 1-10 (depending on what you chose) recommended new albums based on the person who triggered it
+    .query $nick 3. !lfmnr [username] - This will show 5 (default) recommended new albums based on username
+    .query $nick 4. !lfmnr [username] <1-10> - This will show 1-10 (depending on what you chose) recommended new albums based on username
+  }
+  if ($2 == compare) {
+    .query $nick The Taste-O-Meter works 2 ways:
+    .query $nick !lfmc user1 - This will compare user1 with the person who triggered it (assuming that person has added their Last.fm nick to the bot)
+    .query $nick !lfmc user1 user2 - This will compare user1 with user2
+  }
+  if (!$2) {
+    .query $nick !lfmhelp - for this list of commands
+
+    .query $nick 3---Adding yourself to the bot
+    .query $nick --
+    .query $nick !lfma username :: Add yourself to the bot
+    .query $nick !lfmd username :: Remove yourself from the bot
+    .query $nick --
+    .query $nick 3---Basic information
+    .query $nick !lfm [username] :: Now Playing info
+    .query $nick !lfmu [username] :: Profile information on the specified user
+    .query $nick --
+    .query $nick 3---Advanced information
+    .query $nick !lfmc user1 [user2] :: Taste-O-Meter rating with another nick. Type !lfmhelp compare for more information.
+    .query $nick !lfms artist :: 10 artists similar to the one specified
+    .query $nick !lfmnr <1-10/username> [1-10] :: Recommended new album(s) based on your listening history. Type !lfmhelp nr for more information.
+    .query $nick !lfmta :: Top 10 overall artists on the Last.fm charts
+    .query $nick !lfmuta <overall|7day|3month|6month|12month> [username] :: Top 10 Artists for a specific period/user
+    .query $nick !lfmn [username] :: Top 10 recommended Neighbors for the specified user
+  }
+}
+
+on *:TEXT:!lfm*:#: {
+  if ($sock(lfm)) { sockclose lfm }
+
+  if ($1 == !lfma) {
+    if (!$2) {
+      msg # Please supply a username.
+    }
+    if ($2) {
+      hadd lastinfo $nick $2
+      msg # Added! Use !lfm or !lfmu
+    }
+  }
+  if ($1 == !lfmd) {
+    if (!$2) {
+      msg # Please supply a username.
+    }
+    if ($2) {
+      if ($nick == hxck) || ($nick == $2) {
+        hdel lastinfo $nick $2
+        msg # User removed.
+      }
+      else { msg # You do not have sufficient privileges to run that command. }
+    }
+  }
+
+  if ($1 == !lfmu) {
+    if ($sock(lfm)) { sockclose lfm }
+    set %methodd info
+    if (!$2) {
+      if (!$hget(lastinfo, $nick)) {
+        msg $chan No such nick regged with the bot, please add one using !lfma <Last.FM Nick>  
+        halt
+      }
+      if $hget(lastinfo, $nick) {
+        set %username $hget(lastinfo, $nick)
+        set %method /2.0/?method=user.getinfo&user= $+ %username $+ &limit=1&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+      }
+    }
+    if ($2) {
+      set %username $iif($hget(lastinfo, $2),$hget(lastinfo, $2),$2)
+      set %method /2.0/?method=user.getinfo&user= $+ %username $+ &limit=1&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+    }
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm »
+  }
+
+  if ($1 == !lfm) {
+    if ($sock(lfm)) { sockclose lfm }
+    set %lfmnametemp 0
+    set %lfmartisttemp 0
+    set %lfmalbumtemp 0
+    set %methodd np
+    if (!$2) {
+      if (!$hget(lastinfo, $nick)) {
+        msg $chan No such nick regged with the bot, please add one using !lfma <Last.FM Nick>  
+        halt
+      }
+      if ($hget(lastinfo, $nick)) {
+        set %username $hget(lastinfo, $nick)
+        set %method /2.0/?method=user.getrecenttracks&user= $+ %username $+ &limit=1&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+      }
+    }
+    if ($2) {
+      set %username $iif($hget(lastinfo, $2),$hget(lastinfo, $2),$2)
+      set %method /2.0/?method=user.getrecenttracks&user= $+ %username $+ &limit=1&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+    }
+    sockopen lfm ws.audioscrobbler.com 80
+    set %lfm.chan #
+  }
+
+  if ($1 == !lfmc) {
+    set %methodd compare
+    if (!$2) { msg # You must provide a nickname to compare with. | halt }
+    if (!$3) {
+      if (!$hget(lastinfo,$nick)) { msg # You're not regged with the bot, please add one using !lfma <Last.FM Nick>, or do !lfmc <Last.FM Nick 1> <Last.FM Nick 2> | halt }
+      else {
+        set %lfmcu1 $hget(lastinfo,$nick)
+        set %lfmcu2 $iif($hget(lastinfo,$2),$hget(lastinfo,$2),$2)
+      }
+    }
+    if ($3) {
+      set %lfmcu1 $iif($hget(lastinfo,$2),$hget(lastinfo,$2),$2)
+      set %lfmcu2 $iif($hget(lastinfo,$3),$hget(lastinfo,$3),$3)  
+    }
+    set %method $+(/2.0/?method=tasteometer.compare&type1=user&type2=user&value1=,%lfmcu1,&value2=,%lfmcu2,&api_key=bdf34b247ee7ee2ccd8e856a675bb82d)    
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm 15»
+  }
+
+  if ($1 == !lfms) {
+    set %methodd similar
+    if (!$2) { msg # You must provide an artist. | halt }
+    set %method /2.0/?method=artist.getsimilar&artist= $+ $replace($2-,$chr(32),$chr(43)) $+ &autocorrect=1&limit=10&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm 15»
+  }  
+
+  if ($1 == !lfmnr) {
+    if (($2) && (!$3)) { 
+      if ($2 isnum) {
+        if ($2 > 10) { msg # Sorry, but that'll be too many releases, please choose a number between 1 and 10 | halt }
+        if ($2 isnum 1-10) { 
+          if (!$hget(lastinfo,$nick)) { msg $chan You're not regged with the bot, please add one using !lfma <Last.FM Nick> | halt }
+          set %lfmnrout $2 
+          set %username $hget(lastinfo,$nick) 
+        }
+      }
+      else { 
+        set %lfmnrout 5
+        set %username $iif($hget(lastinfo,$2),$hget(lastinfo,$2),$2) 
+      }
+    }
+    if (!$2) {
+      if (!$hget(lastinfo,$nick)) { msg $chan You're not regged with the bot, please add one using !lfma <Last.FM Nick> | halt }
+      else { 
+        set %lfmnrout 5
+        set %username $hget(lastinfo,$nick) 
+      }
+    }
+    if ($3) {
+      set %username $iif($hget(lastinfo,$2),$hget(lastinfo,$2),$2) 
+      if ($3 > 10) { msg # Sorry, but that'll be too many releases, please choose a number between 1 and 10 | halt }
+      if ($3 isnum 1-10) { set %lfmnrout $3 }
+    }
+    set %methodd lfmnr
+    set %lfmnametemp 0
+    set %lfmnrtemp 0
+    set %method $+(/2.0/?method=user.getnewreleases&user=,%username,&api_key=bdf34b247ee7ee2ccd8e856a675bb82d)
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm 15»
+  }
+
+  if ($1 == !lfmta) {
+    set %methodd lfmta
+    set %method http://ws.audioscrobbler.com/2.0/?method=chart.gettopartists&limit=10&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm 15»
+  }
+
+  if ($1 == !lfmuta) {
+    set %methodd lfmuta
+    if (!$2) { msg # You must provide a period of time. Acceptable inputs are: Overall, 7day, 3month, 6month and 12month. | halt }
+    if (($2) && (!$3)) {
+      if ($2 == overall) || ($2 == 7day) || ($2 == 3month) || ($2 == 6month) || ($2 == 12month) {
+        set %period $2
+        if (!$hget(lastinfo,$nick)) { msg # You're not regged with the bot, please add one using !lfma <Last.FM Nick> | halt }
+        set %username $hget(lastinfo,$nick)
+        set %method http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user= $+ %username $+ &period= $+ %period $+ &limit=10&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+      }
+      else { msg # 15Last.fm 15» Acceptable inputs are: Overall, 7day, 3month, 6month and 12month. | halt } 
+    }
+    if (($2) && ($3)) {
+      if ($2 == overall) || ($2 == 7day) || ($2 == 3month) || ($2 == 6month) || ($2 == 12month) {
+        set %period $2
+        set %username $iif($hget(lastinfo,$3),$hget(lastinfo,$3),$3) 
+        set %method http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user= $+ %username $+ &period= $+ %period $+ &limit=10&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+      }
+      else { msg # 15Last.fm 15» Acceptable inputs are: Overall, 7day, 3month, 6month and 12month. | halt }
+    }
+    if ($sock(lfm)) { sockclose lfm }
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm 15»
+  }
+
+  if ($1 == !lfmn) {
+    set %methodd lfmn
+    if (!$2) {
+      if (!$hget(lastinfo,$nick)) { msg # You're not regged with the bot, please add one using !lfma <Last.FM Nick> | halt }
+      set %username $hget(lastinfo,$nick)
+      set %method http://ws.audioscrobbler.com/2.0/?method=user.getneighbours&user= $+ %username $+ &limit=10&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+    }
+    if ($2) {
+      set %username $iif($hget(lastinfo,$2),$hget(lastinfo,$2),$2) 
+      set %method http://ws.audioscrobbler.com/2.0/?method=user.getneighbours&user= $+ %username $+ &limit=10&api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+    }
+    if ($sock(lfm)) { sockclose lfm }
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm 15»
+  }
+  if ($1 == !lfmai) {
+    set %methodd lfmai
+    if (!$2) {
+      msg # You must input an artist to search for. | halt
+    }
+    if ($2) {
+      set %lfm.ai $replace($2-,$chr(32),$chr(43))
+      set %method http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist= $+ %lfm.ai $+ &api_key=bdf34b247ee7ee2ccd8e856a675bb82d
+    }
+    if ($sock(lfm)) { sockclose lfm }
+    sockopen lfm ws.audioscrobbler.com 80
+    sockmark lfm msg # 15Last.fm 15»
+  }
+}
+
+on *:sockopen:lfm: {
+  sockwrite -n $sockname GET %method HTTP/1.1
+  sockwrite -n $sockname Host: ws.audioscrobbler.com
+  sockwrite -n $sockname Connection: close
+  sockwrite -n $sockname $crlf
+}
+
+on *:sockread:lfm: {
+
+  if ($sockerr) { $sock(lfm).mark Socket Error: $sock(lfm).wsmsg }
+  var %lfmtemp
+  sockread %lfmtemp
+
+  if (%methodd == np) {
+    if ((<name> isin %lfmtemp) && (%lfmnametemp == 0)) {
+      set %lfmname $replace($nohtml(%lfmtemp),&amp;,&,&quot;,")
+      set %lfmnametemp 1
+    }
+    if ((<artist isin %lfmtemp) && (%lfmartisttemp == 0)) {
+      set %lfmartist $replace($nohtml(%lfmtemp),&amp;,&,&quot;,")
+      set %lfmartisttemp 1
+    }
+    if ((<album isin %lfmtemp) && (%lfmalbumtemp == 0)) {
+      set %lfmalbum $replace($nohtml(%lfmtemp),&amp;,&,&quot;,")
+      set %lfmalbumtemp 1
+    }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == np2) {
+    if (<duration> isin %lfmtemp) { set %lfm.length $nohtml(%lfmtemp) }
+    if (<userloved> isin %lfmtemp) { 
+      if (<userplaycount> isin %lfmtemp) { 
+        set %lfm.playcount $gettok($nohtml(%lfmtemp),1,32) 
+        set %lfm.loved $gettok($nohtml(%lfmtemp),2,32)
+      }
+      else { set %lfm.loved $gettok($nohtml(%lfmtemp),1,32) }
+    }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == info) {
+    if (<realname> isin %lfmtemp) { set %lfm.realname $remove(%lfmtemp,<realname>,</realname>) }
+    if (<country> isin %lfmtemp) { set %lfm.country $remove($gettok(%lfmtemp,1,32),<country>,</country>) }
+    if (<name> isin %lfmtemp) { set %lfm.name $remove($gettok(%lfmtemp,1,32),<name>,</name>) }
+    if (<age> isin %lfmtemp) { set %lfm.age $remove($gettok(%lfmtemp,1,32),<age>,</age>) }
+    if (<id> isin %lfmtemp) { set %lfm.id $remove($gettok(%lfmtemp,1,32),<id>,</id>) }
+    if (size="large" isin %lfmtemp) { set %lfm.image $remove($gettok(%lfmtemp,2,32),size="large">,</image>) }
+    if (<gender> isin %lfmtemp) { set %lfm.gender $remove($gettok(%lfmtemp,1,32),<gender>,</gender>) }
+    if (<playcount> isin %lfmtemp) { set %lfm.plays $remove($gettok(%lfmtemp,1,32),<playcount>,</playcount>) }
+    if (<subscriber> isin %lfmtemp) { set %lfm.subscriber $remove(%lfmtemp,<subscriber>,</subscriber>) }
+    if (<type> isin %lfmtemp) { set %lfm.type $remove(%lfmtemp,<type>,</type>) }
+    set %lfm.url http://last.fm/user/ $+ %username
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == compare) {
+    if (<score> isin %lfmtemp) { set %lfm.score $round($calc($nohtml(%lfmtemp)*100),1) }
+    if (<name> isin %lfmtemp)  { set %lfm.artists $+(%lfm.artists,$chr(32),$replace($nohtml(%lfmtemp),&amp;,&,&quot;,"),$chr(44)) }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == similar) {
+    if (<name> isin %lfmtemp)  {
+      set %lfm.similar $+(%lfm.similar,$chr(32),$nohtml(%lfmtemp),$chr(44))
+    }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == lfmnr) {
+    if ((<name> isin %lfmtemp) && (%lfmnametemp == 0) && (%lfmnrtemp < %lfmnrout)) { set %lfmrecsout %lfmrecsout $replace($nohtml(%lfmtemp),&amp;,&,&quot;,") - }
+    if ((<name> isin %lfmtemp) && (%lfmnametemp == 1) && (%lfmnrtemp < %lfmnrout)) { 
+      set %lfmrecsout %lfmrecsout $replace($nohtml(%lfmtemp),&amp;,&,&quot;,") $+ ,
+      set %lfmnametemp 0
+      inc %lfmnrtemp
+    }    
+    if (<artist> isin %lfmtemp) { set %lfmnametemp 1 }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == lfmta) {
+    if (<name> isin %lfmtemp) {
+      set %lfm.topartists $+(%lfm.topartists,$chr(32),$nohtml(%lfmtemp),$chr(44))
+    }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == lfmuta) {
+    if (<name> isin %lfmtemp) {
+      set %lfm.usertop $+(%lfm.usertop,$chr(32),$nohtml(%lfmtemp),$chr(44))
+    }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+
+  if (%methodd == lfmn) {
+    if (<name> isin %lfmtemp) {
+      set %lfm.neighbors $+(%lfm.neighbors,$chr(32),$nohtml(%lfmtemp),$chr(44))
+    }
+    if (<error isin %lfmtemp) { var %err $remove(%lfmtemp,<error code=",</lfm>,</error>,">) | $sock(lfm).mark $remove(%err,$left(%err,1))  | unset %lfm.* | sockclose lfm }
+  }
+  if (%methodd == lfmai) {
+    if (<lfm status="ok"> isin %lfmtemp) {
+      sockread %lfmtemp
+      sockread %lfmtemp
+      set %lfm.name $nohtml(%lfmtemp)
+    }
+    if (<stats> isin %lfmtemp) {
+      sockread %lfmtemp
+      if (<listeners> isin %lfmtemp) {
+        set %lfm.listeners $nohtml(%lfmtemp)
+      }
+      sockread %lfmtemp
+      if (<playcount> isin %lfmtemp) {
+        set %lfm.playcount $nohtml(%lfmtemp)
+      }
+    }
+    if (<tag> isin %lfmtemp)  {
+      sockread %lfmtemp
+      if (<name> isin %lfmtemp) {
+        set %lfm.tag $+(%lfm.tag,$chr(32),$nohtml(%lfmtemp),$chr(44))
+      }
+    }
+    if (<content> isin %lfmtemp) {
+      sockread %lfmtemp
+      set %lfm.summary $between(%lfmtemp,<![CDATA[,]]>,2)
+    }
+  }
+}
+
+on *:sockclose:lfm: {
+  if (%methodd == np2) {
+    msg %lfm.chan 15Last.fm » %lfmartist - %lfmname $chr(91) $+ %lfmalbum $+ $chr(93) $iif(%lfm.loved,15♥) :: $iif(%lfm.length,$gettok($duration($calc(%lfm.length / 1000),3),2-,58),) :: $& 
+      $iif(%lfm.playcount,Played $pcolor(%lfm.playcount) times,07 $+ First play)
+    unset %lfm* | unset %lfmcu* | unset %method | unset %methodd
+  }
+  if (%methodd == np) {
+    set %methodd np2
+    set %method $+(/2.0/?method=track.getinfo&api_key=bdf34b247ee7ee2ccd8e856a675bb82d&artist=,$urlencode(%lfmartist),&track=,$urlencode(%lfmname),&username=,%username)
+    if ($sock(lfm)) { sockclose lfm }
+    sockopen lfm ws.audioscrobbler.com 80
+  }
+  if (%methodd == info) {
+    $sock(lfm).mark User: %username 15» ID: $iif(%lfm.id == $null,Not Specified,%lfm.id) 15» Subscriber? $replace(%lfm.subscriber,0,No,1,Yes) 15» Type: %lfm.type $+  
+    $sock(lfm).mark Real Name: $iif(%lfm.realname == $null,Not Specified,%lfm.realname) 15» Name: $iif(%lfm.name == $null,Not Specified,%lfm.name) 15» Age: $iif(%lfm.age == $null,Not Specified,%lfm.age) 15» Gender: $iif(%lfm.gender == $null,Not Specified,$replace(%lfm.gender,m,Male,f,Female,n,Unknown)) 15» Country: $iif(%lfm.country == $null,Not Specified,%lfm.country)
+    $sock(lfm).mark Plays: %lfm.plays 15» Image: $iif(%lfm.image == $null,Not Specified,%lfm.image) 15» %lfm.url
+    unset %lfm* | unset %lfmcu* | unset %method | unset %methodd | unset %username
+  }
+  if (%methodd == compare) {
+    $sock(lfm).mark %lfmcu1 $+ 's compatibility with %lfmcu2 is $iif(%lfm.score == 0,Unknown.,$compat(%lfm.score) $+($chr(40),%lfm.score,$chr(37),$chr(41),$chr(46)) Artist(s) they have in common include(s) $gettok(%lfm.artists,1- $+ $calc($gettok(%lfm.artists,0,44) - 2),44) $+ .)
+    unset %lfm* | unset %lfmcu* | unset %method | unset %methodd | unset %username
+  }
+  if (%methodd == similar) {
+    $sock(lfm).mark Similar Artists: $replace($gettok(%lfm.similar,1-10,44) $+ .,&amp;,&)
+    unset %lfm* | unset %lfmcu* | unset %method | unset %methodd | unset %username
+  }
+  if (%methodd == lfmnr) {
+    $sock(lfm).mark New Album Releases for %username are: $gettok(%lfmrecsout,1- %%lfmnrout,44) $+ .
+    unset %lfm* | unset %method | unset %methodd | unset %username
+  }
+  if (%methodd == lfmta) {
+    $sock(lfm).mark Top of the Last.fm Charts: $gettok(%lfm.topartists,1-10,44) $+ .
+    unset %lfm* | unset %method | unset %methodd | unset %username
+  }
+  if (%methodd == lfmuta) {
+    $sock(lfm).mark Top 10 Artists for %username 15» Period: $replace(%period,overall,Overall:,7day,Last 7 Days:,3month,Last 3 Months:,6month,Last 6 Months:,12month,Last 12 months:) $gettok($replace(%lfm.usertop,&amp;,&),1-10,44) $+ .
+    unset %lfm* | unset %method | unset %methodd | unset %username | unset %period
+  }
+  if (%methodd == lfmn) {
+    $sock(lfm).mark Top 10 Neighbors: $gettok(%lfm.neighbors,1-10,44) $+ . http://www.last.fm/user/ $+ %username $+ /neighbours
+    unset %lfm* | unset %method | unset %methodd | unset %username
+  }
+  if (%methodd == lfmai) {
+    $sock(lfm).mark %lfm.name :: %lfm.playcount plays by %lfm.listeners listeners :: $remove(%lfm.tag,$right(%lfm.tag,1),	 ) :: %lfm.summary
+    unset %lfm* | unset %method | unset %methodd | unset %username
+  }
+}
+
+alias nohtml { var %x, %i = $regsub($1-,/(^[^<]*>|<[^>]*>|<[^>]*$)/g,$null,%x), %x = $remove(%x,&nbsp;) | return %x }
+alias urlencode { var %a = $regsubex($$1,/([^\w\s])/Sg,$+(%,$base($asc(\t),10,16,2))) | return $replace(%a,$chr(32),$chr(43)) }
+alias between { noop $regex($1,/\Q $+ $2 $+ \E(.*?)\Q $+ $3 $+ \E/gi) | return $regml($4) }
+alias -l compat {
+  if ($1 isnum 00.0-16.6) { return Very Low }
+  if ($1 isnum 16.6-33.3) { return Low }
+  if ($1 isnum 33.3-50.0) { return Medium }
+  if ($1 isnum 50.0-66.6) { return High }
+  if ($1 isnum 66.6-83.4) { return Very High }
+  if ($1 isnum 83.4-100) { return Super }
+}
+alias -l pcolor {
+  if ($1 isnum 1 - 15) { return 02 $+ %lfm.playcount $+  }
+  if ($1 isnum 16 - 30) { return 11 $+ %lfm.playcount $+  }
+  if ($1 isnum 31 - 45) { return 03 $+ %lfm.playcount $+  }
+  if ($1 isnum 46 - 60) { return 08 $+ %lfm.playcount $+  }
+  if ($1 isnum 61 - 75) { return 07 $+ %lfm.playcount $+  }
+  if ($1 isnum 76 - 999) { return 04 $+ %lfm.playcount $+  }
+}
+
+On *:EXIT: {
+  hsave lastinfo lastinfo.hsh
+  hfree lastinfo
+}

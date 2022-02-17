@@ -1,0 +1,328 @@
+;alias -l ascii {
+;  if ($1) && ($isid) {
+;    var %x = 1
+;    while ($mid($1,%x,1) != $null) {
+;      var %z = $v1
+;      if (!$istok(%i,$asc(%z),32)) {
+;        var %y %y $qt(07 $+ $replace(%z,$chr(2),Bold,$chr(3),Color,$chr(15),Reset,$chr(22),Reverse,$chr(31),Underline,$chr(32),Space,$chr(160),Hard space) $+ ) 00 $+ $asc(%z), $&
+;          %i = %i $asc(%z)
+;      }
+;      inc %x
+;    }
+;    return %y
+;  }
+;}
+;on $owner:TEXT:/^[!%.@](asc|ascii)(\s|$)/Si:#: {
+;  exprotect $1-
+;  spamprotect
+;  if (!%asc.block. [ $+ [ $chan ] ]) && ($2) {
+;    msg $chan 14(Ascii14) $ascii($2-)
+;    set -u10 %asc.block. $+ $chan 1
+;  }
+;}
+
+alias asc2chr { return $regsubex($regsubex($1-, /(\d+)/gu, \112: $+ $safechr(\1) $+ $chr(32)), /(?<=^| )(\d+:(?:(?:"(?:\d+|.)")|(?:[\\\^].))) (?=.*? \1(?: |$))/gu, ) }
+alias chr2asc { return $regsubex($regsubex($1-, /(*UTF8)([\s\S])/gu, $safechr($asc(\1)) $+ : $+ $asc(\1) $+ $chr(32)), /(?<=^| )((?:(?:"(?:\d+|.)")|(?:[\\\^].)):\d+) (?=.*? \1(?: |$))/gu, ) }
+
+alias ascs { $iif($isid,return,editbox -a) $regsubex($1-,/(*UTF8)(.)/g,$safechr($asc(\t)) $+ $chr(32)) } 
+alias chrs { $iif($isid,return,editbox -a) $regsubex($1-,/\s*(\d+)\s*/g,$safechr($chr(\t))) }
+
+alias ascsex { $iif($isid,return,editbox -a) $regsubex($1-,/(*UTF8)(.)/g,$+($qt(\1),:,$asc(\1),$chr(32))) }
+alias chrsex { $iif($isid,return,editbox -a) $regsubex($1-,/\s*(\d+)/g,$+(\1,:,$qt($chr(\t)),$chr(32))) } 
+
+alias strings { $iif($isid,return,editbox -a) $base($asc($1-),10,16,2) }
+alias base64 { $iif($isid,return,editbox -a) $right($left($unsafe($1-),-6),-8) }
+alias a2u { $iif($isid,return,editbox -a) $regsubex($1-,/(.)(.)|(.)/g,$chr($calc($asc(\2) *256 + $asc(\1)))) } ; ANSI2Unicode by Raccoon
+alias u2a { $iif($isid,return,editbox -a) $regsubex($1-,/(*UTF8)(.)/g,$chr($calc($asc(\t) % 256)) $+ $chr($calc($asc(\t) /256)) ) } ; Unicode2ANSI by Raccoon
+alias a2u2 { var %t $regsubex($1-,/(.)(.)|(.)/g,$chr($calc($asc(\2) *256 + $asc(\1)))) | if ($right($1-,1) == $right(%t,1)) var %t $left(%t,-1) $+ $chr($calc($asc($right($1-,1))+256*32)) | $iif($isid,return,editbox -a) %t } ; ANSI2Unicode by Raccoon
+alias china { $iif($isid,return,editbox -ab1e8 /china ) $iif($calc($len($1-) / $regex($1-,/./g)) > 0.55,$enchina($1-),$dechina($1-)) } ; By Raccoon 2017
+alias enchina { $iif($isid,return,editbox -a) $regsubex($1-,/(.)(.)|(.)/g,$chr($calc($asc(\2) * 256 + $asc(\1)))) } ; By Raccoon 2017
+alias dechina { $iif($isid,return,editbox -a) $utfdecode($regsubex($1-,/(*UTF8)(.)/g,$chr($calc($asc(\1) % 256)) $+ $chr($calc($asc(\1) // 256)))) } ; By Raccoon 2017
+alias china2 { $iif($isid,return,editbox -a) $iif($calc($len($1-) / $regex($1-,/./g)) > 0.55,$enchina2($1-),$dechina2($1-)) } ; By Raccoon 2017
+alias enchina2 { $iif($isid,return,editbox -a) $regsubex($1-,/(.)(.)|(.)/g,$chr($calc($asc(\1) * 256 + $asc(\2)))) } ; By Raccoon 2017
+alias dechina2 { $iif($isid,return,editbox -a) $utfdecode($regsubex($1-,/(*UTF8)(.)/g,$chr($calc($asc(\1) // 256)) $+ $chr($calc($asc(\1) % 256)))) } ; By Raccoon 2017
+alias urlEncode { return $regsubex($1, /(\W)/g, $+(%, $base($asc(\t), 10, 16, 2))) }
+alias urlDecode return $utfdecode($regsubex($replace($1, +, $chr(32)), /%([A-F\d]{2})/gi, $chr($base(\1, 16, 10))))
+
+alias jenkins3 {
+  bset -ta &t 1 $1
+  var %r = $3, %i = 0, %max = $bvar(&t,0)
+  while (%i < %max) {
+    !inc %i
+    %r = $calc( 1025 * (%r + $bvar(&t, %i)) % 4294967296)
+    %r = $xor(%r, $calc(%r / 64))
+  }
+  %r = $calc((%r * 9) % 4294967296)
+  %r = $calc(($xor(%r, $calc(%r / 2048)) * 32769) % 4294967296)
+  return %r
+  return $and(%r, $calc(2^ $iif($2 isnum, $2, 32) - 1))
+}
+
+; altered of Jenkins#3 - instead of treating UTF8 codepoints 128+ as multiple bytes, this treats them as a single number in the range 128-65535
+alias jenkins4 {
+  var %r = $3, %i = 0, %max = $len($1)
+  while (%i < %max) {
+    !inc %i
+    %r = $calc( 1025 * (%r + $asc($mid($1, %i,1))) % 4294967296)
+    %r = $xor(%r, $calc(%r / 64))
+  }
+  %r = $calc((%r * 9) % 4294967296)
+  %r = $calc(($xor(%r, $calc(%r / 2048)) * 32769) % 4294967296)
+  return %r
+  return $and(%r, $calc(2^ $iif($2 isnum, $2, 32) - 1))
+}
+
+
+alias -l safechr {
+  if ($1 == 0)  return \0
+  if ($1 == 2)  return ^b
+  if ($1 == 3)  return ^k
+  if ($1 == 9)  return \t
+  if ($1 == 10) return \n
+  if ($1 == 13) return \r
+  if ($1 == 15) return ^o
+  if ($1 == 22) return ^r
+  if ($1 == 29) return ^i
+  if ($1 == 31) return ^u
+
+  return " $+ $chr($1) $+ "
+}
+
+on $owner:TEXT:/^[$](html2uni)(\s|$)/Si:#: {
+  spamprotect
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($html2unicode($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. html2uni chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+
+on $owner:TEXT:/^[$](jenkins)(\s|$)/Si:#: {
+  spamprotect
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($jenkins4($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. jenkins chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+
+on $owner:TEXT:/^[$](urldecode)(\s|$)/Si:#: {
+  spamprotect
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($urldecode($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. urlencode chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+
+on $owner:TEXT:/^[$](urlencode)(\s|$)/Si:#: {
+  spamprotect
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($urlencode($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. urlencode chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](xor)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    var %a $2, %b $3
+    if ($2) { msg $chan $left($replace($xor(%a,%b), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. xor chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on *:TEXT:/^[$](hexip)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    var %a $2, %b $3
+    if ($2) { msg $chan $left($replace($longip($base( $2 ,16,10)), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. hexip chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+
+$longip($base(6b9868f3,16,10))
+
+on $owner:TEXT:/^[$](sha512)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($sha512($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. sha512 english chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](sha256)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($sha256($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. sha256 english chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](sha1)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($sha1($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. sha1 english chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](md5)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($md5($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. md5 english chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+
+on $owner:TEXT:/^[$](enchina)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($enchina2($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. enchina english chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](dechina)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($dechina2($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. dechina chinese chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](string|strings)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($strings($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. strings char }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](u2a|uni2ansi)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($u2a($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. u2a chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](a2u|ans2uni)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($a2u2($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. a2u chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](b64|base64)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($base64($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32)), 250)
+    }
+    else { msg $chan Incorrect format. base64 chars }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](asc|ascii)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2) { msg $chan $left($replace($ascsex($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32),$chr(2),Bold,$chr(3),Color,$chr(15),Reset,$chr(22),Reverse,$chr(31),Underline,$chr(160),Hard space,$chr(29),Italic), 250)
+    }
+    else { msg $chan Incorrect format. asc a-Z/0-9 }
+  } 
+  else { msg $chan Slow down douche. }
+}
+
+on $owner:TEXT:/^[$](chr|char)(\s|$)/Si:#: {
+  spamprotect
+  exprotect $1-
+  if (!%fud && !$($+(%, fud., $nick), 2)) {
+    set -u3 %fud On
+    set -u10 %fud. $+ $nick On
+    if ($2 isnum 0-255) { msg $chan $left($replace($chrsex($2-), $crlf, $chr(32), $cr, $chr(32), $lf, $chr(32),$chr(2),Bold,$chr(3),Color,$chr(15),Reset,$chr(22),Reverse,$chr(31),Underline,$chr(32),Space,$chr(160),Hard space,$chr(29),Italic), 250)
+    }
+    else { msg $chan Incorrect format. chr 0-255 }
+  } 
+  else { msg $chan Slow down douche. }
+} ;; created by rebel, helped by talon_, improved by SReject.

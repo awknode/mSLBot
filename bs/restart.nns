@@ -1,0 +1,74 @@
+on *:load:{
+  set %bot.owner $$?="Please set my owner"
+  set %bot.password $$?="Please set a password."
+}  
+
+alias resetpass {
+  echo -a Current Password: %bot.password
+  set %bot.password $$?="Please input your new bot password"
+  echo -a New Password: %bot.password
+}
+
+
+On $owner:TEXT:.restart*:*: {
+  If ($3 == $null) && ($2 == %bot.password) && ($nick == %bot.owner) {
+    If (%restart != on) {
+      .notice $nick Restarting in 30 seconds. To cancel this, type: restart cancel
+      .timerrestart 1 30 exit -nr
+      set %restart on
+    }
+    Else {
+      .notice $nick Bot is already restarting
+    }
+  }
+  Else {
+    If ($2 == cancel) {
+      If (%restart == on) {
+        .timerrestart* off
+        unset %restart
+        .notice $nick Restart has been cancelled.
+      }
+      Else {
+        If (%resnotice != on) {
+          .notice $nick There is no restart scheduled.
+          set -u3 %resnotice
+        }
+      }
+    }
+    If ($2 == now) {
+      exit -nr
+    }
+    If ($2 == connection) {
+      server
+    }
+  }
+  Elseif ($nick !== %bot.owner) {
+    msg $nick You aren't the owner.
+  }
+  Else {
+    msg $nick Invalid Password.
+  }
+}
+
+
+on *:text:*:?:{
+  if ($nick !== %bot.owner) {
+    msg $nick You're not the owner!
+    window -c $nick
+    write Logs.txt MSG: $+ $chr(91) $asctime(dd/mm/yyyy hh:nn:TT) $chr(93) $+  $nick : $1-
+  }
+}
+
+on *:notice:*:{
+  if ($nick !== %bot.owner) {
+    notice $nick You're not the owner!
+    write Logs.txt NOTICE:  $+ $chr(91) $asctime(dd/mm/yyyy hh:nn:TT) $chr(93) $+ $nick : $1-
+  }
+}
+
+
+on *:NICK: {
+  If ($nick == %bot.owner) {
+    set %bot.owner $newnick
+  }
+}

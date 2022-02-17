@@ -1,0 +1,10 @@
+On @*:TEXT:*:#: {
+  if ($nick !isop $chan) && (!$($+(%,_spamban.,$cid,$chan,$nick),2)) && ($is_nickspam($chan,$1-)) {
+    kick $chan $nick 2 Lame Highlight Spam Detected.
+    inc -z $+(%,_spamban.,$cid,$chan,$nick) 5
+} }
+ALIAS is_nickspam { 
+  var %chan = $$1, %text = $$2, %nicklen = $$iif($calc($3 -1) > 0,$v1,4), %nickspam = $$iif($calc($4) > 0,$v1,8)
+  var %text = $mid($regsubex(is_nickspam,! %text !,/(*UTF8)(?:\W++|(?<!\w)(?:\w{1, $+ %nicklen $+ }|(\w++)(?=.*?\W\1(?:\W|$)))(?!\w))+/g,|),2,-1)
+  if (%chan ischan) && ($numtok(%text,124) >= %nickspam) && ($fline(%chan,/(?<=^|\W)(?: $+ %text $+ )(?=\W|$)/i,0,3) >= %nickspam) { return $v1 }
+  return 0

@@ -1,0 +1,41 @@
+on $*:TEXT:/^[~`!@^&.]u(d|rbandictionary) ./i:*: {
+  sockclose UrbanDictionary
+  set %UD# $iif($chan,$chan,$nick)
+  set %UDURL /define.php?term= $+ $regsubex($2-,/([ `@#$%^&+=\[\]{}\\|;'",<>\/?])/g,% $+ $base($asc(\t),10,16))
+  sockopen UrbanDictionary www.urbandictionary.com 80
+}
+
+on $*:TEXT:/urbandictionary\.com(\/define\.php\?term=\S+)/i:*: {
+  sockclose UrbanDictionary
+  set %UD# $iif($chan,$chan,$nick)
+  set %UDURL $regml(1)
+  sockopen UrbanDictionary www.urbandictionary.com 80
+}
+
+on *:SOCKOPEN:UrbanDictionary: {
+  sockwrite -n UrbanDictionary GET %UDURL HTTP/1.1
+  sockwrite -n UrbanDictionary Host: www.urbandictionary.com
+  sockwrite UrbanDictionary $crlf
+}
+
+on *:SOCKREAD:UrbanDictionary: {
+  sockread %UD
+  while ($sockbr) {
+
+    if (<div class="definition">* iswm %UD) {
+      var %UD~ = $regsubex($regsubex($remove(%UD,$cr),/(<br\/>)+/g,$chr(32) $+ - $+ $chr(32)),/<div class="definition">(.+?)<\/div>(?:<div class="example">(.+?)<\/div>)?/,\1), %UD~~ = $regml(2)
+      msg %UD# $regsubex($replace($regsubex(%UD~,/(<.+?>)+/g,),&amp;,&,&quot;,",&lt;,<,&gt;,>),/&#(x?\d+);/g,$iif(x !isin \t,$chr(\t),$chr($base($remove(\t,x),16,10))))
+      $iif(%UD~~,msg %UD# Example: $regsubex($replace($regsubex(%UD~~,/(<.+?>)+/g,),&amp;,&,&quot;,",&lt;,<,&gt;,>),/&#(x?\d+);/g,$iif(x !isin \t,$chr(\t),$chr($base($remove(\t,x),16,10)))))
+      unset %UD*
+      sockclose UrbanDictionary
+      return
+    }
+    elseif (</i> isn't defined.<br/>Can you define it? isin %UD) {
+      msg %UD# $regsubex($gettok(%UDURL,-1,61),/%(..)/g,$chr($base(\t,16,10))) hasn't been defined yet. These niggers aren't up to speed.
+      unset %UD*
+      sockclose UrbanDictionary
+      return
+    }
+    sockread %UD
+  }
+}

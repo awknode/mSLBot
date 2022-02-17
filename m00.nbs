@@ -1,0 +1,1146 @@
+on *:LOAD:{
+  if ($version < 6.160) {
+    echo -a $m00.prefix You need mIRC v6.16 or higher to run this script. (http://www.mirc.com)
+    echo -a [m00] Unloading $+(",$strip($m00.version),")
+    unload -rs $script
+  }
+  else {
+    if (%m00.disabled == $null) {
+      if (%m00.output == $null) {
+        $m00.defaults(load)
+        set %m00.disabled $?="Enter all Channels you want the tiggers disabled $crlf $+ in, if any. (Example: #chan #chan2 #chan3) $crlf $+ This can also be added later with the menu."
+        $iif(%m00.disabled == $null,unset %m00.disabled)
+      }
+      else {
+        set %m00.disabled $?="Enter all Channels you want the tiggers disabled $crlf $+ in, if any. (Example: #chan #chan2 #chan3) $crlf $+ This can also be added later with the menu."
+        $iif(%m00.disabled == $null,unset %m00.disabled)
+      }
+    }
+    echo -ae [m00] $+(,$m00.version,) loaded...   
+  }
+}
+
+on *:UNLOAD:{
+  if ($timer(m00upchk)) { .timerm00upchk off }
+  if ($timer(m00mupchk)) { .timerm00mupchk off }
+  if (%m00.uprec) || (%m00.disabled) || (%m00.c1) || (%m00.c2) || (%m00.output) {
+    if ($input(Do you want to remove all your stored settings for $+($strip($m00.version),?),y)) {
+      unset %m00.uprec
+      unset %m00.disabled
+      unset %m00.c1
+      unset %m00.c2
+      unset %m00.output 
+      unset %m00.trig.*
+    }
+  }
+  echo -ae [m00] $+(,$m00.version,) unloaded...
+}
+
+on *:START: {
+  m00.upchk
+  .timerm00upchk 0 43200 m00.upchk
+  m00.mupchk
+  .timerm00mupchk 0 43200 m00.mupchk
+}
+
+;=-=-=-=-=-=-=-=-=;
+;=   Triggers    =;
+;=-=-=-=-=-=-=-=-=;
+
+on *:TEXT:*:#:{
+  if ($1 == !m00) {
+    if (%m00.trig.m00) {
+      if ($istok(%m00.disabled,$chan,32)) { echo -a [m00] $m00.msgs(!m00,chan) }
+      else {
+        $repeatcheck(m00)
+        if ($2) { m00 $2 }
+        else { m00 }
+      }
+    }
+  }
+  elseif ($1 == !uptime) {
+    if (%m00.trig.uptime) {
+      if ($istok(%m00.disabled,$chan,32)) { echo -a [m00] $m00.msgs(!uptime,chan) }
+      else { $repeatcheck(uptime) | m00 up }
+    }
+  }
+  elseif ($1 == !getm00) {
+    if (%m00.trig.dcc) {
+      if ($istok(%m00.disabled,$chan,32)) { echo -a [m00] $m00.msgs(!getm00,chan) }
+      else {
+        $repeatcheck(dcc)
+        if (!$2) {
+          if (%m00.dcc.nick) {
+            if ($nick != %m00.dcc.nick) { set -u120 %m00.dcc.nick $nick | msg $chan $m00.msgs(part1) }
+            else { msg $chan $m00.msgs(part2) }
+          }
+          else { set -u120 %m00.dcc.nick $nick | msg $chan $m00.msgs(part1) }
+        }
+      }
+    }
+  }
+  if (%m00.dcc.nick) {
+    if ($nick == %m00.dcc.nick) { 
+      if ($1 == y || $1 == yes) && ($2 == $me) { 
+        msg $chan Sending: $+(",$nopath($script),")
+        .dcc send %m00.dcc.nick $script
+        .notice $m00.msgs(part3)
+        unset %m00.dcc.nick
+      }
+    }
+  }
+}
+
+CTCP *:*:*: {
+  if (($1 == moo) || ($1 == m00)) {
+    if (%m00.trig.ctcp) { 
+      $repeatcheck(ctcp)
+      .ctcpreply $nick $m00.msgs(about) 
+    }
+  }
+}
+
+;=-=-=-=-=-=-=-=-=-=-=;
+;=   Triggers End    =;
+;=-=-=-=-=-=-=-=-=-=-=;
+
+;=-=-=-=-=-=-=-=-=;
+;=    Aliases    =;
+;=-=-=-=-=-=-=-=-=;
+
+alias -l m00.c1 {
+  if ($remove(%m00.c1,b,u,$chr(32)) isnum) {
+    if ($istok(%m00.c1,b,32) && !$istok(%m00.c1,u,32)) { return $+(,$remove(%m00.c1,b,u,$chr(32)),$1,:) }
+    if ($istok(%m00.c1,u,32) && !$istok(%m00.c1,b,32)) { return $+(,$remove(%m00.c1,b,u,$chr(32)),$1,:) }
+    if ($istok(%m00.c1,b,32) && $istok(%m00.c1,u,32)) { return $+(,$remove(%m00.c1,b,u,$chr(32)),$1,:) }
+    else { return $+(,$remove(%m00.c1,b,u,$chr(32)),$1,:) }
+  }
+  else {
+    if ($istok(%m00.c1,b,32) && !$istok(%m00.c1,u,32)) { return $+(,$1,:) }
+    if ($istok(%m00.c1,u,32) && !$istok(%m00.c1,b,32)) { return $+(,$1,:) }
+    if ($istok(%m00.c1,b,32) && $istok(%m00.c1,u,32)) { return $+(,$1,:) }
+    else { unset %m00.c1 | return $+($1,:) }
+  }
+}
+
+alias -l m00.c2 {
+  if ($remove(%m00.c2,b,u,$chr(32)) isnum) {
+    if ($istok(%m00.c2,b,32) && !$istok(%m00.c2,u,32)) { return $+(,$remove(%m00.c2,b,u,$chr(32)),$1,) }
+    if ($istok(%m00.c2,u,32) && !$istok(%m00.c2,b,32)) { return $+(,$remove(%m00.c2,b,u,$chr(32)),$1,) }
+    if ($istok(%m00.c2,b,32) && $istok(%m00.c2,u,32)) { return $+(,$remove(%m00.c2,b,u,$chr(32)),$1,) }
+    else { return $+(,$remove(%m00.c2,b,u,$chr(32)),$1,) }
+  }
+  else {
+    if ($istok(%m00.c2,b,32) && !$istok(%m00.c2,u,32)) { return $+(,$1,) }
+    if ($istok(%m00.c2,u,32) && !$istok(%m00.c2,b,32)) { return $+(,$1,) }
+    if ($istok(%m00.c2,b,32) && $istok(%m00.c2,u,32)) { return $+(,$1,) }
+    else { unset %m00.c2 | return $1 }
+  }
+}
+
+alias -l m00.version {
+  return 15teh m00 m0d v3.1
+}
+
+alias -l m00.prefix {
+  return [m00] $+(",$m00.version,")
+}
+
+alias moo {
+  m00 $1-
+}
+
+alias -l m00.defaults {
+  if ($1 == load) {
+    set %m00.output os cpu ram hdd gfx sound net up
+    set %m00.c1 b
+    set %m00.trig.m00 on
+    set %m00.trig.uptime on
+    set %m00.trig.dcc on
+    set %m00.trig.ctcp on
+    unset %m00.c2
+  }
+  if ($1 == restore) {
+    if (%m00.output == os cpu ram hdd gfx sound net up) && (%m00.c1 == b) && (%m00.c2 == $null) { echo -a $m00.prefix Display Output is already set to Default. }
+    else {
+      set %m00.output os cpu ram hdd gfx sound net up
+      set %m00.c1 b
+      unset %m00.c2
+      echo -a $m00.prefix Default Display Output settings restored.
+    }
+  }
+}
+
+alias m00 {
+  if (%m00.output) {
+    if ($1) {
+      var %m00stat = $1
+      if ($m00.stat.alls(%m00stat)) {
+        if ($active == Status Window) { echo -a [m00] $m00.combine(%m00stat) }
+        else {
+          if ($chan) { msg $chan $m00.combine(%m00stat) }
+          else { say $m00.combine(%m00stat) } 
+        }
+      }
+      elseif ($1 == echo) {
+        if ($2) {
+          var %m00stat = $2
+          if ($m00.stat.alls(%m00stat)) { echo -a [m00] $m00.combine(%m00stat) }
+          else { echo -a [m00] Unknown Command. }
+        }
+        else { echo -a $m00.sysinfo }
+      }
+      else { echo -a [m00] (15ERROR) Lookup Error or Unknown Command. }
+    }
+    else  { 
+      if ($chan) { msg $chan $m00.sysinfo }
+      else { say $m00.sysinfo }
+    }
+  }
+  else { echo -a $m00.msgs(output) }
+}
+
+alias -l m00.msgs {
+  if ($1 == output) { return $m00.prefix Nothing has been set for the System Infomation Display. Use the menu to configure your Output Display. }
+  if ($1 == m00) { .timerflood1 1 2 echo -a $m00.prefix The !m00 tigger was disabled due to an attempted flood by $nick at: $time(h:nn:sstt) on: $date(dddd mmm. dd yyyy) $+ . }
+  if ($1 == uptime) { .timerflood2 1 2 echo -a $m00.prefix The !uptime tigger was disabled due to an attempted flood by $nick at: $time(h:nn:sstt) on: $date(dddd mmm. dd yyyy) $+ . }
+  if ($1 == dcc) { .timerflood3 1 2 echo -a $m00.prefix The !getm00 tigger was disabled due to an attempted flood by $nick at: $time(h:nn:sstt) on: $date(dddd mmm. dd yyyy) $+ . | unset %m00.dcc.nick }
+  if ($1 == ctcp) { .timerflood4 1 2 echo -a $m00.prefix The CTCP m00 Reply was disabled due to an attempted flood by $nick at: $time(h:nn:sstt) on: $date(dddd mmm. dd yyyy) $+ . } 
+  if ($1 == about) { return $+(",$m00.version,") By: 15CastorTroy Original Code By: 15HM2K }
+  if ($2 == chan) { return $+(-,$1) is Disabled on $+($chan,-) Attempted use by $nick at: $time(h:nn:sstt) on: $date(dddd mmm. dd yyyy) $+ . }
+  if (%m00.dcc.nick) {
+    if ($1 == part1) { Return $+(%m00.dcc.nick,$chr(44)) do u want a copy of $+(",$m00.version,?") (If yes, say "yes/y $+($me,") within the next 2 mins. (Before somebody else asks. ;P)) }
+    if ($1 == part2) { Return $+(%m00.dcc.nick,$chr(44)) you have already requested $+(",$m00.version,.") (Say "yes/y $+($me,") to receive it. (Before somebody else asks. ;P)) }
+    if ($1 == part3) { Return %m00.dcc.nick [m00] Once the DCC send is done, to load type: "/load -rs $+($nopath($script),") }
+  }
+}
+
+alias -l m00.name {
+  if ($1 == opsys) { return Operating System }
+  if ($1 == up) { return Uptime }
+  if ($1 == uprec) { return Record Uptime }
+  if ($1 == cpu) { return Processor }
+  if ($1 == gfx) { return Video }
+  if ($1 == sound) { return Sound Card }
+  if ($1 == resall) { return Resolution }
+  if ($1 == ram) { return Memory }
+  if ($1 == rambar) { return Memory Bar }
+  if ($1 == hdd) { return $m00.name.hdd(drives) }
+  if ($1 == hddused) { return Used HD Space }
+  if ($1 == hddsize) { return Total HD Space }
+  if ($1 == hddfree) { return Free HD Space }
+  if ($1 == hddlabels) { return $m00.name.hdd(labels) }
+  if ($1 == hddlulz) { return Free HD Space }
+  if ($1 == net) { return Network Connection }
+  if ($1 == name) { return PC Name }
+  if ($1 == descript) { return PC Description }
+  if ($1 == org) { return PC Organization }
+  if ($1 == useracc) { return PC Account Type }
+  if ($1 == user) { return PC User }
+  if ($1 == users) { return PC User Accounts }
+  if ($1 == owner) { return PC Owner }
+  if ($1 == stype) { return PC System Type }
+  if ($1 == domain) { return PC Domain }
+  if ($1 == opsystitle) { return Operating System }
+  if ($1 == opsyssp) { return OS Service Pack }
+  if ($1 == opsysver) { return OS Version }
+  if ($1 == opssysinstall) { return OS Install Date }
+  if ($1 == opsysbuild) { return OS Build }
+  if ($1 == opsysproc) { return Processes Running }
+  if ($1 == opsysserial) { return OS Serial Number }
+  if ($1 == opsysdrive) { return OS Drive }
+  if ($1 == cpuname) { return Processor Name }
+  if ($1 == cpuspeed) { return Processor Clock Speed }
+  if ($1 == cpuload) { return Processor Load }
+  if ($1 == cputotal) { return Processor Cores }
+  if ($1 == cpuarch) { return Processor Architecture }
+  if ($1 == cpumanu) { return Processor Manufacturer }
+  if ($1 == cpusocket) { return Processor Socket Type }
+  if ($1 == cpul2) { return Processor L2 Cache }
+  if ($1 == cpuvolt) { return Processor Voltage }
+  if ($1 == gfxmake) { return Video Card Manufacturer }
+  if ($1 == gfxproc) { return Video Card Model }
+  if ($1 == gfxram) { return Video Card Memory }
+  if ($1 == gfxdinstall) { return Video Card Driver Date }
+  if ($1 == gfxdver) { return Video Card Driver Version }
+  if ($1 == gfxrate) { return Video Card Max Refresh Rate }
+  if ($1 == montype) { return Monitor Type }
+  if ($1 == monid) { return Current Monitor ID }
+  if ($1 == monmode) { return Monitor Video Mode }
+  if ($1 == res) { return Monitor Resolution }
+  if ($1 == resbit) { return Monitor Color Depth }
+  if ($1 == resrate) { return Monitor Refresh Rate }
+  if ($1 == rammax) { return Total Memory }
+  if ($1 == ramfree) { return Total Memory Free }
+  if ($1 == ramused) { return Total Memory Used }
+  if ($1 == netname) { return Network Adapter }
+  if ($1 == netmanu) { return Network Adapter Manufacturer }
+  if ($1 == nettype) { return Connection Type }
+  if ($1 == netkind) { return Network Adapter Type }
+  if ($1 == netspeed) { return Network Speed }
+  if ($1 == netin) { return Downloaded }
+  if ($1 == netout) { return Uploaded }
+  if ($1 == nettotal) { return Total Bytes Transfered }
+  if ($1 == packsin) { return Packets Received }
+  if ($1 == packsout) { return Packets Sent }
+  if ($1 == packstotal) { return Total Packets Transfered }
+  if ($1 == soundtype) { return Sound Card }
+  if ($1 == soundmanu) { return Sound Card Manufacturer }
+  if ($1 == mobo) { return Motherboard }
+  if ($1 == moboname) { return MB Model }
+  if ($1 == mobomanu) { return MB Manufacturer }
+  if ($1 == mobover) { return MB Version }
+  if ($1 == 1394) { return 1394 Controller }
+  if ($1 == ide) { return IDE Controller }
+  if ($1 == usb) { return USB Controller }
+  if ($1 == bios) { return BIOS }
+  if ($1 == biosver) { return BIOS Version }
+  if ($1 == biosmanu) { return BIOS Manufacturer }
+  if ($1 == bioslang) { return BIOS Language }
+  if ($1 == cd) { return Optical Drive }
+  if ($1 == cdname) { return Optical Drive Model }
+  if ($1 == cdkind) { return Optical Drive Type }
+  if ($1 == cddrive) { return Optical Drive Root }
+  if ($1 == pfile) { return Paging File }
+  if ($1 == pfilename) { return PageFile Location }
+  if ($1 == pfilemax) { return PageFile Size } 
+  if ($1 == pfilefree) { return PageFile Free } 
+  if ($1 == pfileused) { return PageFile Used } 
+  if ($1 == pfilepeak) { return PageFile Peak }  
+  if ($1 == mservers) { return Networks Connected To }
+  if ($1 == mchans) { return Channels In }
+  if ($1 == moper) { return Networks Opered On }
+  if ($1 == mup) { return mIRC Uptime }
+  if ($1 == muprec) { return Record mIRC Uptime }
+}
+
+alias -l m00.sysname {
+  if ($1 == opsys) { return OS }
+  if ($1 == cpu) { return CPU }
+  if ($1 == ram) { return RAM }
+  if ($1 == hdd) { return HDD }
+  if ($1 == gfx) { return GFX }
+  if ($1 == sound) { return SOUND }
+  if ($1 == net) { return NET }
+  if ($1 == up) { return UP }
+}
+
+alias -l m00.name.hdd {
+  var %i = 1 
+  while (%i <= $disk(0)) { 
+    if ($disk(%i).type == fixed) var %totdisc = %i
+    inc %i 
+  }
+  if ($1 == drives) { return $iif(%totdisc > 1,Hard Drives,Hard Drive) }
+  if ($1 == labels) { return $iif(%totdisc > 1,Hard Drive Labels,Hard Drive Label) }
+}
+
+alias -l m00.sysinfo {
+  if ($m00.stats(status)) {
+    var %m00.sinfo.os = $m00.c1($m00.sysname(opsys)) $m00.c2($m00.stats(opsystitle) $m00.stats(ossp))
+    var %m00.sinfo.cpu = $m00.c1($m00.sysname(cpu)) $m00.c2($m00.stats(cpuname))
+    var %m00.sinfo.ram = $m00.c1($m00.sysname(ram)) $m00.c2(Used: $m00.ram(ramused))
+    var %m00.sinfo.hdd = $m00.c1($m00.sysname(hdd)) $m00.c2(Free: $m00.stats(hddfree))
+    var %m00.sinfo.gfx = $m00.c1($m00.sysname(gfx)) $m00.c2($m00.stat.alls(gfx))
+    var %m00.sinfo.sound = $m00.c1($m00.sysname(sound)) $m00.c2($m00.stat.alls(sound))
+    var %m00.sinfo.net = $m00.c1($m00.sysname(net)) $m00.c2($m00.stats(netname) $+($chr(40),$m00.stats(netspeed),$chr(41)))
+    var %m00.sinfo.up = $m00.c1($m00.sysname(up)) $m00.c2($m00.up(up))
+    return $iif($istok(%m00.output,opsys,32),%m00.sinfo.opsys) $iif($istok(%m00.output,cpu,32),%m00.sinfo.cpu) $iif($istok(%m00.output,ram,32),%m00.sinfo.ram) $iif($istok(%m00.output,hdd,32),%m00.sinfo.hdd) $iif($istok(%m00.output,gfx,32),%m00.sinfo.gfx) $iif($istok(%m00.output,sound,32),%m00.sinfo.sound) $iif($istok(%m00.output,net,32),%m00.sinfo.net) $iif($istok(%m00.output,up,32),%m00.sinfo.up)
+  }
+  else { echo -a [m00] Lookup Error. Try Again. }
+}
+
+alias -l m00.combine {
+  return $m00.c1($m00.name($1)) $m00.c2($m00.stat.alls($1))
+}
+
+alias -l m00.stat.alls {
+  if ($1 == opsys) { return $m00.stats(opsystitle) $+($chr(40),Build: $m00.stats(opsysbuild),$chr(44)) Version: $+($m00.stats(opsysver),$chr(41)) $+($m00.stats(ossp),$chr(44)) Installed: $m00.stats(opsysinstall) }
+  if ($1 == cpu) { return $+($m00.stats(cpuname),$chr(44)) $remove($gettok($m00.stats(cpuspeed),2,32),$chr(40),$chr(41)) L2: $m00.stats(cpul2) $m00.stats(cpuload) }
+  if ($1 == ram) { return $m00.ram($1) }
+  if ($1 == gfx) { return $m00.stats(gfxmake) $m00.stats(gfxproc) $m00.stats(gfxram) $+($chr(40),$m00.stats(res) $m00.stats(resbit) $m00.stats(resrate),$chr(41)) }
+  if ($1 == sound) { return $+($m00.stats(soundtype),$chr(44)) $m00.stats(soundmanu) }
+  if ($1 == resall) { return $+($chr(40),$m00.stats(res) $m00.stats(resbit) $m00.stats(resrate),$chr(41)) } 
+  if ($1 == net) { return $+($m00.stats(netname),$chr(44)) $m00.stats(nettype) $+($chr(40),$m00.stats(netspeed),$chr(41)) [In: $m00.stats(netin) / Out: $+($m00.stats(netout),]) }
+  if ($1 == mobo) { return $+($m00.stats(moboname),$chr(44)) $m00.stats(mobomanu) $+($chr(40),$m00.stats(mobover),$chr(41)) }
+  if ($1 == bios) { return $+($m00.stats(biosver),$chr(44)) $m00.stats(biosmanu) $+($chr(40),$m00.stats(bioslang),$chr(41)) }
+  if ($1 == cd) { return $+($m00.stats(cddrive),$chr(92)) $m00.stats(cdname) $+($chr(40),$m00.stats(cdkind),$chr(41)) }
+  if ($1 == pfile) { return $m00.pfile($1) }
+  else { return $m00.stats($1) }
+}
+
+alias -l m00.stats {
+  if ($1 == status) { return $wmiget(Win32_OperatingSystem).Status }
+  if ($1 == name) { return $wmiget(Win32_ComputerSystem).Caption }
+  if ($1 == descript) { return $wmiget(Win32_OperatingSystem).Description }
+  if ($1 == org) { return $wmiget(Win32_OperatingSystem).Organization }
+  if ($1 == user) { return $gettok($wmiget(Win32_ComputerSystem).UserName,2,92) }
+  if ($1 == users) { return $wmiget(Win32_OperatingSystem).NumberOfUsers }
+  if ($1 == useracc) { return $wmiget(Win32_Account).Name }
+  if ($1 == owner) { return $wmiget(Win32_ComputerSystem).PrimaryOwnerName }
+  if ($1 == stype) { return $wmiget(Win32_ComputerSystem).SystemType }
+  if ($1 == domain) { return $wmiget(Win32_ComputerSystem).Domain }
+  if ($1 == opsystitle) { return $wmiget(Win32_OperatingSystem).Caption }
+  if ($1 == opsysp) { return $wmiget(Win32_OperatingSystem).CSDVersion }
+  if ($1 == opsysver) { return $wmiget(Win32_OperatingSystem).Version }
+  if ($1 == opsysinstall) { return $asctime($ctime($iif($wmiget(Win32_OperatingSystem).InstallDate,$+($mid($ifmatch,7,2),/,$mid($ifmatch,5,2),/,$mid($ifmatch,1,4)) $+($mid($ifmatch,9,2),:,$mid($ifmatch,11,2),:,$mid($ifmatch,13,2)))),h:nn:sstt ddd. mmmm d yyyy) }
+  if ($1 == opsysbuild) { return $+($chr(35),$wmiget(Win32_OperatingSystem).BuildNumber) }
+  if ($1 == opsysproc) { return $wmiget(Win32_OperatingSystem).NumberOfProcesses }
+  if ($1 == opsysserial) { return $wmiget(Win32_OperatingSystem).SerialNumber }
+  if ($1 == opsysdrive) { return $wmiget(Win32_OperatingSystem).SystemDrive }
+  if ($1 == cpuname) { return $wmiget(Win32_Processor).Name }
+  if ($1 == cpuspeed) { return $+($round($calc($wmiget(Win32_Processor).CurrentClockSpeed / 1000),2),GHz) $+($chr(40),$wmiget(Win32_Processor).CurrentClockSpeed,MHz,$chr(41)) }
+  if ($1 == cpuload) { return $+($chr(40),$wmiget(Win32_Processor).LoadPercentage,% Load,$chr(41)) }
+  if ($1 == cputotal) { return $iif($wmiget(Win32_Processor).NumberOfCores,$wmiget(Win32_Processor).NumberOfCores,$wmiget(Win32_ComputerSystem).NumberOfProcessors) }
+  if ($1 == cpuarch) { return $wmiget(Win32_Processor).Caption }
+  if ($1 == cpumanu) { return $wmiget(Win32_Processor).Manufacturer }
+  if ($1 == cpusocket) { return $wmiget(Win32_Processor).SocketDesignation }
+  if ($1 == cpul2) { return $bytes($calc($wmiget(Win32_Processor).L2CacheSize * 1024)).suf }
+  if ($1 == cpuvolt) { return $+($calc($wmiget(Win32_Processor).CurrentVoltage / 10),v) }
+  if ($1 == gfxmake) { return $wmiget(Win32_VideoController).AdapterCompatibility }
+  if ($1 == gfxproc) { return $wmiget(Win32_VideoController).VideoProcessor }
+  if ($1 == gfxram) { return $bytes($wmiget(Win32_VideoController).AdapterRam,3).suf }
+  if ($1 == gfxdinstall) { return $asctime($ctime($iif($wmiget(Win32_VideoController).DriverDate,$+($mid($ifmatch,7,2),/,$mid($ifmatch,5,2),/,$mid($ifmatch,1,4)) $+($mid($ifmatch,9,2),:,$mid($ifmatch,11,2),:,$mid($ifmatch,13,2)))),h:nn:sstt ddd. mmmm d yyyy) }
+  if ($1 == gfxdver) { return $wmiget(Win32_VideoController).DriverVersion }
+  if ($1 == gfxrate) { return $+($wmiget(Win32_VideoController).MaxRefreshRate,Hz) }
+  if ($1 == soundtype) { return $wmiget(Win32_SoundDevice).Name }
+  if ($1 == soundmanu) { return $wmiget(Win32_SoundDevice).Manufacturer }
+  if ($1 == up) { return $m00.up(up) }
+  if ($1 == uprec) { return $m00.up(uprec) }
+  if ($1 == res) { return $+($wmiget(Win32_VideoController).currenthorizontalresolution,x,$wmiget(Win32_VideoController).currentverticalresolution) }
+  if ($1 == resbit) { return $+($wmiget(Win32_VideoController).currentbitsperpixel,bit) }
+  if ($1 == resrate) { return $+($wmiget(Win32_VideoController).currentrefreshrate,Hz) }
+  if ($1 == montype) { return $wmiget(Win32_DesktopMonitor).MonitorType }
+  if ($1 == monid) { return $wmiget(Win32_DesktopMonitor).DeviceID }
+  if ($1 == monmode) { return $wmiget(Win32_DisplayControllerConfiguration).VideoMode }
+  if ($1 == rammax) { return $+($round($calc($wmiget(Win32_OperatingSystem).TotalVisibleMemorySize / 1024),1),MB) }
+  if ($1 == ramfree) { return $+($round($calc($wmiget(Win32_OperatingSystem).FreePhysicalMemory / 1024), 1),MB) }
+  if ($1 == ramused) { return $m00.ram($1) }
+  if ($1 == rambar) { return $m00.ram($1) }
+  if ($1 == netname) { return $wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).Name }
+  if ($1 == netmanu) { return $wmiget(Win32_NetworkAdapter).Manufacturer }
+  if ($1 == nettype) { return $wmiget(Win32_NetworkAdapter).AdapterType }
+  if ($1 == netkind) { return $wmiget(Win32_NetworkAdapterConfiguration).Description }
+  if ($1 == netspeed) { return $+($calc($wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).CurrentBandwidth / 1000000),MB/s) }
+  if ($1 == netin) { return $bytes($wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).BytesReceivedPersec).suf }
+  if ($1 == netout) { return $bytes($wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).BytesSentPersec).suf }
+  if ($1 == nettotal) { return $bytes($wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).BytesTotalPerSec).suf }
+  if ($1 == packsin) { return $wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).PacketsReceivedPersec }
+  if ($1 == packsout) { return $wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).PacketsSentPersec }
+  if ($1 == packstotal) { return $wmiget(Win32_PerfRawData_Tcpip_NetworkInterface).PacketsPerSec }
+  if ($1 == hdd) { return $m00.hdd($1) }
+  if ($1 == hdd2) { return $m00.hdd($1) }
+  if ($1 == hddused) { return $m00.hdd($1) }
+  if ($1 == hddsize) { return $m00.hdd($1) }
+  if ($1 == hddfree) { return $m00.hdd($1) }
+  if ($1 == hddlabels) { return $m00.hdd($1) }
+  if ($1 == hddlulz) { return $m00.hdd($1) }
+  if ($1 == moboname) { return $wmiget(Win32_BaseBoard).Product }
+  if ($1 == mobomanu) { return $wmiget(Win32_BaseBoard).Manufacturer }
+  if ($1 == mobover) { return $wmiget(Win32_BaseBoard).Version }
+  if ($1 == biosver) { return $wmiget(Win32_BIOS).Name }
+  if ($1 == biosmanu) { return $wmiget(Win32_BIOS).Manufacturer }
+  if ($1 == bioslang) { return $wmiget(Win32_BIOS).CurrentLanguage }
+  if ($1 == cdname) { return $wmiget(Win32_CDROMDrive).Name }
+  if ($1 == cdkind) { return $wmiget(Win32_CDROMDrive).Description }
+  if ($1 == cddrive) { return $wmiget(Win32_CDROMDrive).Drive }
+  if ($1 == pfilename) { return $wmiget(Win32_PageFileUsage).name }
+  if ($1 == pfilemax) { return $m00.pfile($1) } 
+  if ($1 == pfilefree) { return $m00.pfile($1) } 
+  if ($1 == pfileused) { return $m00.pfile($1) } 
+  if ($1 == pfilepeak) { return $m00.pfile($1) }
+  if ($1 == 1394) { return $wmiget(Win32_1394Controller).Name }
+  if ($1 == ide) { return $wmiget(Win32_IDEController).Caption2 }
+  if ($1 == usb) { return $wmiget(Win32_USBController).Name } 
+  if ($1 == mservers) { return $scon(0) }
+  if ($1 == mchans) { return $m00.mirc(chans) }
+  if ($1 == moper) { return $m00.mirc(oper) } 
+  if ($1 == mup) { return $m00.mup(mup) }
+  if ($1 == muprec) { return $m00.mup(muprec) }
+}
+
+;#############################################################################################################################;
+;---These-next-3-aliases-are-the-only-things-I-didn't-completely-recode-or-change-too-much.-Props-to-HM2K-on-the-nice-code!---;
+;#############################################################################################################################;
+
+alias -l moorambar {
+  if ($len($1) < 990) {
+    var %moo.rb.size = 10
+    var %moo.rb.used = $round($calc($1 / 100 * %moo.rb.size),0)
+    var %moo.rb.unused = $round($calc(%moo.rb.size - %moo.rb.used),0)
+    var %moo.rb.usedstr = $str(|,%moo.rb.used)
+    var %moo.rb.unusedstr = $str(-,%moo.rb.unused)
+    if ((%moo.rb.usedstr) && (%moo.rb.unusedstr)) {
+      if ($istok(%m00.c2,b,32) && !$istok(%m00.c2,u,32)) { return $+($chr(91),,%moo.rb.usedstr,,$m00.c2(%moo.rb.unusedstr),$m00.c2($chr(93)),) }
+      if ($istok(%m00.c2,u,32) && !$istok(%m00.c2,b,32)) { return $+($chr(91),,%moo.rb.usedstr,,$m00.c2(%moo.rb.unusedstr),$m00.c2($chr(93)),) }
+      if ($istok(%m00.c2,u,32) && $istok(%m00.c2,b,32)) { return $+($chr(91),,%moo.rb.usedstr,,$m00.c2(%moo.rb.unusedstr),$m00.c2($chr(93)),) }
+      else { return $+($chr(91),,%moo.rb.usedstr,,$m00.c2(%moo.rb.unusedstr),$m00.c2($chr(93))) }
+    }
+  }
+}
+
+alias -l wmiget {
+  var %com = cominfo, %com2 = cominfo2, %com3 = cominfo3
+  if ($com(%com)) { .comclose %com }
+  if ($com(%com2)) { .comclose %com2 }
+  if ($com(%com3)) { .comclose %com3 }
+  .comopen %com WbemScripting.SWbemLocator
+  var %x = $com(%com,ConnectServer,3,dispatch* %com2), %x = $com(%com2,ExecQuery,3,bstr*,select $prop from $1,dispatch* %com3), %x = $comval(%com3,$iif($2,$2,1),$prop)
+  if ($com(%com)) { .comclose %com }
+  if ($com(%com2)) { .comclose %com2 }
+  if ($com(%com3)) { .comclose %com3 }
+  return %x
+}
+
+alias -l repeatcheck {
+  var %rep.lim = 3
+  var %rep.t.lim = 25
+  var %rep.t.expr = 10
+  if (%rep.lockusr- [ $+ [ $nick ] ]) { 
+    echo [m00] $ifmatch
+    haltdef 
+  }
+  inc $+(-u,%rep.t.lim,$chr(32),%,rep-,$nick,.,$len($strip($1-)),.,$hash($strip($1-),32)) 1
+  if (%rep- [ $+ [ $nick ] $+ . $+ [ $len($strip($1-)) ] $+ . $+ [ $hash($strip($1-),32) ] ] == %rep.lim) {
+    if ($+(%m00.trig.,$1)) { unset $+(%m00.trig.,$1) | $m00.msgs($1) }
+    .set $+(-u,%rep.t.expr,$chr(32),%,rep.lockusr-,$nick) 1
+  }
+}
+
+;#############################################################################################################################;
+
+alias -l m00.hdd {
+  var %i = 1
+  while (%i <= $disk(0)) { 
+    if ($disk(%i).type == fixed) var %hddall = %hddall $+($chr(91),$disk(%i).path) $+($bytes($disk(%i).free).suf,/,$bytes($disk(%i).size).suf,$chr(93))
+    if ($disk(%i).type == fixed) var %hddall2 = %hddall2 $disk(%i).path $+($bytes($disk(%i).free).suf,/,$bytes($disk(%i).size).suf,$+($chr(44),$chr(32)))
+    if ($disk(%i).type == fixed) var %labels = %labels $+($chr(91),$disk(%i).path,$disk(%i).label,$chr(93))
+    if ($disk(%i).type == fixed) var %size = %size $disk(%i).size 
+    if ($disk(%i).type == fixed) var %free = %free $disk(%i).free
+    inc %i 
+  }
+  var %hddall2b = $left(%hddall2,-1)
+  var %hddtsize = $calc($replace(%size,$chr(32),$+($chr(32),$chr(43),$chr(32))))
+  var %hddtfree = $calc($replace(%free,$chr(32),$+($chr(32),$chr(43),$chr(32))))
+  var %hddtused = $calc(%hddtsize - %hddtfree)
+  if ($1 == hdd) { return %hddall }
+  if ($1 == hdd2) { return %hddall2b }
+  if ($1 == hddused) { return [All:\ $+($bytes(%hddtused).suf,]) }
+  if ($1 == hddsize) { return [All:\ $+($bytes(%hddtsize).suf,]) }
+  if ($1 == hddfree) { return [All:\ $+($bytes(%hddtfree).suf,/,$bytes(%hddtsize).suf,]) }
+  if ($1 == hddlabels) { return %labels }
+  if ($1 == hddlulz) { return [All:\ $+($bytes(%hddtfree,%_m00.hdd.lulz).suf,/,$bytes(%hddtsize,%_m00.hdd.lulz).suf,]) | unset %_m00.hdd.lulz }
+}
+
+alias -l m00.ram {
+  var %m00.rammax = $round($calc($wmiget(Win32_OperatingSystem).TotalVisibleMemorySize / 1024),1)
+  var %m00.ramuse = $round($calc($wmiget(Win32_OperatingSystem).FreePhysicalMemory / 1024), 1)
+  var %m00.rpercent = $+($chr(40),$round($calc((%m00.rammax - %m00.ramuse) / %m00.rammax * 100),2),%,$chr(41))
+  var %m00.stat.rbar = $moorambar($round($calc((%m00.rammax - %m00.ramuse) / %m00.rammax * 100),2))
+  var %m00.stat.rused = $+($round($calc(%m00.rammax - %m00.ramuse),0),/,%m00.rammax,MB)
+  if ($1 == rambar) { return %m00.rpercent %m00.stat.rbar }
+  if ($1 == ramused) { return %m00.stat.rused }
+  if ($1 == ram) { return Used: %m00.stat.rused %m00.rpercent %m00.stat.rbar }
+}
+
+alias -l m00.pfile {
+  var %m00.pfile.max = $calc($wmiget(Win32_PageFileUsage).AllocatedBaseSize * 1048576)
+  var %m00.pfile.used = $calc($wmiget(Win32_PageFileUsage).CurrentUsage * 1048576)
+  var %m00.pfile.free = $calc(%m00.pfile.max - %m00.pfile.used)
+  var %m00.pfile.peak = $calc($wmiget(Win32_PageFileUsage).PeakUsage * 1048576)
+  var %m00.pfile.pused = $+($bytes(%m00.pfile.used,3).suf,/,$bytes(%m00.pfile.max,3).suf)
+  if ($1 == pfileused) { return %m00.pfile.pused }
+  if ($1 == pfilefree) { return $bytes(%m00.pfile.free,3).suf }
+  if ($1 == pfilemax) { return $bytes(%m00.pfile.max,3).suf }
+  if ($1 == pfilepeak) { return $bytes(%m00.pfile.peak,3).suf }
+  if ($1 == pfile) { return $+($m00.stats(pfilename),$chr(44)) Used: %m00.pfile.pused Peak: $bytes(%m00.pfile.peak,3).suf }
+}
+
+alias -l m00.up {
+  m00.upchk
+  var %m00.stat.up = $uptime(system,1)
+  var %m00.upr.part1 = $duration($gettok(%m00.uprec,1,32))
+  var %m00.upr.part2 = $gettok(%m00.uprec,2-,32)
+  if ($1 == up) { return %m00.stat.up }
+  if ($1 == uprec) { return $+(%m00.upr.part1,$chr(44)) %m00.upr.part2 }
+  if ($1 == uprec2) { return %m00.upr.part1 }
+}
+
+alias -l m00.upchk {
+  var %m00.stat.tupr = $uptime(system,3)
+  var %m00.stat.upr = $gettok(%m00.uprec,1,32)
+  if (%m00.uprec) {
+    if (%m00.stat.tupr >= %m00.stat.upr) { set %m00.uprec %m00.stat.tupr Set On: $+($chr(40),$date(ddd. mmmm d yyyy),$chr(41)) }
+  }
+  else { set %m00.uprec %m00.stat.tupr Set On: $+($chr(40),$date(ddd. mmmm d yyyy),$chr(41)) }
+}
+
+alias -l m00.mup {
+  m00.mupchk
+  var %m00.stat.mup = $uptime(mirc,1)
+  var %m00.mupr.part1 = $duration($gettok(%m00.muprec,1,32))
+  var %m00.mupr.part2 = $gettok(%m00.muprec,2-,32)
+  if ($1 == mup) { return %m00.stat.mup }
+  if ($1 == muprec) { return $+(%m00.mupr.part1,$chr(44)) %m00.mupr.part2 }
+}
+
+alias -l m00.mupchk {
+  var %m00.stat.tmupr = $uptime(mirc,3)
+  var %m00.stat.mupr = $gettok(%m00.muprec,1,32)
+  if (%m00.muprec) {
+    if (%m00.stat.tmupr >= %m00.stat.mupr) { set %m00.muprec %m00.stat.tmupr Set On: $+($chr(40),$date(ddd. mmmm d yyyy),$chr(41)) }
+  }
+  else { set %m00.muprec %m00.stat.tmupr Set On: $+($chr(40),$date(ddd. mmmm d yyyy),$chr(41)) }
+}
+
+alias -l m00.mirc {
+  if ($1 == chans) {
+    var %k = 1
+    while (%k <= $scon(0)) {
+      scon %k
+      var %t = $iif(%t,$calc(%t + $chan(0)),$chan(0))
+      inc %k
+    }
+    return %t
+  }
+  if ($1 == oper) {
+    var %k = 1
+    while (%k <= $scon(0)) {
+      scon %k
+      if (o isincs $usermode) {
+        if (%t) { inc %t }
+        else { var %t = 1 }
+      }
+      inc %k
+    }
+    return %t
+  }
+}
+
+alias -l m00.trig.m00 {
+  if ($1 == on) {
+    if (%m00.trig.m00) { echo -a $m00.prefix The !m00 tigger is already ON. }
+    else { set %m00.trig.m00 on | echo -a $m00.prefix The !m00 tigger is now ON. }
+  }
+  elseif ($1 == off) {
+    if (%m00.trig.m00) { unset %m00.trig.m00 | echo -a $m00.prefix The !m00 tigger is now OFF. }
+    else { echo -a $m00.prefix The !m00 tigger is already OFF. }
+  }
+}
+
+alias -l m00.trig.uptime {
+  if ($1 == on) {
+    if (%m00.trig.uptime) { echo -a $m00.prefix The !uptime tigger is already ON. }
+    else { set %m00.trig.uptime on | echo -a $m00.prefix The !uptime tigger is now ON. }
+  }
+  elseif ($1 == off) {
+    if (%m00.trig.uptime) { unset %m00.trig.uptime | echo -a $m00.prefix The !uptime tigger is now OFF. }
+    else { echo -a $m00.prefix The !uptime tigger is already OFF. }
+  }
+}
+
+alias -l m00.trig.dcc {
+  if ($1 == on) {
+    if (%m00.trig.dcc) { echo -a $m00.prefix The !getm00 tigger is already ON. }
+    else { set %m00.trig.dcc on | echo -a $m00.prefix The !getm00 tigger is now ON. }
+  }
+  elseif ($1 == off) {
+    if (%m00.trig.dcc) { unset %m00.trig.dcc | echo -a $m00.prefix The !getm00 tigger is now OFF. }
+    else { echo -a $m00.prefix The !getm00 tigger is already OFF. }
+  }
+}
+
+alias -l m00.trig.ctcp {
+  if ($1 == on) {
+    if (%m00.trig.ctcp) { echo -a $m00.prefix CTCP Reply is already ON. }
+    else { set %m00.trig.ctcp on | echo -a $m00.prefix CTCP Reply is now ON. }
+  }
+  elseif ($1 == off) {
+    if (%m00.trig.ctcp) { unset %m00.trig.ctcp | echo -a $m00.prefix CTCP Reply is now OFF. }
+    else { echo -a $m00.prefix CTCP Reply is already OFF. }
+  }
+}
+
+alias -l m00.unload {
+  if ($input(Are you sure you want to unload $+($crlf,$strip($m00.version),?),y)) { .unload -rs $script }
+  else { echo -a $m00.prefix Script was NOT unloaded. }
+}
+
+alias -l m00.trig.all {
+  if ($1 == on) {
+    if (%m00.trig.m00) && (%m00.trig.uptime) && (%m00.trig.dcc) && (%m00.trig.ctcp) { echo -a $m00.prefix All Triggers are already On. }
+    else {
+      set %m00.trig.m00 on
+      set %m00.trig.uptime on
+      set %m00.trig.dcc on
+      set %m00.trig.ctcp on
+      echo -a $m00.prefix All Triggers are now On.
+    }
+  }
+  if ($1 == off) {
+    if (%m00.trig.m00) || (%m00.trig.uptime) || (%m00.trig.dcc) || (%m00.trig.ctcp) {
+      unset %m00.trig.m00
+      unset %m00.trig.uptime
+      unset %m00.trig.dcc
+      unset %m00.trig.ctcp
+      echo -a $m00.prefix All Triggers are now Off.
+    }
+    else { echo -a $m00.prefix All Triggers are already Off. }
+  }
+}
+
+alias -l m00.disabled {
+  if (%m00.disabled) { echo -a $m00.prefix Channels with the m00 triggers disabled: $replace(%m00.disabled,$chr(32),$+($chr(44),$chr(32))) }
+  else { echo -a $m00.prefix There are no channels the m00 triggers disabled. }
+}
+
+alias -l m00.addcchan {
+  if (%m00.disabled) {
+    set %m00.addcchan $chan
+    if ($istok(%m00.disabled,%m00.addcchan,32)) { echo -a $m00.prefix %m00.addcchan is already on the m00 triggers disabled list. | unset %m00.addcchan }
+    else {
+      set %m00.disabled %m00.disabled %m00.addcchan
+      echo -a $m00.prefix %m00.addcchan has been added to the m00 triggers disabled list.
+      unset %m00.addcchan
+      $iif(%m00.disabled == $null,unset %m00.disabled)
+    }
+  }
+  else { set %m00.disabled $chan | echo -a $m00.prefix %m00.disabled has been added to the m00 triggers disabled list. }
+}
+
+alias -l m00.addchans {
+  if (%m00.disabled) {
+    set %m00.addchan $?="Enter any new Channels you want to disabled $crlf $+ the m00 triggers on. (Example: #chan #chan2 #chan3)"
+    if (%m00.addchan != $null) {
+      if ($istok(%m00.disabled,%m00.addchan,32)) { echo -a $m00.prefix %m00.addchan is already on the m00 triggers disabled list. | unset %m00.addchan }
+      else {
+        set %m00.disabled %m00.disabled %m00.addchan
+        echo -a $m00.prefix %m00.addchan has been added to the m00 triggers disabled list.
+        unset %m00.addchan
+        $iif(%m00.disabled == $null,unset %m00.disabled)
+      }
+    }
+    else { unset %m00.addchan | echo -a $m00.prefix No channels were added to the m00 triggers disabled list. }
+  }
+  else {
+    set %m00.disabled $?="Enter all Channels you want the m00 triggers disabled $crlf $+ in, if any. (Example: #chan #chan2 #chan3)"
+    if (%m00.disabled != $null) { echo -a $m00.prefix %m00.disabled has been added to the m00 triggers disabled list. }
+    else { unset %m00.disabled | echo -a $m00.prefix No channels were added to the m00 triggers disabled list. }
+  }
+}
+
+alias -l m00.delcchan {
+  if (%m00.disabled) {
+    set %m00.delcchan $chan
+    if ($istok(%m00.disabled,%m00.delcchan,32)) {
+      m00.delcchanchk
+      echo -a $m00.prefix %m00.delcchan has been removed from the m00 triggers disabled list.
+      unset %m00.delcchan
+      $iif(%m00.disabled == $null,unset %m00.disabled)
+    }
+    else { echo -a $m00.prefix %m00.delchan is not on the m00 triggers disabled list. | unset %m00.delchan }
+  }
+  else { echo -a $m00.prefix There are no channels with the m00 triggers disabled. }
+}
+
+alias -l m00.delcchanchk {
+  if (%m00.delcchan == %m00.disabled) { unset %m00.disabled }
+  else {
+    if (%m00.delcchan == $gettok(%m00.disabled,1,32)) { set %m00.disabled $remove(%m00.disabled,$+(%m00.delcchan,$chr(32))) }
+    else { set %m00.disabled $remove(%m00.disabled,$+($chr(32),%m00.delcchan)) }
+  }
+}
+
+alias -l m00.delchans {
+  if (%m00.disabled) {
+    set %m00.delchan $?="Enter any Channels you want to disable $crlf $+ the m00 triggers on. (Example: #chan #chan2 #chan3)"
+    if (%m00.delchan != $null) {
+      if ($istok(%m00.disabled,%m00.delchan,32)) {
+        m00.delchanschk
+        echo -a $m00.prefix %m00.delchan has been removed from the m00 triggers disabled list.
+        unset %m00.delchan
+        $iif(%m00.disabled == $null,unset %m00.disabled)
+      }
+      else { echo -a $m00.prefix %m00.delchan is not on the m00 triggers disabled list. | unset %m00.delchan }
+    }
+    else { unset %m00.delchan | echo -a $m00.prefix No channels were removed to the m00 triggers disabled list. }
+  }
+  else { echo -a $m00.prefix There are no channels with the m00 triggers disabled. }
+}
+
+alias -l m00.delchanschk {
+  if (%m00.delchan == %m00.disabled) { unset %m00.disabled }
+  else {
+    if (%m00.delchan == $gettok(%m00.disabled,1,32)) { set %m00.disabled $remove(%m00.disabled,$+(%m00.delchan,$chr(32))) }
+    else { set %m00.disabled $remove(%m00.disabled,$+($chr(32),%m00.delchan)) }
+  }
+}
+
+alias -l m00.delallchans {
+  if (%m00.disabled) { unset %m00.disabled | echo -a $m00.prefix All channels have been removed from the m00 triggers disabled list. }
+  else { echo -a $m00.prefix There are no channels with the m00 triggers disabled. }
+}
+
+;=-=-=-=-=-=-=-=-=-=-=;
+;=    Aliases End    =;
+;=-=-=-=-=-=-=-=-=-=-=;
+
+;=-=-=-=-=-=-=;
+;=   Menu    =;
+;=-=-=-=-=-=-=;
+
+menu channel,query {
+  Jedi System and Tools
+  .$strip($m00.version)
+  ..System Information:m00
+  ..-
+  ..Operating System
+  ...All:m00 opsys
+  ...Name:m00 opsystitle
+  ...Service Pack:m00 opsyssp
+  ...Build:m00 opsysbuild
+  ...Version:m00 opsysver
+  ...Serial Number:m00 opsysserial
+  ...Install Date:m00 opsysinstall
+  ...Drive:m00 opsysdrive
+  ...Processes Running:m00 opsysproc
+  ..Processor
+  ...All:m00 cpu
+  ...Name:m00 cpuname
+  ...Manufacturer:m00 cpumanu
+  ...Socket Type:m00 cpusocket
+  ...Architecture:m00 cpuarch
+  ...Speed:m00 cpuspeed
+  ...L2 Cache:m00 cpul2
+  ...Load %:m00 cpuload
+  ...$chr(35) Of Cores:m00 cputotal
+  ...Voltage:m00 cpuvolt
+  ..Memory
+  ...All:m00 ram
+  ...Used Ram:m00 ramused
+  ...Total Ram:m00 rammax
+  ...Free Ram:m00 ramfree
+  ...Ram Bar:m00 rambar
+  ..$m00.name.hdd(drives)
+  ...All:m00 hdd
+  ...Total Used:m00 hddused
+  ...Total Size:m00 hddsize
+  ...Total Free:m00 hddfree
+  ...Drive Labels:m00 hddlabels
+  ...Drive Lulz
+  ....Show Total Free in Bytes:set -u2 %_m00.hdd.lulz b | m00 hddlulz
+  ....Show Total Free in Kilobytes:set -u2 %_m00.hdd.lulz k | m00 hddlulz
+  ....Show Total Free in Megabytes:set -u2 %_m00.hdd.lulz m | m00 hddlulz
+  ....Show Total Free in Terabytes:set -u2 %_m00.hdd.lulz t | m00 hddlulz
+  ..Video
+  ...All:m00 gfx
+  ...Model:m00 gfxproc
+  ...Manufacturer:m00 gfxmake
+  ...Memory:m00 gfxram
+  ...Driver Version:m00 gfxdver
+  ...Driver Date:m00 gfxdinstall
+  ...Max Refresh Rate:m00 gfxrate
+  ...Resolution
+  ....All:m00 resall
+  ....Monitor Resolution:m00 res
+  ....Monitor Color Depth:m00 resbit
+  ....Monitor Refresh Rate:m00 resrate
+  ....Monitor Type:m00 montype
+  ....Monitor ID:m00 monid
+  ....Monitor Video Mode:m00 monmode
+  ..Sound
+  ...All:m00 sound
+  ...Sound Card:m00 soundtype
+  ...Manufacturer:m00 soundmanu
+  ..Motherboard
+  ...All:m00 mobo
+  ...Model:m00 moboname
+  ...Manufacturer:m00 mobomanu
+  ...Version:m00 mobover
+  ..Optical Drive
+  ...All:m00 cd
+  ...Model:m00 cdname
+  ...Type:m00 cdkind
+  ...Root Drive:m00 cddrive
+  ..Bios
+  ...All:m00 bios
+  ...Version:m00 biosver
+  ...Manufacturer:m00 biosmanu
+  ...Language:m00 bioslang
+  ..Internet
+  ...All:m00 net
+  ...Network Adapter:m00 netname
+  ...Network Adapter Type:m00 netkind
+  ...Network Adapter Manufacturer:m00 netmanu
+  ...Network Speed:m00 netspeed
+  ...Network In:m00 netin
+  ...Network Out:m00 netout
+  ...Connection Type:m00 nettype
+  ..Uptime
+  ...System Uptime:m00 up
+  ...Record System Uptime:m00 uprec
+  ...mIRC Uptime:m00 mup
+  ...Record mIRC Uptime:m00 muprec
+  ..PC Information
+  ...Name:m00 name
+  ...Description:m00 descript
+  ...Organization:m00 org
+  ...User:m00 user
+  ...Owner:m00 owner
+  ...Account Type:m00 useracc
+  ...User Accounts:m00 users
+  ...System Type:m00 stype
+  ...Domain:m00 domain
+  ..Other  
+  ...Paging File
+  ....All:m00 pfile
+  ....Location:m00 pfilename
+  ....Size:m00 pfilemax
+  ....Free:m00 pfilefree
+  ....Used:m00 pfileused
+  ....Peak:m00 pfilepeak
+  ...mIRC
+  ....Networks:m00 mservers
+  ....Channels:m00 mchans
+  ....$iif(o isincs $usermode,Oper,$style(2) Oper):m00 moper
+  ...1394 Controller:m00 1394
+  ...IDE Controller:m00 ide
+  ...USB Controller:m00 usb
+  ..-
+  ..Settings
+  ...Output Options
+  ....Configure Output Display:dialog -m m00 m00
+  ....Reset Display to Default:$m00.defaults(restore)
+  ...Triggers 
+  ....!m00 trigger $+($chr(91),$iif(%m00.trig.m00,On,Off),$chr(93))
+  .....Turn On:$m00.trig.m00(on)
+  .....Turn Off:$m00.trig.m00(off)
+  ....!uptime trigger $+($chr(91),$iif(%m00.trig.uptime,On,Off),$chr(93))
+  .....Turn On:$m00.trig.uptime(on)
+  .....Turn Off:$m00.trig.uptime(off)
+  ....!getm00 trigger $+($chr(91),$iif(%m00.trig.dcc,On,Off),$chr(93))
+  .....Turn On:$m00.trig.dcc(on)
+  .....Turn Off:$m00.trig.dcc(off)
+  ....m00 CTCP Reply $+($chr(91),$iif(%m00.trig.ctcp,On,Off),$chr(93)) 
+  .....Turn On:$m00.trig.ctcp(on)
+  .....Turn Off:$m00.trig.ctcp(off)
+  ....Turn On All Triggers:$m00.trig.all(on)
+  ....Turn Off All Triggers:$m00.trig.all(off)
+  ...Disabled Channels
+  ....Show The Disabled Channels List:m00.disabled
+  ....Add $iif($chan,$chan,$+($chr(40),N/A,$chr(41))) to The List:m00.addcchan
+  ....Remove $iif($chan,$chan,$+($chr(40),N/A,$chr(41))) from The List:m00.delcchan
+  ....Add to The Disabled Channels List:m00.addchans
+  ....Remove a Channel from the List:m00.delchans
+  ....Remove ALL Channels from the List:m00.delallchans
+  ...About:describe $active $ms is using: $m00.msgs(about) (To get it, Use: !getm00) 15-_-
+  ...Unload $+(",$strip($m00.version),"):m00.unload
+}
+
+;=-=-=-=-=-=-=-=-=;
+;=   Menu End    =;
+;=-=-=-=-=-=-=-=-=;
+
+;=-=-=-=-=-=-=-=;
+;=   Dialog    =;
+;=-=-=-=-=-=-=-=;
+
+DIALOG m00 {
+  title "m00 Display Options"
+  size -1 -1 206 128
+  option dbu
+  box "System Information Output", 1, 1 1 204 42
+  check "OPSYS", 2, 22 11 21 10
+  check "CPU", 3, 66 11 21 10
+  check "RAM", 4, 112 11 21 10
+  check "HDD", 5, 158 11 21 10
+  check "GFX", 6, 22 26 21 10
+  check "SOUND", 7, 66 26 28 10
+  check "NET", 8, 112 26 21 10
+  check "UPTIME", 9, 158 26 32 10
+  box "Color Output", 10, 1 46 204 67
+  box "Color 1", 11, 3 52 200 30
+  box "Color 2", 12, 3 81 200 30
+  combo 13, 19 63 60 50, drop
+  check "Bold", 14, 112 63 26 10
+  check "Underline", 15, 158 63 37 10
+  combo 16, 19 92 60 50, drop
+  check "Bold", 17, 113 92 26 10
+  check "Underline", 18, 158 92 37 10
+  button "Default", 19, 5 115 30 11
+  button "Save", 20, 136 115 30 11, ok default
+  button "Cancel", 21, 171 115 30 11, cancel
+}
+
+;---Dialog-Aliases---;
+
+alias -l m00.dinit {
+  if ($istok(%m00.output,opsys,32)) { did -c m00 2 | set %m00.output.temp.opsys on }
+  else { did -u m00 2 | set %m00.output.temp.opsys off }
+  if ($istok(%m00.output,cpu,32)) { did -c m00 3 | set %m00.output.temp.cpu on }
+  else { did -u m00 3 | set %m00.output.temp.cpu off }
+  if ($istok(%m00.output,ram,32)) { did -c m00 4 | set %m00.output.temp.ram on }
+  else { did -u m00 4 | set %m00.output.temp.ram off }
+  if ($istok(%m00.output,hdd,32)) { did -c m00 5 | set %m00.output.temp.hdd on }
+  else { did -u m00 5 | set %m00.output.temp.hdd off }
+  if ($istok(%m00.output,gfx,32)) { did -c m00 6 | set %m00.output.temp.gfx on }
+  else { did -u m00 6 | set %m00.output.temp.gfx off }
+  if ($istok(%m00.output,sound,32)) { did -c m00 7 | set %m00.output.temp.sound on }
+  else { did -u m00 7 | set %m00.output.temp.sound off }
+  if ($istok(%m00.output,net,32)) { did -c m00 8 | set %m00.output.temp.net on }
+  else { did -u m00 8 | set %m00.output.temp.net off }
+  if ($istok(%m00.output,up,32)) { did -c m00 9 | set %m00.output.temp.up on }
+  else { did -u m00 9 | set %m00.output.temp.up off }
+  if ($istok(%m00.c1,b,32)) { did -c m00 14 | set %m00.output.temp.c1b on }
+  else { did -u m00 14 | set %m00.output.temp.c1b off }
+  if ($istok(%m00.c1,u,32)) { did -c m00 15 | set %m00.output.temp.c1u on }
+  else { did -u m00 15 | set %m00.output.temp.c1u off }
+  if ($istok(%m00.c2,b,32)) { did -c m00 17 | set %m00.output.temp.c2b on }
+  else { did -u m00 17 | set %m00.output.temp.c2b off }
+  if ($istok(%m00.c2,u,32)) { did -c m00 18 | set %m00.output.temp.c2u on }
+  else { did -u m00 18 | set %m00.output.temp.c2u off }
+  did -a m00 13 No Color | did -a m00 13 White | did -a m00 13 Black | did -a m00 13 Blue | did -a m00 13 Green | did -a m00 13 Red
+  did -a m00 13 Brown | did -a m00 13 Purple | did -a m00 13 Orange | did -a m00 13 Yellow | did -a m00 13 Lime | did -a m00 13 Teal
+  did -a m00 13 Cyan | did -a m00 13 Royal | did -a m00 13 Fuchsia | did -a m00 13 Grey | did -a m00 13 Silver
+  did -a m00 16 No Color | did -a m00 16 White | did -a m00 16 Black | did -a m00 16 Blue | did -a m00 16 Green | did -a m00 16 Red
+  did -a m00 16 Brown | did -a m00 16 Purple | did -a m00 16 Orange | did -a m00 16 Yellow | did -a m00 16 Lime | did -a m00 16 Teal
+  did -a m00 16 Cyan | did -a m00 16 Royal | did -a m00 16 Fuchsia | did -a m00 16 Grey | did -a m00 16 Silver
+  if ((%m00.c1 == $null) || ($remove(%m00.c1,b,u,$chr(32)) !isnum)) { did -c m00 13 1 | set %m00.output.temp.c1 off }
+  if ($istok(%m00.c1,00,32)) { did -c m00 13 2 | set %m00.output.temp.c1 00 }
+  if ($istok(%m00.c1,01,32)) { did -c m00 13 3 | set %m00.output.temp.c1 01 }
+  if ($istok(%m00.c1,02,32)) { did -c m00 13 4 | set %m00.output.temp.c1 02 }
+  if ($istok(%m00.c1,03,32)) { did -c m00 13 5 | set %m00.output.temp.c1 03 }
+  if ($istok(%m00.c1,04,32)) { did -c m00 13 6 | set %m00.output.temp.c1 04 }
+  if ($istok(%m00.c1,05,32)) { did -c m00 13 7 | set %m00.output.temp.c1 05 }
+  if ($istok(%m00.c1,06,32)) { did -c m00 13 8 | set %m00.output.temp.c1 06 }
+  if ($istok(%m00.c1,07,32)) { did -c m00 13 9 | set %m00.output.temp.c1 07 }
+  if ($istok(%m00.c1,08,32)) { did -c m00 13 10 | set %m00.output.temp.c1 08 }
+  if ($istok(%m00.c1,09,32)) { did -c m00 13 11 | set %m00.output.temp.c1 09 }
+  if ($istok(%m00.c1,10,32)) { did -c m00 13 12 | set %m00.output.temp.c1 10 }
+  if ($istok(%m00.c1,11,32)) { did -c m00 13 13 | set %m00.output.temp.c1 11 }
+  if ($istok(%m00.c1,12,32)) { did -c m00 13 14 | set %m00.output.temp.c1 12 }
+  if ($istok(%m00.c1,13,32)) { did -c m00 13 15 | set %m00.output.temp.c1 13 }
+  if ($istok(%m00.c1,14,32)) { did -c m00 13 16 | set %m00.output.temp.c1 14 }
+  if ($istok(%m00.c1,15,32)) { did -c m00 13 17 | set %m00.output.temp.c1 15 }
+  if ((%m00.c2 == $null) || ($remove(%m00.c2,b,u,$chr(32)) !isnum)) { did -c m00 16 1 | set %m00.output.temp.c2 off }
+  if ($istok(%m00.c2,00,32)) { did -c m00 16 2 | set %m00.output.temp.c2 00 }
+  if ($istok(%m00.c2,01,32)) { did -c m00 16 3 | set %m00.output.temp.c2 01 }
+  if ($istok(%m00.c2,02,32)) { did -c m00 16 4 | set %m00.output.temp.c2 02 }
+  if ($istok(%m00.c2,03,32)) { did -c m00 16 5 | set %m00.output.temp.c2 03 }
+  if ($istok(%m00.c2,04,32)) { did -c m00 16 6 | set %m00.output.temp.c2 04 }
+  if ($istok(%m00.c2,05,32)) { did -c m00 16 7 | set %m00.output.temp.c2 05 }
+  if ($istok(%m00.c2,06,32)) { did -c m00 16 8 | set %m00.output.temp.c2 06 }
+  if ($istok(%m00.c2,07,32)) { did -c m00 16 9 | set %m00.output.temp.c2 07 }
+  if ($istok(%m00.c2,08,32)) { did -c m00 16 10 | set %m00.output.temp.c2 08 }
+  if ($istok(%m00.c2,09,32)) { did -c m00 16 11 | set %m00.output.temp.c2 09 }
+  if ($istok(%m00.c2,10,32)) { did -c m00 16 12 | set %m00.output.temp.c2 10 }
+  if ($istok(%m00.c2,11,32)) { did -c m00 16 13 | set %m00.output.temp.c2 11 }
+  if ($istok(%m00.c2,12,32)) { did -c m00 16 14 | set %m00.output.temp.c2 12 }
+  if ($istok(%m00.c2,13,32)) { did -c m00 16 15 | set %m00.output.temp.c2 13 }
+  if ($istok(%m00.c2,14,32)) { did -c m00 16 16 | set %m00.output.temp.c2 14 }
+  if ($istok(%m00.c2,15,32)) { did -c m00 16 17 | set %m00.output.temp.c2 15 }
+}
+
+;---Dialog-Aliases-End---;
+
+on *:DIALOG:m00:*:*: {
+  if ($devent == init) { 
+    m00.dinit
+  }
+  if ($devent == sclick) { 
+    if ($did == 2) {
+      if (%m00.output.temp.opsys) { $iif(%m00.output.temp.opsys == on,set %m00.output.temp.opsys off,set %m00.output.temp.opsys on) }
+      else { $iif($istok(%m00.output,opsys,32),set %m00.output.temp.opsys off,set %m00.output.temp.opsys on) }
+    }
+    if ($did == 3) {
+      if (%m00.output.temp.cpu) { $iif(%m00.output.temp.cpu == on,set %m00.output.temp.cpu off,set %m00.output.temp.cpu on) }
+      else { $iif($istok(%m00.output,cpu,32),set %m00.output.temp.cpu off,set %m00.output.temp.cpu on) }
+    }
+    if ($did == 4) {
+      if (%m00.output.temp.ram) { $iif(%m00.output.temp.ram == on,set %m00.output.temp.ram off,set %m00.output.temp.ram on) }
+      else { $iif($istok(%m00.output,ram,32),set %m00.output.temp.ram off,set %m00.output.temp.ram on) }
+    }
+    if ($did == 5) {
+      if (%m00.output.temp.hdd) { $iif(%m00.output.temp.hdd == on,set %m00.output.temp.hdd off,set %m00.output.temp.hdd on) }
+      else { $iif($istok(%m00.output,hdd,32),set %m00.output.temp.hdd off,set %m00.output.temp.hdd on) }
+    }
+    if ($did == 6) {
+      if (%m00.output.temp.gfx) { $iif(%m00.output.temp.gfx == on,set %m00.output.temp.gfx off,set %m00.output.temp.gfx on) }
+      else { $iif($istok(%m00.output,gfx,32),set %m00.output.temp.gfx off,set %m00.output.temp.gfx on) }
+    }
+    if ($did == 7) {
+      if (%m00.output.temp.sound) { $iif(%m00.output.temp.sound == on,set %m00.output.temp.sound off,set %m00.output.temp.sound on) }
+      else { $iif($istok(%m00.output,sound,32),set %m00.output.temp.sound off,set %m00.output.temp.sound on) }
+    }
+    if ($did == 8) {
+      if (%m00.output.temp.net) { $iif(%m00.output.temp.net == on,set %m00.output.temp.net off,set %m00.output.temp.net on) }
+      else { $iif($istok(%m00.output,net,32),set %m00.output.temp.net off,set %m00.output.temp.net on) }
+    }
+    if ($did == 9) {
+      if (%m00.output.temp.up) { $iif(%m00.output.temp.up == on,set %m00.output.temp.up off,set %m00.output.temp.up on) }
+      else { $iif($istok(%m00.output,up,32),set %m00.output.temp.up off,set %m00.output.temp.up on) }
+    }
+    if ($did == 13) {
+      if ($did(m00,13).sel = 1) { set %m00.output.temp.c1 off }
+      else { 
+        var %temp.did13 = $calc($did(m00,13).sel - 2)
+        if (%temp.did13 <= 9) { set %m00.output.temp.c1 $+(0,%temp.did13) }
+        else { set %m00.output.temp.c1 %temp.did13 }
+      }
+    }
+    if ($did == 14) {
+      if (%m00.output.temp.c1b) { $iif(%m00.output.temp.c1b == on,set %m00.output.temp.c1b off,set %m00.output.temp.c1b on) }
+      else { $iif($istok(%m00.c1,b,32),set %m00.output.temp.c1b off,set %m00.output.temp.c1b on) }
+    }
+    if ($did == 15) {
+      if (%m00.output.temp.c1u) { $iif(%m00.output.temp.c1u == on,set %m00.output.temp.c1u off,set %m00.output.temp.c1u on) }
+      else { $iif($istok(%m00.c1,u,32),set %m00.output.temp.c1u off,set %m00.output.temp.c1u on) }
+    }
+    if ($did == 16) {
+      if ($did(m00,16).sel = 1) { set %m00.output.temp.c2 off }
+      else { 
+        var %temp.did16 = $calc($did(m00,16).sel - 2)
+        if (%temp.did16 <= 9) { set %m00.output.temp.c2 $+(0,%temp.did16) }
+        else { set %m00.output.temp.c2 %temp.did16 }
+      }
+    }
+    if ($did == 17) {
+      if (%m00.output.temp.c2b) { $iif(%m00.output.temp.c2b == on,set %m00.output.temp.c2b off,set %m00.output.temp.c2b on) }
+      else { $iif($istok(%m00.c2,b,32),set %m00.output.temp.c2b off,set %m00.output.temp.c2b on) }
+    }
+    if ($did == 18) {
+      if (%m00.output.temp.c2u) { $iif(%m00.output.temp.c2u == on,set %m00.output.temp.c2u off,set %m00.output.temp.c2u on) }
+      else { $iif($istok(%m00.c2,u,32),set %m00.output.temp.c2u off,set %m00.output.temp.c2u on) }
+    }
+    if ($did == 19) {
+      did -c m00 13,14,16 1
+      did -c m00 2-9
+      did -u m00 15,17,18
+      set %m00.output.temp.opsys on | set %m00.output.temp.cpu on | set %m00.output.temp.ram on | set %m00.output.temp.hdd on | set %m00.output.temp.gfx on
+      set %m00.output.temp.sound on | set %m00.output.temp.net on | set %m00.output.temp.up on | set %m00.output.temp.c1b on
+      $iif(%m00.output.temp.c1, unset %m00.output.temp.c1) | $iif(%m00.output.temp.c1u, unset %m00.output.temp.c1u)
+      $iif(%m00.output.temp.c2, unset %m00.output.temp.c2) | $iif(%m00.output.temp.c2u, unset %m00.output.temp.c2u) | $iif(%m00.output.temp.c2b, unset %m00.output.temp.c2b)      
+    }
+    if ($did == 20) {
+      $iif(%m00.output.temp.opsys = on,set %m00.output opsys,unset %m00.output)
+      $iif(%m00.output.temp.cpu = on,set %m00.output %m00.output cpu)
+      $iif(%m00.output.temp.ram = on,set %m00.output %m00.output ram)
+      $iif(%m00.output.temp.hdd = on,set %m00.output %m00.output hdd)
+      $iif(%m00.output.temp.gfx = on,set %m00.output %m00.output gfx)
+      $iif(%m00.output.temp.sound = on,set %m00.output %m00.output sound)
+      $iif(%m00.output.temp.net = on,set %m00.output %m00.output net)
+      $iif(%m00.output.temp.up = on,set %m00.output %m00.output up)
+      $iif(%m00.output.temp.c1 = off,unset %m00.c1,set %m00.c1 %m00.output.temp.c1)
+      $iif(%m00.output.temp.c1b = on,set %m00.c1 %m00.c1 b)
+      $iif(%m00.output.temp.c1u = on,set %m00.c1 %m00.c1 u)
+      $iif(%m00.output.temp.c2 = off,unset %m00.c2,set %m00.c2 %m00.output.temp.c2)
+      $iif(%m00.output.temp.c2b = on,set %m00.c2 %m00.c2 b)
+      $iif(%m00.output.temp.c2u = on,set %m00.c2 %m00.c2 u)
+      $iif(%m00.output == $null,unset %m00.output) | $iif(%m00.c1 == $null,unset %m00.c1) | $iif(%m00.c2 == $null,unset %m00.c2)
+      unset %m00.output.temp.*
+    }
+    if ($did == 21) {
+      unset %m00.output.temp.*
+    }
+  }
+}

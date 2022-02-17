@@ -1,0 +1,83 @@
+on *:LOAD: set %owner $input(Enter name of the bot owner:,e) 
+#fcheck on
+alias -l fcheck {
+  if ($regex($1,/(quote|qotd|qsearch)$/Si)) {
+    if ($prop = add) set -z $+(%,$regml(1),$site,$network) %fMins
+    else return $+(%,$regml(1),$site,$network)
+  }
+}
+#fcheck end
+
+alias -l up return $+($upper($left($1,1)),$mid($1,2)) 
+
+on *:text:*:#: {
+  var %file quote.txt, %x $lines(%file), %y $read(%file, n, $2), %rx $r(1,$lines(%file)), %ry $read(%file, n, %rx)
+  if (!%x && $regex($1,/^!q(del|uote|otd|search|lines|open)$/Si)) { notice $nick 12There does not appear to be any quotes added yet. | halt }
+  if ($1 = !qadd) {
+    if ($nick !isop # && $v1 != %owner) { notice $v1 12You need to be a operator in # $+ . | halt }
+    if (!$2) { notice $nick 12Syntax: $1 4[quote] | halt }
+    tokenize 58 $2- | write %file $+(,$up($1),$chr(58),) $qt($up($2)) | var %x $lines(%file) | notice $nick 12Added quote at 4position %x
+  }
+  if ($1 = !qdel) {
+    if ($nick != %owner) { notice $v1 12Ask $v2 to delete a quote. | halt }
+    if (!$2) { notice $nick 12Syntax: $1 4[1 - %x $+ ] | halt }
+    var %i $numtok($2-, 32)
+    while (%i) { var %list $sorttok($addtok(%list,$gettok($sorttok($2-, 32, n),%i,32),32),32,n) | dec %i }
+    var %j $numtok(%list, 32) 
+    while (%j) { 
+      if (!$read(%file, n, $gettok(%list,%j,32))) notice $nick 12Quote 4# $+ $gettok(%list,%j,32) 12Does not exist 4You can select 1 to %x 
+      else { 
+        notice $nick 12Quote 04# $+ $gettok(%list,%j,32) 12has been removed.
+        write -dl $gettok(%list,%j,32) %file 
+      }  
+      dec %j 
+    }
+  }  
+  if ($1 = !quote) {
+    if ($2 && $2 !isnum) { notice $nick 12Syntax: $1 4[1 - %x $+ ] | halt }
+    if ($2 && !%y || $2 < 0) { notice $nick 12Quote 4# $+ $2 12Does not exist 4You can select 1 to %x | halt }
+    if ($($fcheck($right($1, -1)),2)) { notice $nick 12You must wait04 $duration($v1) 12before you can use that again. | halt }
+    $fcheck($right($1, -1)).add
+    if (!$2) { msg # 12Random Quote 4# $+ %rx 12- %ry | halt }
+    msg # 12Quote 4# $+ $2 12- %y
+  }
+  if ($1 = !qotd) {
+    if (%date != $date) var -g %date $v2, %qotd %rx
+    if ($($fcheck($right($1, -1)),2)) { notice $nick 12You must wait04 $duration($v1) 12before you can use that again. | halt }
+    $fcheck($right($1, -1)).add | msg # 10Quote of the the Day: 12 $+ $read(%file, n, %qotd) 
+  }
+  if ($1 = !qsearch) {
+    if ($($fcheck($right($1, -1)),2)) { notice $nick 12You must wait04 $duration($v1) 12before you can use that again. | halt }
+    $fcheck($right($1, -1)).add
+    if (!$2) { notice $nick 12Syntax: 4 $+ $1 [term] | halt }
+    var %i 1 | while ($read(%file,n,%i)) {
+      if ($2 = -a) {
+        if (!$3) { notice $nick 12Syntax: 4 $+ $1-2 [author] | halt }
+        var %author $gettok($read(%file,n,%i),1,2)
+        if ($3- $+ : = $strip(%author,b)) var %qsearch $addtok(%qsearch,%i,32) 
+      }  
+      elseif ($2- isin $read(%file,n,%i)) var %qsearch $addtok(%qsearch,%i,32) 
+      inc %i
+    }
+    if (!%qsearch) notice $nick 12There is no quote matching $+(4,$iif($2 = -a,$3-,$2),.) 
+    else notice $nick 12Matching quotes for $+(04,$iif($2 = -a,$3-,$2-),: 10,%qsearch,)
+  }
+  if ($1 = !aquote && $regex($2,/^o(|n|ff)$/Si) && $nick = %owner) {
+    if (!%aMins) { notice $nick 12You have first to set the duration of aQuote. | notice $nick 12Syntax: 4!aTime [mins] | halt }
+    if ($regml(1) = n) { msg # 12aQuote has been activated. | timerAQuote 0 %aMins msg # 13Auto Quote: 12 $!read( %file , n) }
+    elseif ($timer(AQuote)) { timerAQuote $2 | msg # 12 $+ aQuote has been turned off. }
+  }
+  if ($1 = !qlines) notice $nick 12There are 04 $+ %x quotes 12added.
+  if ($1 = !qopen && $nick = %owner) run %file
+  if ($regex($1,/^!(a|f)time$/Si) && $nick = %owner) {
+    if ($2 isnum && $2 >= 0) {
+      set $+(%,$regml(1),Mins $calc($int($2) * 60 + $gettok($2,2,46)))
+      msg # 12Setted duration of $iif($regml(1) = a,aQuote,floodcheck) to $2 minutes.  
+    }
+  }
+  if ($1 = !fcheck && $regex($2,/^o(|n|ff)$/Si) && $nick = %owner) {
+    if (!%fMins) { notice $nick 12You have first to set the duration of fTime. | notice $nick 12Syntax: 4!fTime [mins] | halt }
+    $iif($regml(1) = n,en,dis) $+ able #fcheck
+    msg # 12Floodcheck has been $iif($v1 = $v2,en,dis) $+ abled.   
+  }
+}

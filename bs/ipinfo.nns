@@ -1,0 +1,262 @@
+;iplocator by Ford_Lawnmower irc.GeekShed.net #Script-Help
+#IpInfo off
+On $*:Text:/^(!|@)IpInfo.*/Si:#: {
+  if ($timer($+(IpInfo,$network,$nick))) { return }
+  .timer $+ $+(IpInfo,$network,$nick) 1 6 noop
+  var %method $iif($regml(1) == !,.notice $nick,$iif($regex($nick($chan,$nick).pnick,/(!|~|&|@|%)/),.msg $chan,.notice $nick))
+  GetIpInfo %method $2-
+}
+#IpInfo end
+alias IpInfo { GetIpInfo echo -a $1- }
+alias -l GetIpInfo {
+  $1-2 07Searching........
+  var %sockname $+(IpInfo,$network,$2,$ticks)
+  sockopen %sockname www.melissadata.com 80
+  sockmark %sockname $1-2 $+(/lookups/iplocation.asp?ipaddress=,$3)
+}
+On *:sockopen:IpInfo*: {
+  if (!$sockerr) {
+    sockwrite -nt $sockname GET $gettok($sock($sockname).mark,3,32) HTTP/1.0
+    sockwrite -n $sockname Host: www.melissadata.com
+    sockwrite -n $sockname $crlf
+  }
+  else { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+}
+On *:sockread:IpInfo*: {
+  if ($sockerr) { echo -st Socket Error $nopath($script) | sockclose $sockname | return }
+  else {
+    var %IpInfo | sockread %IpInfo
+    if ($regex(%IpInfo,/<td class='columresult'>([^<]*)<\/td><td align='left'><b>([^<]*)<\/b><\/td><\/tr>/gi)) {
+      put $gettok($sock($sockname).mark,1-2,32) $remove($+(07,$regml(1),:,$chr(32),06,$regml(2)),&nbsp;)
+    }
+    elseif ($regex(%IpInfo,/<div align='center' class='Lookupserror'>([^<]*)<b>([^<]*)<\/b>([^<]*)<br>([^<]*)<\/div>/gi)) { 
+      $gettok($sock($sockname).mark,1-2,32) $regml(1) $regml(2) $regml(3) $regml(4) 07Syntax !IpInfo 1.2.3.4
+      sockclose $sockname
+    }
+  }
+}
+dialog IP_Locator {
+  title "Ip Locator"
+  size -1 -1 96 144
+  option dbu
+  text "Country:", 1, 0 8 33 8, right
+  text "Region:", 2, 0 16 33 8, right
+  text "City:", 3, 0 24 33 8, right
+  text "Certainty:", 4, 0 32 33 8, right
+  text "Latitude:", 5, 0 40 33 8, right
+  text "Longitude:", 6, 0 48 33 8, right
+  text "Time Zone:", 7, 0 56 33 8, right
+  text "Population:", 8, 0 64 33 8, right
+  text "Proxy?:", 9, 0 72 33 8, right
+  text "Currency:", 10, 0 80 33 8, right
+  text "", 11, 40 8 57 8
+  text "", 12, 40 16 57 8
+  text "", 13, 40 24 57 8
+  text "", 14, 40 32 57 8
+  text "", 15, 40 40 57 8
+  text "", 16, 40 48 57 8
+  text "", 17, 40 56 57 8
+  text "", 18, 40 64 57 8
+  text "", 19, 40 72 57 8
+  text "", 20, 40 80 57 8
+  text "IP Address:", 21, 0 120 33 8, right
+  edit "", 22, 40 120 54 10
+  button "Find", 23, 65 131 29 12
+  text "", 24, 0 0 97 8, center
+  icon 25, 40 92 47 23
+  text "Flag:", 26, 0 98 33 8, right
+  check "Check for Drones", 27, 2 131 58 10
+}
+On *:dialog:Ip_Locator:Sclick:23: {
+  if ($gettok($did(ip_locator,22).text,0,46) != 4) {
+    did -a Ip_Locator 24 You must enter a ip address
+    .timer 1 3 did -a Ip_Locator 24
+    return
+  }
+  else {
+    did -a Ip_Locator 24
+    IpLocator $did(ip_locator,22).text
+    if ($did(Ip_Locator,27).state == 1) { dronebl $did(ip_locator,22).text }
+  }
+}
+On *:dialog:Ip_Locator:init:*: {
+  IpLocator $ip
+  $iif($ip,did -a Ip_locator 22 $ip)
+}
+alias IpLocator.timeout {
+  if (%IpLocator.chan == dialog) && ($dialog(IP_Locator)) {
+    did -a Ip_locator 24 Connection Timed Out!
+    .timer 1 3 did -a Ip_Locator 24
+  }
+  else { echo -a Connection Timed Out! }
+  IpLocator.clear
+}
+alias IpLocator.clear {
+  unset %IpLocator*
+  sockclose IpLocator
+  .timer-IpLocator off
+  halt
+}
+alias IpLocator {
+  set %IpLocator.nick $me
+  set %IpLocator.chan dialog
+  sockclose IpLocator
+  set %IpLocatorurl $+(/IpLocator.htm?GetLocation&IpAddress=,$1)
+  set %IpLocatorsite www.geobytes.com
+  sockopen IpLocator %IpLocatorsite 80
+  .timer-IpLocator 1 10 IpLocator.timeout
+}
+on *:sockopen:IpLocator: {
+  if (!$sockerr) {
+    sockwrite -n $sockname GET %IpLocatorurl HTTP/1.1
+    sockwrite -n $sockname Host: %IpLocatorsite $+ $CRLF $+ $CRLF
+  }
+  else { echo -st Unknown Socket error $script | return }
+}
+on *:sockread:IpLocator: {
+  if ($sockerr > 0) { echo -a IpLocator >sock error< |  IpLocator.clear }
+  else {
+    var %IpLocatorvar |  sockread %IpLocatorvar
+    if (<td align="left">Country</td> isin %IpLocatorvar) { set %IpLocator.Country on }
+    if (<td align="right">Region</td> isin %IpLocatorvar) { set %IpLocator.Region on }
+    if (<td align="center">City</td> isin %IpLocatorVar) { set %IpLocator.city on }
+    if (<td align="right">Certainty</td> isin %IpLocatorvar) { set %IpLocator.certainty on }
+    if (<td align="right">Latitude</td> isin %IpLocatorvar) { set %IpLocator.latitude on }
+    if (<td align="right">Domain</td> isin %IpLocatorvar) { set %IpLocator.timezone on }
+    if (<td align="right">Longitude</td> isin %IpLocatorvar) { set %IpLocator.longitude on }
+    if (<td align="right">ISP</td> isin %IpLocatorvar) { set %IpLocator.timezone on }
+    if (<td align="right">IP Address</td> isin %IpLocatorvar) { set %IpLocator.timezone on }
+    if (<td align="right">TimeZone</td> isin %IpLocatorvar) { set %IpLocator.timezone on }
+    if (<td align="right">State or Region</td> isin %IpLocatorvar) { set %IpLocator.timezone on }
+    if (<td align="right">Population</td> isin %IpLocatorvar) { set %IpLocator.population on }
+    if (<td align="right">Is proxy</td> isin %IpLocatorvar) { set %IpLocator.proxy on }
+    if (<td align="right">Currency</td> isin %IpLocatorvar) { set %IpLocator.currency on }
+    if (<td align="right">Flag</td> isin %IpLocatorvar) { set %Iplocator.flag on }
+    if (<input name="ro-no_bots_pls isin %IpLocatorvar) {
+      if (%IpLocator.Country == on) { set %IpLocator.country $between(%IpLocatorvar,value="," size,1) }
+      if (%IpLocator.region == on) { set %IpLocator.region $between(%IpLocatorvar,value="," size,1) }
+      if (%IpLocator.City == on) { set %IpLocator.city $between(%IpLocatorvar,value="," size,1) }
+      if (%IpLocator.certainty == on) { set %IpLocator.certainty $between(%IpLocatorvar,value="," size,1) }
+      if (%IpLocator.latitude == on) { set %IpLocator.latitude $between(%IpLocatorvar,value="," size,1) }
+      if (%IpLocator.longitude == on) { set %IpLocator.longitude $between(%IpLocatorvar,value="," size,1) }
+      if (%IpLocator.timezone == on) { set %IpLocator.timezone $between(%IpLocatorvar,value=",",1) }
+      if (%IpLocator.population == on) { set %IpLocator.population $between(%IpLocatorvar,value=",",1) }
+      if (%IpLocator.proxy == on) { set %IpLocator.proxy $between(%IpLocatorvar,value=",",1) }
+      if (%IpLocator.currency == on) { set %IpLocator.currency $between(%IpLocatorvar,value="," size,1) }
+    }
+    if (<a href="FreeServices.htm"> isin %IpLocatorvar) && (%IpLocator.flag == on) {
+      var %flaglink $between(%IpLocatorvar,<a href="FreeServices.htm"><img border="0" src="," width="107",1)
+      getflag %flaglink $nopath(%flaglink)
+      if (%IpLocator.chan == dialog) && ($dialog(IP_Locator)) {
+        did -a IP_Locator 11 $iif(%IpLocator.country,$v1,N/A)
+        did -a IP_Locator 12 $iif(%IpLocator.region,$v1,N/A)
+        did -a IP_Locator 13 $iif(%IpLocator.city,$v1,N/A)
+        did -a IP_Locator 14 $iif(%IpLocator.certainty,$v1 $+ %,N/A)
+        did -a IP_Locator 15 $iif(%IpLocator.latitude,$v1,N/A)
+        did -a IP_Locator 16 $iif(%IpLocator.longitude,$v1,N/A)
+        did -a IP_Locator 17 $iif(%IpLocator.timezone,$v1,N/A)
+        did -a IP_Locator 18 $iif(%IpLocator.population,$v1,N/A)
+        did -a IP_Locator 19 $iif(%IpLocator.proxy,$v1,N/A)
+        did -a IP_Locator 20 $iif(%IpLocator.currency,$v1,N/A)
+        .timer 1 4 did -g IP_Locator 25 $qt($+($mircdir,flags\,$nopath(%flaglink)))
+      }
+      IpLocator.clear
+    }
+  }
+}
+alias -l IP_Locator {
+  if ($dialog(IP_Locator)) { dialog -v IP_Locator IP_Locator }
+  else { dialog -m IP_Locator IP_Locator }
+}
+menu status,channel {
+  IP Locator
+  .Dialog:IP_Locator
+  .$iif($group(#IpInfo) == On,$style(1)) IpInfo Trigger
+  ..$iif($group(#IpInfo) == On,$style(2)) On: .enable #IpInfo
+  ..$iif($group(#IpInfo) == Off,$style(2)) Off: .disable #IpInfo
+}
+Alias -l GetFlag {
+  if ($isfile($+(flags\,$2))) { return }
+  set %Getflag.Site $gettok($remove($1,http://),1,47)
+  set %Getflag.URL $remove($1,$gettok($1,1,47),$gettok($1,2,47),//)
+  set %Getflag.PicName $2
+  if (!$isdir($+($mircdir,flags))) { mkdir flags }
+  sockclose Getflag
+  sockopen Getflag %Getflag.site 80
+}
+On *:sockopen:Getflag:{
+  sockwrite -nt $sockname GET %Getflag.url HTTP/1.0
+  sockwrite $sockname Host: %Getflag.site $+ $crlf $+ $crlf
+}
+On *:sockread:Getflag:{
+  if (!$sock($sockname).mark) {
+    var %Getflag.var | sockread %Getflag.var
+    if (%Getflag.var == $null) { sockmark $sockname 1 }
+  }
+  else {
+    sockread &flag 
+    bwrite $qt($+($mircdir,flags\,%Getflag.picname)) -1 -1 &flag
+  }
+}
+On *:sockclose:Getflag:{
+  unset %Getflag.*
+} 
+alias -l httpstrip { var %x, %i = $regsub($1-,/(^[^<]*>|<[^>]*>|<[^>]*$)/g,$null,%x) | return $remove($replace(%x,&amp;,&),&nbsp;,&lt;) }
+alias -l Put {
+  if (!$regex($1,/(\.|^)(msg|notice|echo)$/Si)) || (!$3) { echo -st **Put error** Syntax /Put msg #channel text - or - /Put notice nickname text  | return }
+  var %tokens $0, %Tstart 3, %Dtimer 1500
+  if ($timer($+(Put,$2,$network)).secs) { %Dtimer = $calc($v1 * 1000) }  
+  while ($len($($+($,%Tstart,-,%tokens),2)) > 430) {
+    dec %tokens
+    if ($len($($+($,%Tstart,-,%tokens),2)) <= 430) {
+      .timer -m 1 %Dtimer $1-2 $($+($,%Tstart,-,%tokens),2))
+      inc %Dtimer 1500
+      %Tstart = $calc(%tokens + 1)
+      %tokens = $0
+    }
+  }
+  .timer -m 1 %Dtimer $1-2 $($+($,%Tstart,-,%tokens),2))
+  .timer $+ $+(Put,$2,$network) -m 1 $calc(%Dtimer + 1500) noop 
+}
+;alias by Gummo
+alias -l between { 
+  noop $regex($1,/\Q $+ $2 $+ \E(.*?)\Q $+ $3 $+ \E/gi) 
+  return $regml($4) 
+}
+alias -l dronebl {
+  .enable #dronecheck
+  var %dronebl $gettok($1,4,46) $+ . $+ $gettok($1,3,46) $+ . $+ $gettok($1,2,46) $+ . $+ $gettok($1,1,46) $+ .dnsbl.dronebl.org
+  set %dns.ip $1
+  .dns %dronebl
+}
+menu nicklist {
+  IP Locator for $$1:{
+    IP_Locator
+    .enable #nicklistcheck
+    userip $$1
+    .timer 1 2 .disable #nicklistcheck
+  }
+}
+#nicklistcheck off
+Raw 340:*: {
+  haltdef 
+  var %tempip $gettok($1-,2,64)
+  echo -a %tempip
+  if ($gettok(%tempip,4,46) isnum) {
+    iplocator %tempip
+    did -r Ip_locator 22
+    did -a Ip_locator 22 %tempip
+  }
+}
+#nicklistcheck end
+#dronecheck off
+On 1:DNS: {
+  if ($dialog(IP_Locator)) { 
+    if ($dns(0)) { did -a Ip_Locator 24 $qt(%dns.ip) Is a Drone! | .timer 1 2 did -a IP_Locator 19 True }
+    else { did -a Ip_Locator 24 $qt(%dns.ip) is Not a Drone | .timer 1 2 did -a IP_Locator 19 False } 
+  }
+  unset %dns.ip
+  .disable #dronecheck
+  halt
+}
+#dronecheck End

@@ -1,0 +1,23 @@
+On *:TEXT:!Roulette:#: {
+  if ((%floodroulette) || ($($+(%,floodroulette.,$nick),2))) { return }
+  set -u1 %floodroulette On
+  set -u1 %floodroulette. $+ $nick On
+  if ($nick isop #) msg $chan Nazi mods are only released upon spam DansGame you know that $nick ...
+  else {
+    var %randnumber = $rand(1,4)
+    if (%randnumber == 1) {
+      msg $chan BOOM BITCH!!! The SHOOTS YOUR ASS! and a bullet goes WAY up there. $nick is shaking so badly that it kissed his anus and now $nick $+ 's just wishing he could have gotten dinner first. 
+      msg $chan /timeout $nick 120
+    }
+    elseif (%randnumber == 2) { 
+      msg $chan Roulette clicks!...Empty...You live to see another day $nick pew....
+    }
+    elseif (%randnumber == 3) { 
+      msg $chan ..... BANG! ... Roulette kills another victim BibleThump 
+      msg $chan /timeout $nick 120
+    }
+    elseif (%randnumber == 4) {
+      msg $chan $nick starts to shake, $nick tries to pull the trigger but can't. $nick drops the gun, $nick isn't up for the challenge... Roulette. 
+    }
+  }
+  }	

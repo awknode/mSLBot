@@ -1,0 +1,86 @@
+alias slapall {
+  if $($+(%,sent,.,$chan),2) { return }
+  beep 2 | var %warn $input(There are $nick($active,0) user(s) in the channel $+ $chr(44) are you sure you wish to continue?,yv,Warning!)
+  if (%warn == $yes) {
+    var %x = 1, %y = $nick($active,0)
+    while (%x <= %y) {
+      if (!$istok($me,$nick($active,%x),32)) {
+        $+(.timer,.,$chan,.,%x) 1 %x describe # slaps $nick($active,%x) around a bit with a large trout
+      }
+      inc %x
+    }
+    set -u10 $+(%,sent,.,$chan) 1
+  }
+}
+
+alias masshl {
+  if ($left($1,1) == -) { var %massu $iif(a isin $1 || o isin $1 || h isin $1 || v isin $1 || r isin $1,$remove($1,-),a) | tokenize 32 $2- }
+  else { var %massu a }
+  var %x 1 | var %msg $iif($1,=> $+ $1-) | tokenize 32
+  while (%x <= $nick(#,0,%massu)) { if ($nick(#,%x,%massu) != $me) { tokenize 32 $1- $nick(#,%x,%massu) }
+    inc %x 
+  }
+  tokenize 32 $1- %msg
+  while ($$1-) { say $1-30 | tokenize 32 $31- }
+}
+menu nicklist {
+  .Mass HL {
+    var %msg $?="Message?" | var %msg $iif(%msg,=> $+ %msg) | tokenize 32 $replace($snicks,$chr(44),$chr(32))
+    tokenize 32 $1- %msg
+    while ($$1-) { say $1-30 | tokenize 32 $31- }
+  }
+}
+
+
+alias krashed { 
+  msg $chan https://images.encyclopediadramatica.se/4/40/Krashed.jpg
+  msg $chan https://images.encyclopediadramatica.se/thumb/d/d5/Krashed_Dick_1.jpg/450px-Krashed_Dick_1.jpg LOLOL
+  msg $chan https://images.encyclopediadramatica.se/thumb/d/de/Krashed_Dick_2.jpg/450px-Krashed_Dick_2.jpg RIFK
+  msg $chan It is a well known fact amongst the botnet community that Krashed became friends with Wheelchair1918 (ryan1918.com) and sucked his dick until he was released a crippled version of the AgoBot source code. Krashed then later took credit for being involved with the original AgoBot team after being arrested by the FBI, as well as the credit of many other attacks that he was not responsible for, when in reality, Rain, Emp, and Ago had not ever heard of Krashed. This kid is like an autistic version of MafiaBoy. 
+  msg $chan 2http://redlegion.org/krashed/1.jpg krashed
+  msg $chan 2http://redlegion.org/krashed/2.jpg is
+  msg $chan 2http://redlegion.org/krashed/3.jpg nothing
+  msg $chan 2http://redlegion.org/krashed/4.jpg but
+  msg $chan 2http://redlegion.org/krashed/5.jpg a
+  msg $chan 2http://redlegion.org/krashed/6.jpg rat
+}
+
+
+on *:SNOTICE:*You were forced to join*:{ part $7 }
+
+
+on *:SNOTICE:*whois on you*: {
+  echo -a 4[ALERT]48 $2 ( $address($2,2) ) did a whois on you on server [ $server ] at [ $time(.:h:nn:sstt:.) , $date ] .
+  whois $2
+  PRIVMSG $2 sup $2 don't whois me or i will fuck your world up m8
+  NOTICE $2 sup $2 don't whois me or i will fuck your world up m8
+  ctcp $2 sup $2 don't whois me or i will fuck your world up m8
+  ctcp $2 PING
+  ctcp $2 TIME
+  ctcp $2 VERSION
+  ctcp $2 FINGER
+  privmsg $2 4,4==================
+  privmsg $2 4,4==0,0==============4,4==
+  privmsg $2 4,4==0,0==1,1==0,0==1,1======0,0==4,4==
+  privmsg $2 4,4==0,0==1,1==0,0==1,1==0,0======4,4==
+  privmsg $2 4,4==0,0==1,1==========0,0==4,4==
+  privmsg $2 4,4==0,0======1,1==0,0==1,1==0,0==4,4==
+  privmsg $2 4,4==0,0==1,1======0,0==1,1==0,0==4,4==
+  privmsg $2 4,4==0,0==============4,4==
+  privmsg $2 4,4==================
+  privmsg $2 1,1aidsvilleaidsville4,4a1,1ids4,4v1,1ill4,4e1,1aid4,4s1,1vi4,4l1,1leaidsvill4,4ea1,1id4,4s1,1v4,4ill1,1ea4,4idsv1,1illeaidsvilleaidsvill
+  privmsg $2 1,1aidsvilleaidsville4,4a1,1ids4,4v1,1ill4,4e1,1aid4,4s1,1vi4,4l1,1le4,4aids1,1vil4,4l1,1ea4,4i1,1d4,4s1,1v4,4i1,1ll4,4e1,1a4,4i1,1dsvilleaidsvilleaidsvill
+  privmsg $2 1,1aidsvilleaidsville4,4aidsv1,1ill4,4e1,1aid4,4s1,1vi4,4l1,1leaidsvil4,4leai1,1d4,4s1,1v4,4i1,1ll4,4e1,1a4,4idsv1,1illeaidsvilleaidsvill
+  privmsg $2 1,1aidsvilleaidsville4,4a1,1ids4,4v1,1ill4,4e1,1aids4,4vi1,1lle4,4aids1,1vil4,4l1,1ea4,4i1,1d4,4s1,1v4,4ill1,1eaids4,4v1,1illeaidsvilleaidsvill
+  privmsg $2 1,1aidsvilleaid0,0s1,1villeaidsvilleaidsvilleaidsvilleaidsville4,4aidsv1,1illeaidsvilleaidsvill
+  privmsg $2 1,1aidsv0,0i1,1lleaid0,0svilleaidsvilleaidsvilleaidsville1,1aidsvilleaidsvilleaidsvilleaidsvill
+  privmsg $2 1,1aidsv0,0illeaidsv4,4illeaidsvilleaidsvilleaidsvill0,0eaidsv1,1illeaidsvilleaidsvilleaidsvill
+  privmsg $2 1,1aidsv0,0illeaidsv4,4i1WELCOME4,4v1TO4,4l1AIDS-VILLE4,4a1FAGGOT4,4leaidsvi15,1------------------1,1lleaidsvill
+  privmsg $2 1,1aidsv0,0illeaidsv4,4illeaidsvilleaidsvilleaidsvill0,0eaidsv1,1illeaidsvilleaidsvi4\1,1leaidsvill
+  privmsg $2 1,1aidsv0,0i1,1lleaid0,0svilleaidsvilleaidsvilleaidsville1,1aidsvilleaidsvilleaidsvil4\1,1eaidsvill
+  privmsg $2 1,1aidsvilleaid0,0s1,1villeaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvill4\1,1aidsvill
+  privmsg $2 1,1aidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsville4,4aidsvilleaidsvi1,1ll
+  privmsg $2 1,1aidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvil4,4leaidsvilleaidsvill
+  privmsg $2 1,1aidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvill
+  privmsg $2 1,1aidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvilleaidsvill
+}

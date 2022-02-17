@@ -1,0 +1,619 @@
+;tvmaze by mruno
+;uses tvmaze.com for tv show info
+;usage !EP <show>
+;---------------------------------------------------------------
+;set max results when searching (!EP -s blah)
+alias TVMaze.Query.Results return 3
+
+;set 1 for colors and 0 for no colors
+alias TVMaze.Colors return 1
+;---------------------------------------------------------------
+on *:TEXT:!EP*:#:{
+  if ($chr(36) isin $1-) return
+  if ($timer(TVMaze)) || ($hget(TVMaze)) return
+  else .timerTVMaze 1 10 noop
+  .timerTVMaze.Timeout 1 60 TVMaze.Timeout
+  if (-s == $2) && ($3) {
+    ;search multiple shows
+    .timer 1 0 hadd TVMaze query.type multiple
+    .timer 1 0 TVMaze.Query.Multiple $chan $nick $strip($3-)
+  }
+  elseif (-ID == $2) && ($3 isnum) {
+    ;get results of an exact show by ID code
+    .timer 1 0 hadd TVMaze query.type id
+    .timer 1 0 TVMaze.Query.Single $chan $nick $strip($3)
+  }
+  elseif ($2) && (-id != $2) {
+    ;single query results
+    .timer 1 0 hadd TVMaze query.type single
+    .timer 1 0 TVMaze.Query.Single $chan $nick $strip($2-)
+  }
+  else {
+    ;display help
+    .notice $nick TVmaze script by mruno Usage: !EP <show>
+    .notice $nick Options -s Search for shows with up to $TVMaze.Query.Results results. -ID Returns the results with an ID from TVmaze.com
+    .notice $nick Option Examples: !EP -s walking dead or !EP -id 240
+    return
+  }
+  .notice $nick Querying TVmaze...
+  hmake TVMaze
+}
+
+alias TVMaze.Timeout {
+  msg $hget(TVMaze,chan) !EP - Reply from TVmaze.com has timed out.
+  if ($hget(tvmaze)) hfree tvmaze
+  .timerTVMaze* off
+  jsonclose TVMaze*
+}
+alias TVMaze.Complete {
+  ;end of json queries!
+  ;output the info to the channel or user
+  .timerTVMaze* off
+  var %action
+  if ($hget(TVMaze,query.type) == single) || ($hget(TVMaze,query.type) == id) {
+    if $hget(TVMaze,nick) && ($hget(TVMaze,chan)) {
+      set %action msg $hget(TVMaze,chan)
+      %action $iif($TVMaze.Colors,12) $+ $hget(TVMaze,title) $+  $paren($hget(TVMaze,country)) - $iif($hget(TVMaze,NextEP.Name),$date($ctime($remove($replace($hget(TVMaze,NextEP.airdate),-,/),$chr(44))),dddd) @ $meridiemhour($hget(TVMaze,NextEP.airtime)) -) $paren($hget(TVMaze,status))
+      %action $iif($TVMaze.Colors,12) $+ $remove($hget(TVMaze,url),http://) $+ 
+      var %a $gettok($replace($hget(TVMaze,NextEP.airstamp),-,/),1,84) $hget(TVMaze,NextEP.airtime)
+      set %a $timeleft($ctime($remove(%a,$chr(44))))
+      var %airing $iif(sec isin $gettok(%a,$gettok(%a,0,32),32),$gettok(%a,1 - $calc($gettok(%a,0,32) - 1),32),%a)
+      if (- isin %airing) unset %airing
+      if ($hget(TVMaze,PrevEP.name)) %action Last Episode: $date($ctime($remove($replace($hget(TVMaze,PrevEP.airdate),-,/),$chr(44))),mmm/dd/yyyy) S $+ $hget(TVMaze,PrevEP.season) $+ E $+ $hget(TVMaze,PrevEP.number) $quo($hget(TVMaze,PrevEP.name))
+      if ($hget(TVMaze,NextEP.name)) %action Next Episode: $date($ctime($remove($replace($hget(TVMaze,NextEP.airdate),-,/),$chr(44))),mmm/dd/yyyy) S $+ $hget(TVMaze,NextEP.season) $+ E $+ $hget(TVMaze,NextEP.number) $quo($hget(TVMaze,NextEP.name)) $iif(%airing,- Airing in: %airing)
+      elseif ($hget(TVMaze,status) == running) %action Next Episode: TBA
+      .notice $hget(TVMaze,nick) Not the right show? Try !EP -s $replace($hget(TVMaze,query),$chr(37) $+ 20,$chr(32))
+    }
+  }
+  else {
+    set %action .notice $hget(TVMaze,nick)
+    if $hget(TVMaze,nick) {
+      var %i 0
+      while (%i < $TVMaze.Query.Results) {
+        %action $iif($TVMaze.Colors,12) $+ $hget(TVMaze,$+(Query.,%i,.name)) $+  $paren($hget(TVMaze,$+(Query.,%i,.country)))  Status: $hget(TVMaze,$+(Query.,%i,.status))   Airs on: $hget(TVMaze,$+(Query.,%i,.network)) $iif($hget(TVMaze,$+(Query.,%i,.genres)), Genres: $hget(TVMaze,$+(Query.,%i,.genres)))  ID: $hget(TVMaze,$+(Query.,%i,.id))
+        inc %i
+      }
+      %action Select the one you want with !EP -id <id number>
+    }
+  }
+  unset %TVMaze*
+  .timerTVMaze* off
+  jsonclose TVMaze*
+  .timer 1 1 if ($hget(tvmaze)) hfree tvmaze
+}
+
+
+alias TVMaze.Query.Single {
+  ;/TVMaze.Query.Single channel nickname query
+  ;this returns a single show's results
+
+  var %chan $1
+  var %nick $2
+  var %query $3-
+
+  hadd TVMaze chan %chan
+  hadd TVMaze nick %nick
+  set %query $replace(%query,$chr(32),$chr(37) $+ 20)
+  hadd TVMaze query %query
+  var %name TVMaze.Query
+  if ($hget(TVMaze,query.type) == id) TVMaze.Json -u %name http://api.tvmaze.com/shows/ $+ %query
+  else TVMaze.Json -u %name http://api.tvmaze.com/singlesearch/shows?q= $+ %query
+  .timerTVMaze.Waiting.to.Query 0 1 TVMaze.Get.Single.Query %name %query
+}
+alias TVMaze.Get.Single.Query {
+  ; called by TVMaze.Query.Single to record a single search show's information
+
+  if (!%TVMaze.num) set %TVMaze.num 1
+  else inc %TVMaze.num
+  if (%TVMaze.num > 3) {
+    unset %TVMaze.num
+    if ($hget(TVMaze,query.type) == id) .timerTVMaze.repeat -m 1 500 TVMaze.Json -u $1 http://api.tvmaze.com/shows/ $+ $2-
+    else .timerTVMaze.repeat -m 1 500 TVMaze.Json -u $1 http://api.tvmaze.com/singlesearch/shows?q= $+ $2-
+  }
+  var %name TVMaze.Query
+  var %id $json(%name,id)
+  if (%id) {
+    hadd TVMaze id %id
+    hadd TVMaze title $json(%name,name)
+    hadd TVMaze url $json(%name,url)
+    hadd TVMaze type $json(%name,type)
+    hadd TVMaze language $json(%name,language)
+    hadd TVMaze status $json(%name,status)
+    hadd TVMaze runtime $json(%name,runtime)
+    hadd TVMaze rating $json(%name,rating,average)
+    hadd TVMaze network $json(%name,network,name)
+    hadd TVMaze country $json(%name,network,country,code)
+    hadd TVMaze timezone $json(%name,network,country,timezone)
+    hadd TVMaze summary $remove($json(%name,summary),<p>,</p>)
+    var %genres
+    var %i 0
+    while (%i < 5) {
+      if ($json(%name,genres,%i)) set %genres $addtok(%genres,$ifmatch,44)
+      inc %i
+    }
+    hadd TVMaze genres %genres
+    var %prevep $json(%name,_links,previousepisode,href)
+    if (%prevep) {
+      TVMaze.Json -u TVMaze.PrevEP %prevep
+      hadd TVMaze PrevEP %prevep
+      .timerTVMaze.Waiting.to.Complete.PrevEP -m 0 500 TVMaze.Get.PrevEP $1-
+      hinc TVMaze Waiting
+    }
+    var %nextep $json(%name,_links,nextepisode,href)
+    if (%nextep) {
+      TVMaze.Json -u TVMaze.NextEP %nextep
+      hadd TVMaze NextEP %nextep
+      .timerTVMaze.Waiting.to.Complete.NextEP -m 0 500 TVMaze.Get.NextEP $1-
+      hinc TVMaze Waiting
+    }
+    .timerTVMaze.Waiting.to.Query off
+    if (!$hget(TVMaze,Waiting)) .timerTVMaze.Complete 1 1 TVMaze.Complete
+  }
+}
+alias TVMaze.Json JSONOpen $1-
+alias TVMaze.Query.Multiple {
+  ;/TVMaze.Query.Multiple channel nickname query
+  ;this returns multiple show results
+
+  var %chan $1
+  var %nick $2
+  var %query $3-
+
+  hadd TVMaze chan %chan
+  hadd TVMaze nick %nick
+  set %query $replace(%query,$chr(32),$chr(37) $+ 20)
+  hadd TVMaze query %query
+  var %name TVMaze.Query
+  TVMaze.Json -u %name http://api.tvmaze.com/search/shows?q= $+ %query
+  .timerTVMaze.Waiting.to.Query -m 0 500 TVMaze.Get.Query TVMaze.Query %query
+}
+
+alias TVMaze.Get.Query {
+  ; called by TVMaze.Query.Multiple to record multiple show information
+
+  if (!%TVMaze.Query.num) set %TVMaze.Query.num 1
+  else inc %TVMaze.Query.num
+  if (%TVMaze.Query.num > 6) {
+    unset %TVMaze.Query.num
+    .timerTVMaze.Query.Repeat 1 1 TVMaze.Json -u $1 http://api.tvmaze.com/search/shows?q= $+ $2-
+  }
+  var %name TVMaze.Query
+  if ($json(%name,0,show,name)) {
+    .timertvmaze.waiting.to.query off
+    var %total
+    var %i 0
+    while (%i < $TVMaze.Query.Results) {
+
+      if ($json(%name,%i,show,name)) {
+        hadd TVMaze Query. $+ %i $+ .name $json(%name,%i,show,name)
+        hadd TVMaze Query. $+ %i $+ .url $json(%name,%i,show,url)
+        hadd TVMaze Query. $+ %i $+ .type $json(%name,%i,show,type)
+        hadd TVMaze Query. $+ %i $+ .language $json(%name,%i,show,language)
+
+        var %genres
+        var %a 0
+        while (%a < 5) {
+          if ($json(%name,%i,show,genres,%a)) set %genres $addtok(%genres,$ifmatch,44)
+          inc %a
+        }
+        hadd TVMaze Query. $+ %i $+ .genres %genres
+
+        hadd TVMaze Query. $+ %i $+ .status $json(%name,%i,show,status)
+        hadd TVMaze Query. $+ %i $+ .premiered $json(%name,%i,show,premiered)
+        hadd TVMaze Query. $+ %i $+ .network $json(%name,%i,show,network,name)
+        hadd TVMaze Query. $+ %i $+ .country $json(%name,%i,show,network,country,code)
+        hadd TVMaze Query. $+ %i $+ .id $gettok($json(%name,%i,show,_links,self,href),$gettok($json(%name,%i,show,_links,self,href),0,47),47)
+      }
+      else break
+      inc %i
+    }
+    jsonclose %name
+    .timerTVMaze.Complete 1 1 TVMaze.Complete
+  }
+}
+
+alias TVMaze.Get.PrevEP {
+  ;called from another alias to get the previous episode's information
+
+  var %name TVMaze.PrevEP
+  if (!%TVMaze.PrevEP.num) set %TVMaze.PrevEP.num 1
+  else inc %TVMaze.PrevEP.num
+  if (%TVMaze.PrevEP.num > 6) {
+    unset %TVMaze.PrevEP.num
+    .timerTVMaze.PrevEP.Repeat -m 1 500 TVMaze.Json -u TVMaze.PrevEP $hget(TVMaze,PrevEP)
+  }
+  if ($json(%name,id)) {
+    .timerTVMaze.PrevEP.Repeat off
+    .timerTVMaze.Waiting.to.Complete.PrevEP off
+    .timer 1 0 jsonclose %name
+
+    hadd TVMaze PrevEP.Name $json(%name,name)
+    hadd TVMaze PrevEP.Season $iif($len($json(%name,season)) == 1,0 $+ $json(%name,season),$json(%name,season))
+    hadd TVMaze PrevEP.number $iif($len($json(%name,number)) == 1,0 $+ $json(%name,number),$json(%name,number))
+    hadd TVMaze PrevEP.airdate $json(%name,airdate)
+    hadd TVMaze PrevEP.summary $remove($json(%name,summary),<p>,</p>)
+
+    hdec TVMaze Waiting
+    .timer 1 0 if (!$hget(TVMaze,Waiting)) .timerTVMaze.Complete 1 1 TVMaze.Complete
+  }
+}
+alias TVMaze.Get.NextEP {
+  ;;called from another alias to get the next episode's information
+
+  var %name TVMaze.NextEP
+  if (!%TVMaze.NextEP.num) set %TVMaze.NextEP.num 1
+  else inc %TVMaze.NextEP.num
+  if (%TVMaze.NextEP.num > 6) {
+    unset %TVMaze.NextEP.num
+    .timerTVMaze.NextEP.Repeat 1 1 TVMaze.Json -u TVMaze.NextEP $hget(TVMaze,NextEP)
+  }
+  if ($json(%name,id)) {
+    .timerTVMaze.NextEP.Repeat off
+    .timerTVMaze.Waiting.to.Complete.NextEP off
+    .timer 1 0 jsonclose %name
+
+    hadd TVMaze NextEP.Name $json(%name,name)
+    hadd TVMaze NextEP.Season $iif($len($json(%name,season)) == 1,0 $+ $json(%name,season),$json(%name,season))
+    hadd TVMaze NextEP.number $iif($len($json(%name,number)) == 1,0 $+ $json(%name,number),$json(%name,number))
+    hadd TVMaze NextEP.airdate $json(%name,airdate)
+    hadd TVMaze NextEP.airtime $json(%name,airtime)
+    hadd TVMaze NextEP.airstamp $json(%name,airstamp)
+    hadd TVMaze NextEP.summary $remove($json(%name,summary),<p>,</p>)
+
+    hdec TVMaze Waiting
+    .timer 1 0 if (!$hget(TVMaze,Waiting)) .timerTVMaze.Complete 1 1 TVMaze.Complete
+  }
+}
+alias -l quo if ($1-) return " $+ $1- $+ "
+alias -l paren {
+  if ($3) return $2 $+ $1 $+ $3
+  elseif ($2) return $2 $+ $1 $+ $2
+  elseif ($1 != $null) return ( $+ $1- $+ )
+}
+alias -l meridiemhour {
+  ;converts 24 hour into 12 hour
+  if ($1) {
+    var %h $gettok($1,1,58)
+    var %m $gettok($1,2,58)
+    if (%h < 13) return $+($1,am)
+    else return $+($calc(%h - 12),:,%m,pm)
+  }
+}
+alias -l timeleft {
+  if (!$1) { return 0 }
+  if ($1) && ($1 !isnum) { return 0 }
+  var %s = $nduration($calc($1 - $ctime))
+  return %s
+  var %s = $replacex(%s,wks,$chr(32) weeks.,wk,$chr(32) week.)
+  var %s = $replacex(%s,days,$chr(32) days.,day,$chr(32) day.)
+  if (*min* iswm %s) { var %s = $replacex(%s,hrs,$chr(32) hours.,hr,$chr(32) hour.) }
+  if (*min* !iswm %s) { var %s = $replacex(%s,hrs,$chr(32) hours,hr,$chr(32) hour) }
+  if (*sec* iswm %s) { var %s = $replacex(%s,mins,$chr(32) minutes.,min,$chr(32) minute.) }
+  if (*sec* !iswm %s) { var %s = $replacex(%s,mins,$chr(32) minutes,min,$chr(32) minute) }
+  var %s = $replacex(%s,secs,$chr(32) seconds,sec,$chr(32) second)
+  var %s = $replace(%s,$chr(46),$chr(44))
+  if (%s) { return %s }
+  else { return 0 }
+}
+alias -l nduration {
+  if (!$1) { return 0 }
+  if ($1) && ($1 !isnum) { return 0 }
+  if ($1 >= 31557600) {
+    var %y = $floor($calc($1 / 31557600))
+    return %y year $+ $iif(%y != 1,s) $+ $chr(44) $duration($calc($1 % 31557600))
+  }
+  if ($1 >= 2629800) {
+    var %m = $floor($calc($1 / 2629800))
+    if (%m > 1) return over %m months
+    else return %m month $+ $iif(%m != 1,s) $+ $chr(44) $duration($calc($1 % 2629800))
+  }
+  else { return $duration($1) }
+}
+
+
+
+;http://hawkee.com/snippet/10194/
+alias -l JSONOpen {
+  var %switches = -
+  if (-* iswm $1) {
+    %switches = $1
+    tokenize 32 $2-
+  }
+  var %com = JSONHandler:: $+ $1, %error, %file, %rem
+  var %init = function init(a,b){errortext="";data="";url=b ? b : "";method="GET";headers=[];parsedJSON={};status=a;fso=new ActiveXObject("Scripting.FileSystemObject")}
+  var %read = function readFile(filename){var ado=new ActiveXObject("ADODB.Stream");ado.CharSet="utf-8";ado.Open();ado.LoadFromFile(filename);if(!ado.EOF){data=ado.ReadText();}ado.close()}
+  var %json = "object"!==typeof JSON&&(JSON={});(function(){function m(a){return 10>a?"0"+a:a}function t(a){p.lastIndex=0;return p.test(a)?'"'+a.replace(p,function(a){var c=u[a];return"string"===typeof c?c:"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+a+'"'}function q(a,l){var c,d,h,r,g=e,f,b=l[a];b&&"object"===typeof b&&"function"===typeof b.toJSON&&(b=b.toJSON(a));"function"===typeof k&&(b=k.call(l,a,b));switch(typeof b){case "string":return t(b);case "number":return isFinite(b)?String(b):"null";case "boolean":case "null":return String(b);case "object":if(!b)return"null";e+=n;f=[];if("[object Array]"===Object.prototype.toString.apply(b)){r=b.length;for(c=0;c<r;c+=1)f[c]=q(c,b)||"null";h=0===f.length?"[]":e?"[\n"+e+f.join(",\n"+e)+"\n"+g+"]":"["+f.join(",")+"]";e=g;return h}if(k&&"object"===typeof k)for(r=k.length,c=0;c<r;c+=1)"string"===typeof k[c]&&(d=k[c],(h=q(d,b))&&f.push(t(d)+(e?": ":":")+h));else for(d in b)Object.prototype.hasOwnProperty.call(b,d)&&(h=q(d,b))&&f.push(t(d)+(e?": ":":")+h);h=0===f.length?"{}":e?"{\n"+e+f.join(",\n"+e)+"\n"+g+"}":"{"+f.join(",")+"}";e=g;return h}}"function"!==typeof Date.prototype.toJSON&&(Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+m(this.getUTCMonth()+1)+"-"+m(this.getUTCDate())+"T"+m(this.getUTCHours())+":"+m(this.getUTCMinutes())+":"+m(this.getUTCSeconds())+"Z":null},String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(){return this.valueOf()});var s,p,e,n,u,k;"function"!==typeof JSON.stringify&&(p=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,u={"\b":"\\b","\t":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"},JSON.stringify=function(a,l,c){var d;n=e="";if("number"===typeof c)for(d=0;d<c;d+=1)n+=" ";else"string"===typeof c&&(n=c);if((k=l)&&"function"!==typeof l&&("object"!==typeof l||"number"!==typeof l.length))throw Error("JSON.stringify");return q("",{"":a})});"function"!==typeof JSON.parse&&(s=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,JSON.parse=function(a,e){function c(a,d){var g,f,b=a[d];if(b&&"object"===typeof b)for(g in b)Object.prototype.hasOwnProperty.call(b,g)&&(f=c(b,g),void 0!==f?b[g]=f:delete b[g]);return e.call(a,d,b)}var d;a=String(a);s.lastIndex=0;s.test(a)&&(a=a.replace(s,function(a){return"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)}));if(/^[\],:{}\s]*$/.test(a.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,"")))return d=eval("("+a+")"),"function"===typeof e?c({"":d},""):d;throw new SyntaxError("JSON.parse");})})();
+  var %xhr = function xhr(){var a,b=['MSXML2.XMLHTTP.6.0','MSXML2.XMLHTTP.3.0','Microsoft.XMLHTTP'],c;for(a=0;a<b.length;a++){try{c=new ActiveXObject(b[a]);break}catch(e){}}if(typeof c==="undefined"){errortext = "Unable to locate an XMLHTTP object for use"}else{c.open(method,url,false);for(a=0;a<headers.length;a++){c.setRequestHeader(headers[a][0],headers[a][1])}c.send(data);if(c.status!==200){errortext="Unable to retrieve data - Server Error: " + c.status}else{status="Parsed";try{parsedJSON=JSON.parse(c.responseText)}catch(ee){errortext="Unable to parse Retrieved Data"}}}}
+  if (!$regex(%switches, /^-[ufbwd]*$/)) {
+    %error = Invalid switches specified
+  }
+  elseif ($regex(%switches, /([ufbwd])\1/)) {
+    %error = Duplicate switch specified ( $+ $regml(1) $+ )
+  }
+  elseif ($regex(%switches, /([ufb])/g) > 1) {
+    %error = Conflicting switches specified (- $+ $regml(1) $+ , - $+ $regml(2) $+ $iif($regml(3), $chr(44) - $+ $v1) $+ )
+  }
+  elseif (w isin %switches && u !isin %switches) {
+    %error = Invalid switch (-w is only for use with -u)
+  }
+  elseif ($0 < 2) {
+    %error = Required parameters missing
+  }
+  elseif (!$regex($1,/^[a-z\d_.-]+$/i)) {
+    %error = Invalid name specified (Can only contant letters, numbers, _, ., and -)
+  }
+  elseif ($com(%com)) {
+    %error = Specified name in use
+  }
+  elseif (u isin %switches && $0 > 2) {
+    %error = Invalid URL specified. (Contains Spaces: $2-)
+  }
+  elseif (f isin %switches && !$isfile($2-)) {
+    %error = File not found: $2-
+  }
+  elseif (b isin %switches && &* !iswm $2) {
+    %error = Invalid binary variable specified (No '&' Prefix)
+  }
+  elseif (b isin %switches && $0 > 2) {
+    %error = Invalid binary variable specified (Contains Spaces: $2-)
+  }
+  elseif (b isin %switches && $bvar($2, 0) < 1) {
+    %error = Invalid binary variable specified (No content)
+  }
+  elseif (!$JSON::ComOpen(%com, MSScriptControl.ScriptControl) || $comerr) {
+    %error = Unable to create an instance of MSScriptControl.ScriptControl
+  }
+  elseif (!$com(%com, language, 4, bstr, jscript) || $comerr) {
+    %error = Unable to set ScriptControl's language to Javascript
+  }
+  elseif (!$com(%com, addcode, 1, bstr, %init) || $comerr) {
+    %error = Unable to add init() to ScriptControl
+  }
+  elseif (!$com(%com, addcode, 1, bstr, %xhr) || $comerr) {
+    %error = Unable to add xhr() to ScriptControl
+  }
+  elseif (!$com(%com, addcode, 1, bstr, %read) || $comerr) {
+    %error = Unable to add readFile() to ScriptControl
+  }
+  elseif (!$com(%com, ExecuteStatement, 1, bstr, %JSON) || $comerr) {
+    %error = Unable to Initalize the JSON parser object
+  }
+  elseif (!$com(%com, ExecuteStatement, 1, bstr, $iif(u isin %switches, $+(init,$chr(40), "XHR", $chr(44), $qt($JSON::Escape($2)),$chr(41)), $+(init,$chr(40), "Parsed", $chr(44), "", $chr(41)))) || $comerr) {
+    %error = Unable to initalize variables for ScriptControl
+  }
+  else {
+    if (u isin %switches) {
+      if (w !isin %switches) {
+        var %i = $com(%com, ExecuteStatement, 1, bstr, $+(xhr,$chr(40),$chr(41)))
+        if (!%i || $comerr) {
+          %error = Unable to retrieve data from $2 :: $com(%com).error :: $com(%com).errortext
+        }
+        elseif (!$com(%com, eval, 1, bstr, errortext) || $com(%com).result) {
+          %error = Unable to retrieve data $+ $iif($v1,: $v1,)
+        }
+      }
+    }
+    else {
+      %file = $JSON::File($1)
+      if (f isin %switches) {
+        %file = $longfn($2)
+      }
+      elseif (b isin %switches) {
+        bwrite $qt(%file) 0 -1 $2
+        %rem = $true
+      }
+      else {
+        write -n $qt(%file) $2-
+        %rem = $true
+      }
+      if (!$com(%com, ExecuteStatement, 1, bstr, $JSON::Funct(readFile, $qt($JSON::Escape(%file)))) || $comerr) {
+        %error = Unable to read contents of data-passing file
+      }
+      elseif (!$com(%com, ExecuteStatement, 1, bstr, $JSON::Funct(parsedJSON=JSON.parse,data)) || $comerr) {
+        %error = Unable to parse data into valid JSON
+      }
+    }
+    if (d isin %switches) {
+      $+(.timer,%com) 1 0 JSONClose $1
+    }
+  }
+  :error
+  %error = $iif($error, $v1, %error)
+  if (%rem && %file && $isfile(%file)) {
+    .remove $qt(%file)
+  }
+  if (%error) {
+    if ($timer(%com)) { $+(.timer,%com) off }
+    if ($com(%com)) {
+      set -eu0 $+(%,%com,::error) %error
+      .comclose $v1
+    }
+    else {
+      set -eu0 %JSONError %error
+    }
+  }
+}
+alias -l JSONURLOption {
+  var %com = JSONHandler:: $+ $1, %error, %head, %value, %x = 2
+
+  if (!$com(%com)) {
+    return
+  }
+  unset % [ $+ [ %com ] $+ ] ::error
+  if ($0 < 3) {
+    %error = Missing parameters
+  }
+  elseif (!$com(%com, eval, 1, bstr, status) || $com(%com).result != XHR) {
+    %error = HTTP Request already completed or wasn't specified
+  }
+  elseif ($2 == method) {
+    if (!$regex($3-, /^(?:GET|POST|PUT|DELETE)$/i)) {
+      %error = Invalid HTTP Request method Specified: $3-
+    }
+    elseif (!$com(%com, ExecuteStatement, 1, bstr, method=" $+ $3 $+ ") || $comerr) {
+      %error = Unable to set HTTP Request method
+    }
+  }
+  else {
+    if (!$com(%com, ExecuteStatement, 1, bstr, $JSON::Funct(headers.push,[ $+ $qt($JSON::Escape($2)), $qt($JSON::Escape($3-)) $+ ])) || $comerr) {
+      %error = Unable to set HTTP Header: %head $+ : $+ %value
+    }
+  }
+  :error
+  %error = $iif($error, $v1, %error)
+  if (%error) {
+    reseterror
+    set -e $+(%,%com,::Error) %error
+  }
+}
+alias -l JSONGet {
+  var %switches -
+  if (-* iswm $1) {
+    %switches = $1
+    tokenize 32 $2-
+  }
+  var %com = JSONHandler:: $+ $1
+  var %file = $JSON::File($1)
+  var %error
+  var %rem
+  if ($com(%com)) {
+    if ($com(%com, eval, 1, bstr, status) && $com(%com).result !== XHR) {
+      %error = HTTP Request already completed or wasn't specified
+    }
+    elseif (!$regex(%switches, /^-[bf]*$/)) {
+      %error = Invalid switches specified
+    }
+    elseif ($regex(%switches, /([bf])\1/)) {
+      %error = Duplicate switch specified ( $+ $regml(1) $+ )
+    }
+    elseif ($regex(%switches, /([bf])/g) > 1) {
+      %error = Conflicting switches specified (- $+ $regml(1) $+ , - $+ $regml(2) $+ )
+    }
+    elseif (b isin %switches && &* !iswm $2) {
+      %error = Invalid binary variable specified (No '&' Prefix)
+    }
+    elseif (b isin %switches && $0 > 2) {
+      %error = Invalid binary variable specified (Contains Spaces: $2-)
+    }
+    elseif (f isin %switches && !$isfile($2-)) {
+      %error = File not found: $2-
+    }
+    else {
+      if (b isin %switches && $bvar($2,0)) {
+        bwrite $qt(%file) 0 -1 $2
+        %rem = $true
+      }
+      elseif (f isin %switches) {
+        %file = $2-
+      }      
+      elseif ($2-) {
+        write -n $qt(%file) $2-
+        %rem = $true
+      }
+      %file = $longfn(%file)
+      if ($isfile(%file) && (!$com(%com, ExecuteStatement, 1, bstr, $JSON::Funct(readFile,$qt($JSON::Escape(%file)))) || $comerr)) {
+        %error = Unable to pass data to JSON Handler
+      }
+      elseif (!$com(%com, ExecuteStatement, 1, bstr, xhr $+ $chr(40) $+ $chr(41)) || $comerr) {
+        %error = Unable to retrieve data from specified URL :: $com(%com).error :: $com(%com).errortext    
+      }
+      elseif (!$com(%com, eval, 1, bstr, errortext) || $com(%com).result) {
+        %error = $v1
+      }
+      if (%rem && $isfile(%file)) { .remove %file }
+    }
+  }
+  :error
+  %error = $iif($error, $v1, %error)
+  if (%error) {
+    reseterror
+    set -eu0 $+(%,%com,::Error) %error
+  }
+}
+alias -l JSON {
+  var %com, %x = 1, %i = 0, %get = parsedJSON, %tok, %res
+  if ($regex($1,/^\d+$/) && $0 === 1) {
+    while ($com(%x)) {
+      if (JSONHandler::* iswm $v1) {
+        %com = $v2
+        inc %i
+        if (%i === $1) { return %com }
+      }
+      inc %x
+    }
+    return $iif($1 == 0, %i)
+  }
+  elseif ($regex($1, /^JSONHandler::CHILD::([^:]+)::(.*)$/)) {
+    %com = $regml(1)
+    %get = $regml(2)
+  }
+  else {
+    %com = JSONHandler:: $+ $1
+  }
+  if ($com(%com)) {
+    if ($0 == 1) {
+      if ($prop == isChild) {
+        return $iif($regex($1, /^JSONHandler::CHILD::([^:]+)::(.*)$/), $true, $false)
+      }
+      elseif ($prop == error) {
+        return $iif($(,$+(%,%com,::error)), $true,$false)
+      }
+      elseif ($prop == errortext) {
+        return $(,$+(%,%com,::error))
+      }
+      elseif ($com($1)) {
+        return $1
+      }
+    }
+    elseif (!$com(%com, eval, 1, bstr, status) || $com(%com).result != parsed) {
+      set -eu0 $+(%,%com,::error) JSON Handler waiting for HTTP Request
+    }
+    else {
+      %x = 2
+      while (%x <= $0) {
+        %tok = $(,$ $+ %x)
+        if (!$regex(%tok, /^\d+$/)) {
+          %tok = $qt($replace(%tok,\,\\,",\"))
+        }
+        %get = $+(%get,[,%tok,])
+        inc %x
+      }
+      if (!$com(%com, eval, 1, bstr, %get) || $comerr) {
+        set -e $+(%,%com,::error) Invalid Item|index specified
+      }
+      else {
+        %res = $com(%com).result
+        if (%res == [object]) {
+          return JSONHandler::CHILD:: $+ $1 $+ :: $+ %get
+        }
+        else {
+          return %res
+        }
+      }
+    }
+  }
+}
+alias -l JSONClose {
+  var %com = JSONHandler:: $+ $1
+  unset % [ $+ [ %com ] $+ ] ::*
+  if ($com(%com)) { .comclose $v1 }
+  if ($timer(%com)) { $+(.timer,%com) off }
+}
+alias -l JSONList {
+  var %x = 1, %i = 0
+  while ($com(%x)) {
+    if (JSONHandler::* iswm $v1) {
+      inc %i
+      echo $color(info text) -a * # $+ %i : $regsubex($v2, /^JSONHandler::/,)
+    }
+    inc %x
+  }
+  if (!%i) {
+    echo $color(info text) -a * No active JSON handlers
+  }  
+}
+on *:Start: unset %JSONHandler::*
+alias -l JSON::ComOpen { .comopen $1- | if ($com($1) && !$comerr) { return $true } | :error | reseterror | if ($com($1)) { .comclose $1 } }
+alias -l JSON::Escape { return $replace($1,\,\\,",\") }
+alias -l JSON::File { var %a = 1 | while ($isfile(JSON $+ $1 $+ %a $+ .json)) { inc %a } | return $+(JSON, $1, %a, .json) }
+alias -l JSON::Funct { var %a = $1 $+ $chr(40), %i = 1 | while (%i < $0) { inc %i | %a = $+(%a,$iif(%i > 2,$chr(44)),$(, $ $+ %i)) } | return %a $+ $chr(41) }
