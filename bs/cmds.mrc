@@ -236,13 +236,6 @@ On $*:text:/^[$](sscmd|sshelp|shelp|sscommands)/Si:*: {
   msg $nick much, much more.....
 }
 
-;  notice $nick 0[7 commands 0] [ 7. ! @ 012] 
-news <flag> <#> , yt search , imdb , define , ud , google (!ghelp) , wiki , addquote , quote (randquote) , fml , 
-wz [!wz help] , !weather , !alerts . !alertinfo , !almanac , !tzone <location> (timezone) , binary , asc , urlchk , 
-calc , ipinfo , mtg , xe , tv [!tvhelp] , time , date  
-
-
-
 On $owner:Text:/^[$]regnick/Si:#: { 
   nothere
   spamprotect
