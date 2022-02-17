@@ -1,8 +1,5 @@
 on *:start: {
-  server -e git.opiates.icu:+31337 haha/efnet:scrotum99z99 
-  ;; server -m nullptr.cz:+31337 vmbot/efnet:scrotum88x88$
-  ;; server -m nullptr.cz:+31337 vmbot/blackcatz:scrotum88x88$
-  ;; server -m nullptr.cz:+31337 vmbot/freenode:scrotum88x88$
+  server -e git.opiates.icu:+31337 haha/efnet:password
   ;; ignore -yt *
 }
 
